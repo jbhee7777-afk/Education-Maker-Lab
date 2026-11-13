@@ -227,21 +227,21 @@
   G3.forEach(mazeSheet);
 
   /* ───────── 숨은그림찾기 (장면 속에 숨은 물건) ───────── */
-  const HIDSET = { low: [['gingerhouse', '과자 집 마을'], ['rudolph', '선물 더미 속 루돌프']], mid: [['sleigh', '산타의 밤하늘 비행'], ['forest', '숲속 동물들의 트리 꾸미기']], high: [['livingroom', '크리스마스이브 거실'], ['market', '크리스마스 마켓의 밤']] };
+  const HIDSET = { low: [['snowman', '눈사람 만들기'], ['decorate', '루돌프와 펭귄의 트리 꾸미기']], mid: [['skating', '얼음 호수 스케이트'], ['forest', '숲속 동물들의 트리 꾸미기']], high: [['livingroom', '크리스마스이브 거실'], ['village', '눈 오는 마을의 아침']] };
   const ispy = (g) => reg({
     id: 'ispy-' + g, title: '크리스마스 숨은그림찾기', cat: 'play', grades: [g], icon: 'gift', answers: true,
-    desc: { low: '그림 속에 숨은 물건 6개를 찾아요. 2장면.', mid: '그림 속에 숨은 물건 8개를 찾아요. 2장면.', high: '복잡한 그림 속에 숨은 물건 10개를 찾아요. 2장면.' }[g],
+    desc: { low: '그림 속에 숨은 물건 6~7개를 찾아요. 2장면.', mid: '그림 속에 숨은 물건 8개를 찾아요. 2장면.', high: '복잡한 그림 속에 숨은 물건 10개를 찾아요. 2장면.' }[g],
     gen(c) {
       return HIDSET[g].map(([f, t]) => {
         const D = window.HIDDEN[f], H2 = 196, w = H2 * D.w / D.h, x0 = (186 - w) / 2;
         const marks = c.ans ? D.spots.map(([x, y, r]) => `<circle cx="${(x0 + x * w).toFixed(1)}" cy="${(y * H2).toFixed(1)}" r="${Math.max(5, r * w * 1.3).toFixed(1)}" fill="none" stroke="#d93a3a" stroke-width="1.1"/>`).join('') : '';
-        const legend = `<div style="display:flex;gap:2mm;flex-wrap:wrap;justify-content:center;flex:none">${D.spots.map(([, , , n]) => `<div style="border:.4mm solid #432;border-radius:3mm;padding:1mm 2mm;display:flex;align-items:center;gap:1mm;background:#fffdf5">${art(n, { line: true, size: 40 })}<span style="font-family:var(--f-display);font-size:11pt">${XArt.label(n)} ☐</span></div>`).join('')}</div>`;
-        return page(this, { title: `숨은그림찾기: ${t}`, sub: `그림 속에 아래 물건 ${D.spots.length}개가 숨어 있어요. 찾으면 ○표 하고 아래 칸에 ✔ 하세요. 물건은 기울어지거나 거꾸로 숨어 있기도 해요!`, body: svg(186, H2, `<image href="${XArt.img('hidden/' + f + '.png')}" x="${x0.toFixed(1)}" y="0" width="${w.toFixed(1)}" height="${H2}"/>` + marks, `style="flex:none;height:${H2}mm"`) + legend });
+        const cnt = {}; D.spots.forEach(([, , , n]) => { cnt[n] = (cnt[n] || 0) + 1; });
+        const legend = `<div style="display:flex;gap:2mm;flex-wrap:wrap;justify-content:center;flex:none">${Object.keys(cnt).map((n) => `<div style="border:.4mm solid #432;border-radius:3mm;padding:1mm 2mm;display:flex;align-items:center;gap:1mm;background:#fffdf5">${art(n, { line: true, size: 40 })}<span style="font-family:var(--f-display);font-size:11pt">${XArt.label(n)}${cnt[n] > 1 ? ' ×' + cnt[n] : ''} ${'☐'.repeat(cnt[n])}</span></div>`).join('')}</div>`;
+        return page(this, { title: `숨은그림찾기: ${t}`, sub: `그림 속에 아래 물건 ${D.spots.length}개가 숨어 있어요. 찾으면 ○표 하고 아래 칸에 ✔ 하세요. 물건은 구름·나무껍질·무늬처럼 그림의 일부인 척 숨어 있어요!`, body: svg(186, H2, `<image href="${XArt.img('hidden/' + f + '.png')}" x="${x0.toFixed(1)}" y="0" width="${w.toFixed(1)}" height="${H2}"/>` + marks, `style="flex:none;height:${H2}mm"`) + legend });
       });
     }
   });
-  /* 숨은그림찾기: 그림 속에 자연스럽게 숨긴 새 그림을 만들 때까지 잠시 뺌 */
-  // G3.forEach(ispy);
+  G3.forEach(ispy);
 
   /* ───────── 낱말 찾기 ───────── */
   const WORDS = ['산타', '루돌프', '눈사람', '트리', '선물', '썰매', '양말', '캐럴', '굴뚝', '장갑', '종소리', '촛불', '눈꽃', '엘프', '진저맨', '코코아', '목도리', '겨울', '카드', '케이크', '펭귄', '북극', '순록', '장식', '리본', '소원', '사랑', '나눔', '크리스마스', '산타마을', '눈썰매', '호두까기', '지팡이사탕', '벽난로', '함박눈', '고드름'];
