@@ -15,6 +15,10 @@
 .hist div{background:var(--paper);border:2px solid var(--ink);border-radius:12px;text-align:center;font-family:var(--f-display);font-size:.9rem;padding:4px}
 .hist .art{width:44px;height:44px;margin:0 auto}
 .hist div.last{background:var(--gold2)}
+.howto{background:var(--cream);border-radius:20px;padding:clamp(14px,2vw,26px);display:flex;flex-direction:column;gap:12px}
+.howto h3{font-size:clamp(1.3rem,2.4vw,1.9rem);color:var(--berry2)}
+.howto ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px;font-size:clamp(1rem,1.7vw,1.3rem);line-height:1.5}
+.howto b{font-family:var(--f-display);font-weight:400;color:var(--pine2)}
 @media (max-width:760px){.lay{grid-template-columns:1fr}}
 </style>
 </head>
@@ -28,14 +32,27 @@
   const WORDS = ['산타','루돌프','눈사람','트리','선물','썰매','양말','캐럴','굴뚝','장갑','종','촛불','눈꽃','엘프','진저맨','코코아','목도리','카드','케이크','펭귄','북극','별','리본','소원','리스','오너먼트','지팡이 사탕','벽난로','함박눈','고드름'];
   let g = XK.grade(), deck = [], drawn = [];
   XK.topbar({title:'메리 빙고 뽑기', icon:'bell', grades:true, onGrade:(x)=>{g=x;reset();}});
+  const RULE = {
+    low:{sheet:'bingo-low', card:'그림 빙고 3×3', line:'한 줄'},
+    mid:{sheet:'bingo-mid', card:'그림 빙고 4×4', line:'두 줄'},
+    high:{sheet:'bingo-high', card:'낱말 빙고 5×5', line:'세 줄'},
+  };
+  const howto = ()=>{ const r = RULE[g]; return `<div class="howto"><h3>놀이 방법 (${XK.GRADES[g]})</h3><ol>
+    <li><b>빙고판 나눠 주기</b>: 「${r.card}」 활동지를 인쇄해 한 명에게 한 장씩 나눠 줘요. ${g==='high'?'낱말 창고에서 24개를 골라 빈칸에 직접 써 넣어요.':'빙고판마다 그림 배치가 모두 달라요.'}</li>
+    <li><b>뽑기</b>: 선생님이 <b>뽑기</b> 버튼을 누르면 ${g==='high'?'낱말':'그림'} 하나가 크게 나와요. 자동 뽑기를 켜면 8초마다 저절로 뽑혀요.</li>
+    <li><b>표시하기</b>: 내 빙고판에 같은 ${g==='high'?'낱말':'그림'}이 있으면 ○표 하거나 바둑돌을 올려요.</li>
+    <li><b>메리 빙고!</b>: 가로·세로·대각선으로 <b>${r.line}</b>이 완성되면 「메리 빙고!」를 외쳐요.</li>
+    <li><b>확인하기</b>: 그 학생이 표시한 것이 오른쪽 「지금까지 나온 것」에 모두 있는지 확인해요.</li></ol>
+    <div class="row" style="justify-content:flex-start"><a class="btn sm gold" href="../sheet.html#${r.sheet}" target="_blank" rel="noopener">${r.card} 활동지 열기</a></div></div>`; };
   function reset(){
     const words = g==='high';
     deck = shuffle(words ? WORDS.map(w=>({w})) : XArt.NAMES.map(n=>({n}))); drawn = [];
-    $('#board').innerHTML = `<div class="hud"><span class="tag">${words?'낱말 빙고 5×5 (고학년 활동지와 짝)':'그림 빙고 (저·중학년 활동지와 짝)'}</span><span class="tag" id="cnt">0 / ${deck.length}</span>
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${words?'낱말 빙고 5×5 (고학년 활동지와 짝)':'그림 빙고 (저·중학년 활동지와 짝)'}</span><span class="tag" id="cnt">0 / ${deck.length}</span><button class="btn sm gold" id="help">놀이 방법</button>
       <div class="row"><label class="note" style="color:var(--ink2)"><input type="checkbox" id="auto"> 8초마다 자동 뽑기</label><button class="btn sm" id="rs">처음부터</button></div></div>
-      <div class="lay"><div class="center"><div class="ball" id="ball"><div class="huge" style="font-size:clamp(1.6rem,4vw,3rem)">준비!</div></div><button class="btn big red" id="draw">뽑기</button></div>
-      <div><div class="h3" style="font-family:var(--f-display);font-size:1.3rem;margin-bottom:8px">지금까지 나온 것</div><div class="hist" id="hist"></div></div></div>`;
+      <div class="lay"><div class="center"><div class="ball" id="ball"><div class="huge" style="font-size:clamp(1.6rem,4vw,3rem)">준비!</div><div class="note">빙고판을 나눠 준 뒤<br>「뽑기」를 눌러요</div></div><button class="btn big red" id="draw">뽑기</button></div>
+      <div id="side">${howto()}</div></div>`;
     $('#draw').onclick = draw; $('#rs').onclick = reset;
+    $('#help').onclick = ()=>XK.modal(howto().replace('class="howto"','class="howto" style="text-align:left"')+'<button class="btn big green" data-close>알겠어요</button>');
     let iv; $('#auto').onchange = (e)=>{ clearInterval(iv); if(e.target.checked){ draw(); iv=setInterval(()=>{ if(!document.body.contains($('#auto'))) return clearInterval(iv); draw(); },8000);} };
   }
   function draw(){
@@ -44,6 +61,7 @@
     $('#ball').innerHTML = d.n ? `${art(d.n)}<div class="big">${L(d.n)}</div>` : `<div class="huge" style="font-size:clamp(2rem,6vw,4.4rem)">${d.w}</div>`;
     $('#ball').classList.remove('pop'); void $('#ball').offsetWidth; $('#ball').classList.add('pop');
     $('#cnt').textContent = `${drawn.length} / ${drawn.length+deck.length}`;
+    if(drawn.length===1) $('#side').innerHTML = `<div class="h3" style="font-family:var(--f-display);font-size:1.3rem;margin-bottom:8px">지금까지 나온 것 <span class="note">— 「메리 빙고!」를 외치면 여기서 확인해요</span></div><div class="hist" id="hist"></div>`;
     $('#hist').innerHTML = drawn.slice().reverse().map((x,k)=>`<div class="${k?'':'last'}">${x.n?art(x.n)+L(x.n):x.w}</div>`).join('');
   }
   reset();
