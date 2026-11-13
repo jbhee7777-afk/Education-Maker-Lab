@@ -57,3 +57,4 @@ ol.ol,ul.ul{margin:0;padding-left:6mm;display:flex;flex-direction:column;gap:1.2
   .pagebox.land{width:210mm;height:297mm!important;overflow:hidden;break-after:page;page-break-after:always;position:relative}
   .pagebox.land .page{position:absolute;left:0;top:0;transform:translateX(210mm) rotate(90deg)!important;transform-origin:0 0;break-after:auto;page-break-after:auto}
 }
+.steps svg text{stroke:none!important}
