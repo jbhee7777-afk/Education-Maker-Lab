@@ -11,6 +11,13 @@
     if (SUF.test(s.id)) { const b = s.id.replace(SUF, ''); SHEETS.forEach(x => { if (SUF.test(x.id) && x.id.replace(SUF, '') === b) x.grades.forEach(g => { if (!m[g]) m[g] = x.id; }); }); m[s.id.match(SUF)[1]] = s.id; }
     EXTRA.forEach(e => { if (Object.values(e).includes(s.id)) for (const g in e) if (!m[g]) m[g] = e[g]; });
     s.grades.forEach(g => { m[g] = m[g] || s.id; });
+    /* 그 학년용이 없으면 같은 종류(컬러링·만들기…)에서 그 학년 활동지로 */
+    ['low', 'mid', 'high'].forEach(g => {
+      if (m[g]) return;
+      const same = SHEETS.filter(x => x.cat === s.cat && x.grades.includes(g));
+      const pick = same.find(x => SUF.test(x.id)) || same.find(x => x.grades.length < 3) || same[0];
+      if (pick) m[g] = pick.id;
+    });
     return m;
   }
   function mount(root, opt = {}) {
@@ -39,6 +46,7 @@
       const s = cur(), fam = family(s), g = b.dataset.g; G = g; XK.store.set('grade', g);
       if (fam[g] && fam[g] !== s.id) { location.hash = fam[g]; return; }
       gradeUI(s, true);
+      if (fam[g] === s.id) { $('#info', root).textContent = `「${s.title}」은(는) ${SH.gname(s.grades)} 활동지라 ${XK.GRADES[g]}도 그대로 쓰면 돼요.`; return; }
       if (!fam[g]) { $('#info', root).textContent = `「${s.title}」은(는) ${SH.gname(s.grades)}용이에요. 오른쪽 목록에서 ${XK.GRADES[g]} 활동지를 골라 보세요.`; $('#other', root).focus(); }
     });
     $('#other', root).onchange = (e) => { if (e.target.value) location.hash = e.target.value; };
