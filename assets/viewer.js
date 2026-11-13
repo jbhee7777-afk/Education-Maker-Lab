@@ -11,13 +11,6 @@
     if (SUF.test(s.id)) { const b = s.id.replace(SUF, ''); SHEETS.forEach(x => { if (SUF.test(x.id) && x.id.replace(SUF, '') === b) x.grades.forEach(g => { if (!m[g]) m[g] = x.id; }); }); m[s.id.match(SUF)[1]] = s.id; }
     EXTRA.forEach(e => { if (Object.values(e).includes(s.id)) for (const g in e) if (!m[g]) m[g] = e[g]; });
     s.grades.forEach(g => { m[g] = m[g] || s.id; });
-    /* 그 학년용이 없으면 같은 종류(컬러링·만들기…)에서 그 학년 활동지로 */
-    ['low', 'mid', 'high'].forEach(g => {
-      if (m[g]) return;
-      const same = SHEETS.filter(x => x.cat === s.cat && x.grades.includes(g));
-      const pick = same.find(x => SUF.test(x.id)) || same.find(x => x.grades.length < 3) || same[0];
-      if (pick) m[g] = pick.id;
-    });
     return m;
   }
   function mount(root, opt = {}) {
@@ -38,16 +31,15 @@
     function gradeUI(s, keep) {
       const fam = family(s);
       if (!keep) { if (SUF.test(s.id)) G = s.id.match(SUF)[1]; else if (!fam[G]) G = s.grades[0]; }
-      $$('#gseg button', root).forEach(b => { const g = b.dataset.g; b.setAttribute('aria-pressed', g === G); b.style.opacity = fam[g] ? 1 : .45; b.title = fam[g] ? '' : '이 활동지는 이 학년용이 없어요'; });
+      $$('#gseg button', root).forEach(b => { const g = b.dataset.g; b.setAttribute('aria-pressed', g === G); b.disabled = !fam[g]; b.style.opacity = fam[g] ? 1 : .35; b.style.cursor = fam[g] ? '' : 'not-allowed'; b.title = fam[g] ? '' : '이 활동지는 ' + XK.GRADES[g] + '용이 없어요'; });
       const groups = {}; SHEETS.filter(x => x.grades.includes(G)).forEach(x => { (groups[x.cat] = groups[x.cat] || []).push(x); });
       $('#other', root).innerHTML = `<option value="">${XK.GRADES[G]} 다른 활동지…</option>` + Object.keys(SH.CAT).filter(c => groups[c]).map(c => `<optgroup label="${SH.CAT[c]}">${groups[c].map(x => `<option value="${x.id}" ${x.id === s.id ? 'selected' : ''}>${x.title}</option>`).join('')}</optgroup>`).join('');
     }
     $$('#gseg button', root).forEach(b => b.onclick = () => {
-      const s = cur(), fam = family(s), g = b.dataset.g; G = g; XK.store.set('grade', g);
+      const s = cur(), fam = family(s), g = b.dataset.g; if (!fam[g]) return; G = g; XK.store.set('grade', g);
       if (fam[g] && fam[g] !== s.id) { location.hash = fam[g]; return; }
       gradeUI(s, true);
       if (fam[g] === s.id) { $('#info', root).textContent = `「${s.title}」은(는) ${SH.gname(s.grades)} 활동지라 ${XK.GRADES[g]}도 그대로 쓰면 돼요.`; return; }
-      if (!fam[g]) { $('#info', root).textContent = `「${s.title}」은(는) ${SH.gname(s.grades)}용이에요. 오른쪽 목록에서 ${XK.GRADES[g]} 활동지를 골라 보세요.`; $('#other', root).focus(); }
     });
     $('#other', root).onchange = (e) => { if (e.target.value) location.hash = e.target.value; };
     function render() {
