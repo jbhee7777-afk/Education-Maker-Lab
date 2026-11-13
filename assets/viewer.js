@@ -18,6 +18,7 @@
       <a class="btn sm" id="v-back" href="${opt.home ? '#' + opt.home() : 'index.html'}">← 키트</a>
       <h1 id="st">활동지</h1>
       <div class="seg" id="gseg" role="group" aria-label="학년군"><button data-g="low">저학년</button><button data-g="mid">중학년</button><button data-g="high">고학년</button></div>
+      <span id="gall" style="display:inline-block;background:var(--berry);color:#fff;font-family:var(--f-display);border:3px solid var(--ink);border-radius:999px;padding:.15em .9em;font-size:.95rem;box-shadow:0 3px 0 var(--ink)" hidden>전 학년</span>
       <select id="other" aria-label="다른 활동지 고르기" class="btn sm" style="max-width:230px"></select>
       <button class="btn sm" id="b-new" hidden>새 문제로 바꾸기</button>
       <button class="btn sm" id="b-ans" hidden>정답 보기</button>
@@ -31,15 +32,15 @@
     function gradeUI(s, keep) {
       const fam = family(s);
       if (!keep) { if (SUF.test(s.id)) G = s.id.match(SUF)[1]; else if (!fam[G]) G = s.grades[0]; }
-      $$('#gseg button', root).forEach(b => { const g = b.dataset.g; b.setAttribute('aria-pressed', g === G); b.disabled = !fam[g]; b.style.opacity = fam[g] ? 1 : .35; b.style.cursor = fam[g] ? '' : 'not-allowed'; b.title = fam[g] ? '' : '이 활동지는 ' + XK.GRADES[g] + '용이 없어요'; });
+      const all = s.grades.length === 3; $('#gall', root).hidden = !all;
+      $$('#gseg button', root).forEach(b => { const g = b.dataset.g; if (all) { b.setAttribute('aria-pressed', false); b.disabled = true; b.style.opacity = .35; b.style.cursor = 'not-allowed'; b.title = '전 학년이 함께 쓰는 활동지예요'; return; } b.setAttribute('aria-pressed', g === G); b.disabled = !fam[g]; b.style.opacity = fam[g] ? 1 : .35; b.style.cursor = fam[g] ? '' : 'not-allowed'; b.title = fam[g] ? '' : '이 활동지는 ' + XK.GRADES[g] + '용이 없어요'; });
       const groups = {}; SHEETS.filter(x => x.grades.includes(G)).forEach(x => { (groups[x.cat] = groups[x.cat] || []).push(x); });
       $('#other', root).innerHTML = `<option value="">${XK.GRADES[G]} 다른 활동지…</option>` + Object.keys(SH.CAT).filter(c => groups[c]).map(c => `<optgroup label="${SH.CAT[c]}">${groups[c].map(x => `<option value="${x.id}" ${x.id === s.id ? 'selected' : ''}>${x.title}</option>`).join('')}</optgroup>`).join('');
     }
     $$('#gseg button', root).forEach(b => b.onclick = () => {
-      const s = cur(), fam = family(s), g = b.dataset.g; if (!fam[g]) return; G = g; XK.store.set('grade', g);
+      const s = cur(), fam = family(s), g = b.dataset.g; if (!fam[g] || s.grades.length === 3) return; G = g; XK.store.set('grade', g);
       if (fam[g] && fam[g] !== s.id) { location.hash = fam[g]; return; }
       gradeUI(s, true);
-      if (fam[g] === s.id) { $('#info', root).textContent = `「${s.title}」은(는) ${SH.gname(s.grades)} 활동지라 ${XK.GRADES[g]}도 그대로 쓰면 돼요.`; return; }
     });
     $('#other', root).onchange = (e) => { if (e.target.value) location.hash = e.target.value; };
     function render() {
