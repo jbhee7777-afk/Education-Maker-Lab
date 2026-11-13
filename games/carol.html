@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>캐럴 노래방</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.lay{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;flex:1;min-height:0}
+.songs{display:flex;flex-direction:column;gap:10px}
+.song{display:flex;align-items:center;gap:10px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);padding:8px 10px;font-family:var(--f-display);font-size:1.1rem;text-align:left;box-shadow:0 4px 0 var(--ink)}
+.song .art{width:46px;height:46px;flex:none}
+.song[aria-pressed="true"]{background:var(--gold2)}
+.song small{display:block;font-family:var(--f-body);font-size:.8rem;color:var(--ink2)}
+.lyrics{flex:1;background:#173f30;border:4px solid var(--ink);border-radius:22px;padding:clamp(14px,2.4vw,34px);overflow:auto;display:flex;flex-direction:column;gap:clamp(8px,1.4vh,18px);min-height:40vh}
+.ln{display:flex;flex-wrap:wrap;gap:.1em .35em;align-items:flex-end}
+.sy{display:inline-flex;flex-direction:column;align-items:center;color:#e6f2ea;font-family:var(--f-display);font-size:clamp(1.3rem,3vw,2.6rem);line-height:1.1;transition:color .1s,transform .1s}
+.sy small{font-family:var(--f-body);font-size:.42em;color:#a9cdb8}
+.sy.on{color:var(--gold);transform:translateY(-4px) scale(1.08)}
+.sy.past{color:#fff}
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ctrl label{font-family:var(--f-display)}
+.rhy{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.rhy span{width:clamp(44px,6vw,74px);height:clamp(44px,6vw,74px);border-radius:50%;border:4px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;transition:transform .08s,background .08s}
+.rhy span.rest{background:transparent;border-style:dashed;opacity:.6}
+.rhy span.on{background:var(--gold);transform:scale(1.18)}
+.rhy span .art{width:70%;height:70%}
+@media (max-width:820px){.lay{grid-template-columns:1fr}.songs{flex-direction:row;flex-wrap:wrap}}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board">
+  <div class="lay">
+    <div class="songs" id="songs"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="hud"><h2 id="st" style="font-size:clamp(1.4rem,3vw,2.4rem)"></h2><span class="note" id="sinfo"></span></div>
+      <div class="lyrics" id="ly"></div>
+      <div class="ctrl">
+        <button class="btn red" id="play">▶ 반주 시작</button><button class="btn" id="stop">■ 멈춤</button>
+        <label for="tempo">빠르기</label><input id="tempo" type="range" min="60" max="180" value="120">
+        <span id="tv" class="note" style="min-width:4em">120</span>
+        <label><input type="checkbox" id="beat" checked> 방울 박자</label>
+        <label><input type="checkbox" id="pron" checked> 한글 발음</label>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const $ = XK.$, art = XArt.art;
+  XK.topbar({title:'캐럴 노래방', icon:'bell'});
+  /* 토큰: 가사/발음:음:박자   | = 줄바꿈   ~ = 앞 글자 이어 부르기 */
+  const JB = 'Jin/징:E4:.5 gle/글:E4:.5 bells/벨스:E4:1 jin/징:E4:.5 gle/글:E4:.5 bells/벨스:E4:1 jin/징:E4:.5 gle/글:G4:.5 all/올:C4:.75 the/더:D4:.25 way/웨이:E4:2 | Oh/오:F4:.5 what/왓:F4:.5 fun/펀:F4:.75 it/잇:F4:.25 is/이즈:F4:.5 to/투:E4:.5 ride/라이드:E4:.5 in/인:E4:.25 a/어:E4:.25 one/원:E4:.5 horse/홀스:D4:.5 o/오:D4:.5 pen/픈:E4:.5 sleigh,/슬레이:D4:1 hey!/헤이:G4:1 | Jin/징:E4:.5 gle/글:E4:.5 bells/벨스:E4:1 jin/징:E4:.5 gle/글:E4:.5 bells/벨스:E4:1 jin/징:E4:.5 gle/글:G4:.5 all/올:C4:.75 the/더:D4:.25 way/웨이:E4:2 | Oh/오:F4:.5 what/왓:F4:.5 fun/펀:F4:.75 it/잇:F4:.25 is/이즈:F4:.5 to/투:E4:.5 ride/라이드:E4:.5 in/인:E4:.25 a/어:E4:.25 one/원:G4:.5 horse/홀스:G4:.5 o/오:F4:.5 pen/픈:D4:.5 sleigh/슬레이:C4:2';
+  const toClass = (src, words)=>{ const t = src.split(' '); let w = 0; return t.map(x=>{ if(x==='|') return x; const p = x.split(':'); return `${words[w++]||'라'}:${p[1]}:${p[2]}`; }).join(' '); };
+  const CL = '우 리 반 우 리 반 신 나 는 우 리 함 께 웃 고 함 께 노 는 반 최 고 의 우 리 반 우 리 반 우 리 반 다 정 한 우 리 서 로 돕 고 아 껴 주 는 반 우 리 반 최 고'.split(' ');
+  const SONGS = [
+    {id:'jb', t:'Jingle Bells', k:'징글벨', ic:'bell', bpm:132, info:'1857년 미국 · 제임스 로드 피어폰트 작곡 (공개 저작물)', s:JB},
+    {id:'class', t:'우리 반 징글벨', k:'개사 예시', ic:'star', bpm:120, info:'「캐럴 노랫말 바꿔 부르기」 활동지의 보기 가사예요. 우리 반 가사로 바꿔 불러 보세요!', s:toClass(JB, CL)},
+    {id:'ww', t:'We Wish You a Merry Christmas', k:'즐거운 성탄', ic:'gift', bpm:150, info:'영국 전래 캐럴 (공개 저작물)', s:'We/위:D4:1 wish/위시:G4:1 you/유:G4:.5 a/어:A4:.5 mer/메:G4:.5 ry/리:F#4:.5 Christ/크리스:E4:1 mas,/마스:E4:1 | we/위:E4:1 wish/위시:A4:1 you/유:A4:.5 a/어:B4:.5 mer/메:A4:.5 ry/리:G4:.5 Christ/크리스:F#4:1 mas,/마스:D4:1 | we/위:D4:1 wish/위시:B4:1 you/유:B4:.5 a/어:C5:.5 mer/메:B4:.5 ry/리:A4:.5 Christ/크리스:G4:1 mas/마스:E4:1 | and/앤드:D4:.5 a/어:D4:.5 hap/해:E4:1 py/피:A4:1 new/뉴:F#4:1 year!/이어:G4:2'},
+    {id:'dh', t:'Deck the Halls', k:'홀을 꾸며요', ic:'holly', bpm:126, info:'웨일스 전래 캐럴 (공개 저작물) · 「Fa la la」는 다 함께!', s:'Deck/덱:G4:1.5 the/더:F4:.5 halls/홀스:E4:1 with/위드:D4:1 boughs/바우즈:C4:1 of/오브:D4:1 hol/할:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | \'Tis/티즈:G4:1.5 the/더:F4:.5 sea/시:E4:1 son/즌:D4:1 to/투:C4:1 be/비:D4:1 jol/졸:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | Don/돈:D4:1.5 we/위:E4:.5 now/나우:F4:1 our/아워:D4:1 gay/게이:E4:1.5 ap/어:F4:.5 par/패:G4:1 el,/럴:D4:1 | Fa/파:E4:.5 la/라:F#4:.5 la,/라:G4:1 la/라:A4:.5 la/라:B4:.5 la,/라:C5:1 la/라:B4:1 la/라:A4:1 la!/라:G4:2 | Troll/트롤:G4:1.5 the/디:F4:.5 an/에인:E4:1 cient/션트:D4:1 Yule/율:C4:1 tide/타이드:D4:1 car/캐:E4:1 ol,/럴:C4:1 | Fa/파:A4:.5 la/라:A4:.5 la/라:A4:.5 la/라:A4:.5 la,/라:G4:1.5 la/라:F4:.5 la/라:E4:1 la/라:D4:1 la!/라:C4:2'},
+    {id:'sn', t:'Silent Night', k:'고요한 밤', ic:'candle', bpm:84, info:'1818년 오스트리아 · 프란츠 그루버 작곡 (공개 저작물)', s:'Si/사:G4:1.5 lent/일런트:A4:.5 ~:G4:1 night,/나잇:E4:3 | Ho/홀:G4:1.5 ly/리:A4:.5 ~:G4:1 night,/나잇:E4:3 | All/올:D5:2 is/이즈:D5:1 calm,/캄:B4:3 all/올:C5:2 is/이즈:C5:1 bright,/브라잇:G4:3 | Round/라운드:A4:2 yon/연:A4:1 vir/버:C5:1.5 gin/진:B4:.5 moth/마:A4:1 er/더:G4:1.5 and/앤:A4:.5 child,/차일드:G4:1 ~:E4:3 | Ho/홀:A4:2 ly/리:A4:1 in/인:C5:1.5 fant/펀트:B4:.5 so/소:A4:1 ten/텐:G4:1.5 der/더:A4:.5 and/앤:G4:1 mild,/마일드:E4:3 | Sleep/슬립:D5:2 in/인:D5:1 hea/헤:F5:1.5 ven/븐:D5:.5 ly/리:B4:1 peace,/피스:C5:3 ~:E5:3 | Sleep/슬립:C5:1 in/인:G4:1 hea/헤:E4:1 ven/븐:G4:1.5 ly/리:F4:.5 peace./피스:D4:1 ~:C4:5'},
+  ];
+  const NOTE = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+  const freq = (n)=>{ const m = n.match(/^([A-G]#?)(\d)$/); return 440*Math.pow(2,(NOTE[m[1]]+(+m[2]+1)*12-69)/12); };
+  let cur = SONGS[0], timers = [], playing = false;
+  const parse = (s)=>{ const lines=[[]]; s.split(' ').forEach(t=>{ if(t==='|'){ lines.push([]); return; } const [ly,n,d]=t.split(':'); const [w,p]=ly.split('/'); lines[lines.length-1].push({w,p:p||'',n,d:+d}); }); return lines; };
+  function list(){
+    $('#songs').innerHTML = SONGS.map(s=>`<button class="song" data-id="${s.id}" aria-pressed="${s===cur}">${art(s.ic)}<span>${s.t}<small>${s.k}</small></span></button>`).join('') +
+      `<button class="song" id="rhyBtn">${art('mitten')}<span>리듬 따라 하기<small>방울 리듬을 듣고 손뼉으로!</small></span></button>`;
+    document.querySelectorAll('.song[data-id]').forEach(b=>b.onclick=()=>{ stop(); cur = SONGS.find(s=>s.id===b.dataset.id); $('#tempo').value=cur.bpm; $('#tv').textContent=cur.bpm; list(); show(); });
+    $('#rhyBtn').onclick = rhythm;
+  }
+  function show(){
+    $('#st').textContent = cur.t; $('#sinfo').textContent = cur.info;
+    const pr = $('#pron').checked && cur.id!=='class';
+    $('#ly').innerHTML = parse(cur.s).map(l=>`<div class="ln">${l.map(x=>x.w==='~'?'<span class="sy" style="display:none"></span>':`<span class="sy">${x.w}${pr?`<small>${x.p}</small>`:''}</span>`).join('')}</div>`).join('');
+  }
+  function bell(f, t, dur, vol=.2){
+    const c = XK.audio(); if(!c||XK.muted) return;
+    [[1,'triangle',vol],[2,'sine',vol*.35],[3.01,'sine',vol*.12]].forEach(([m,type,v])=>{
+      const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.value=f*m;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+.012); g.gain.exponentialRampToValueAtTime(.001,t+Math.max(.25,dur*1.4));
+      o.connect(g).connect(c.destination); o.start(t); o.stop(t+Math.max(.3,dur*1.5));
+    });
+  }
+  function play(){
+    stop(); const c = XK.audio(); if(!c) return; playing = true;
+    const bpm = +$('#tempo').value, spb = 60/bpm, notes = parse(cur.s).flat(), spans = [...document.querySelectorAll('.sy')];
+    let t = c.currentTime + .4, beat = 0, k = 0;
+    notes.forEach((x,i)=>{
+      bell(freq(x.n), t, x.d*spb);
+      const at = (t - c.currentTime)*1000;
+      timers.push(setTimeout(()=>{ spans.forEach((s,j)=>{ s.classList.toggle('on', j===i); if(j<i) s.classList.add('past'); }); if(x.w==='~'&&spans[i-1]) spans[i-1].classList.add('on'); },at));
+      t += x.d*spb;
+    });
+    if($('#beat').checked){ const c0 = c.currentTime+.4; for(let b=0; c0+b*spb < t; b++){ const tt=c0+b*spb; const o=c.createOscillator(), g=c.createGain(); o.type='square'; o.frequency.value=b%2?2600:3100; g.gain.setValueAtTime(.025,tt); g.gain.exponentialRampToValueAtTime(.0005,tt+.06); o.connect(g).connect(c.destination); o.start(tt); o.stop(tt+.07); } }
+    timers.push(setTimeout(()=>{ playing=false; document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on')); XK.confetti(); },(t-c.currentTime)*1000+300));
+  }
+  function stop(){ timers.forEach(clearTimeout); timers = []; playing = false; document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on','past')); }
+  $('#play').onclick = play; $('#stop').onclick = stop;
+  $('#tempo').oninput = (e)=>$('#tv').textContent = e.target.value;
+  $('#pron').onchange = show;
+  /* 리듬 따라 하기 */
+  const RHY = {
+    '쉬움': [[1,1,1,0],[1,1,1,1],[1,0,1,0],[1,1,0,1]],
+    '보통': [[.5,.5,1,1,0],[1,.5,.5,1,0],[.5,.5,.5,.5,1,0],[1,1,.5,.5,1]],
+    '어려움': [[.5,.5,.5,.5,1,.5,.5],[.75,.25,1,.5,.5,1],[.5,1,.5,1,1],[.25,.25,.5,1,.5,.5,1]],
+  };
+  function rhythm(){
+    stop(); $('#st').textContent = '리듬 따라 하기'; $('#sinfo').textContent = '방울 소리를 잘 듣고, 끝나면 다 함께 손뼉으로 따라 쳐요!';
+    $('#ly').innerHTML = `<div class="center" style="gap:18px;color:#fff"><div class="row">${Object.keys(RHY).map(k=>`<button class="btn sm" data-lv="${k}">${k}</button>`).join('')}</div><div class="rhy" id="rr"></div><div class="big" id="rmsg" style="color:var(--gold2)">단계를 고르세요</div></div>`;
+    document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go(b.dataset.lv));
+    function go(lv){
+      const pat = XK.pick(RHY[lv]); const c = XK.audio(); if(!c) return;
+      $('#rr').innerHTML = pat.map(d=>`<span class="${d?'':'rest'}" style="width:calc(clamp(44px,6vw,74px)*${Math.max(.6,d||1)})">${d?art('bell'):''}</span>`).join('');
+      const spb = 60/ +$('#tempo').value; let t = c.currentTime+.5; const sp=[...document.querySelectorAll('#rr span')];
+      $('#rmsg').textContent='잘 들어 보세요…';
+      pat.forEach((d,i)=>{ const dd = d||1; if(d) bell(1568, t, .2, .25); timers.push(setTimeout(()=>{ sp.forEach(s=>s.classList.remove('on')); if(d) sp[i].classList.add('on'); },(t-c.currentTime)*1000)); t += dd*spb; });
+      timers.push(setTimeout(()=>{ sp.forEach(s=>s.classList.remove('on')); $('#rmsg').textContent='이제 손뼉으로 따라 해요! 짝짝!'; XK.sfx('pop'); },(t-c.currentTime)*1000+100));
+    }
+  }
+  list(); $('#tempo').value=cur.bpm; $('#tv').textContent=cur.bpm; show();
+})();
+</script>
+</body>
+</html>

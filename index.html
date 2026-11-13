@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>크리스마스 활동 키트</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+body{padding-bottom:60px}
+.hero{position:relative;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-right,0px)));background:#123a2b url(assets/img/page/hero.jpg) center 40%/cover no-repeat;min-height:clamp(260px,38vw,460px);display:flex;align-items:flex-end}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,40,30,.05) 30%,rgba(10,40,30,.82))}
+.hero .in{position:relative;width:100%;padding:0 max(16px,env(safe-area-inset-left,0px)) 26px max(16px,env(safe-area-inset-right,0px))}
+.hero h1{color:#fff;font-size:clamp(2.4rem,7vw,5.2rem);text-shadow:0 4px 0 rgba(0,0,0,.35);letter-spacing:-.01em}
+.hero p{color:#fff4dc;font-size:clamp(1rem,2vw,1.3rem);max-width:60ch;margin-top:6px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.stats span{background:rgba(255,250,243,.95);color:var(--ink);border-radius:999px;padding:.2em .9em;font-family:var(--f-display);font-size:1rem}
+.stats b{color:var(--berry);font-weight:400;font-variant-numeric:tabular-nums}
+.lights{margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--snow);padding:14px 0 10px;display:flex;flex-direction:column;gap:10px;border-bottom:2px dashed var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:11;background:var(--snow)}
+.gtabs{display:flex;gap:8px;flex-wrap:wrap}
+.gtab{border:3px solid var(--ink);border-radius:18px;background:var(--paper);padding:.35em 1em;font-family:var(--f-display);font-size:1.15rem;box-shadow:0 4px 0 var(--ink);display:flex;align-items:baseline;gap:.4em}
+.gtab small{font-family:var(--f-body);font-size:.8rem;color:var(--ink2)}
+.gtab[aria-pressed="true"]{color:#fff}.gtab[aria-pressed="true"] small{color:#fff}
+.gtab[data-g="all"][aria-pressed="true"]{background:var(--berry)}.gtab[data-g="low"][aria-pressed="true"]{background:var(--low)}.gtab[data-g="mid"][aria-pressed="true"]{background:var(--mid)}.gtab[data-g="high"][aria-pressed="true"]{background:var(--high)}
+.cats{display:flex;gap:6px;flex-wrap:wrap}
+.cat{border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:.15em .8em;font-family:var(--f-display);font-size:.95rem}
+.cat[aria-pressed="true"]{background:var(--pine);color:#fff}
+.cat b{font-weight:400;color:var(--ink2);margin-left:.25em;font-variant-numeric:tabular-nums}
+.cat[aria-pressed="true"] b{color:var(--gold2)}
+section.grp{margin-top:26px}
+section.grp>h2{font-size:clamp(1.5rem,3vw,2rem);display:flex;align-items:center;gap:.4em;margin-bottom:4px}
+section.grp>h2 .art{width:1.5em;height:1.5em}
+section.grp>p{color:var(--ink2);margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:inherit;background:var(--paper);border:2.5px solid var(--ink);border-radius:20px;padding:12px;box-shadow:0 5px 0 rgba(59,42,37,.9);transition:transform .12s;min-width:0}
+.card:hover{transform:translateY(-3px)}
+.card .art{width:62px;height:62px;flex:none}
+.card .tx{min-width:0;display:flex;flex-direction:column;gap:4px}
+.card h3{font-size:1.15rem;line-height:1.25}
+.card p{font-size:.88rem;color:var(--ink2);line-height:1.45}
+.card .meta{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.card.cb{background:linear-gradient(180deg,#fff 0 70%,var(--mint));}
+.guide{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.guide div{background:var(--cream);border-radius:20px;padding:16px}
+.guide h3{font-size:1.2rem;color:var(--berry2);margin-bottom:6px}
+.guide ul{margin:0;padding-left:1.2em;font-size:.95rem;display:flex;flex-direction:column;gap:4px}
+.empty{padding:30px;text-align:center;color:var(--ink2)}
+footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in wrap">
+  <h1>크리스마스 활동 키트</h1>
+  <p>저·중·고학년 맞춤 활동지와 전자칠판 게임을 한곳에 모았어요. 컬러링, 만들기, 종이접기, 퍼즐, 노래, 방탈출까지 학년만 고르면 바로 시작!</p>
+  <div class="stats" id="stats"></div>
+</div></header>
+<div class="lights"></div>
+<div class="wrap">
+  <nav class="filters" aria-label="자료 거르기">
+    <div class="gtabs" id="gtabs"></div>
+    <div class="cats" id="cats"></div>
+  </nav>
+  <main id="list"></main>
+  <div class="guide">
+    <div><h3>활동지 인쇄하기</h3><ul><li>활동지를 열고 <b>인쇄하기</b>(또는 Ctrl+P, ⌘P)를 누르세요. A4 · 여백 없음 · 배경 그래픽 켜기를 추천해요.</li><li>「새 문제로 바꾸기」가 있는 활동지는 누를 때마다 미로·스도쿠·암호가 새로 만들어져요.</li><li>「정답 보기」를 켜고 인쇄하면 채점용 답지가 됩니다.</li><li>바로 인쇄할 수 있는 PDF는 <b>print</b> 폴더에 있어요.</li></ul></div>
+    <div><h3>전자칠판에서 게임하기</h3><ul><li>게임 화면 오른쪽 위 <b>전체화면</b>을 누르고, 학년군 버튼으로 난이도를 고르세요.</li><li>아래 <b>모둠 점수판</b>에서 모둠 수(1~6)를 바꾸고, 모둠 이름을 누르면 차례가 넘어가요.</li><li>소리가 나요. 스피커를 켜 두세요. (끄려면 「소리 켜짐」 버튼)</li></ul></div>
+    <div><h3>이렇게 묶어 쓰면 좋아요</h3><ul><li><b>40분 파티</b>: 퀴즈 쇼 → 몸으로 말해요 → 선물 상자 → 캐럴 합창</li><li><b>빙고 세트</b>: 빙고 활동지 + 「메리 빙고 뽑기」</li><li><b>방탈출 데이</b>: 「산타 작업실 방탈출」 + 「좌표 암호」 활동지로 마무리</li><li><b>조용한 오후</b>: 만다라·젠탱글 컬러링 + 「고요한 밤」 반주</li></ul></div>
+  </div>
+  <footer class="ft">그림: Figma AI로 만든 키트 전용 일러스트 · 글꼴: 주아, 고운돋움, 개구 (SIL OFL) · 캐럴 4곡은 저작권이 만료된 공개 저작물입니다.</footer>
+</div>
+<script src="assets/art.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/sheets-core.js"></script>
+<script src="assets/sheets-a.js"></script>
+<script src="assets/sheets-b.js"></script>
+<script>
+(function(){
+  const $ = XK.$, art = XArt.art, G3 = ['low','mid','high'];
+  const GAMES = [
+    {id:'escape', title:'산타 작업실 방탈출', cat:'escape', grades:G3, icon:'elf', url:'games/escape.html', desc:'엘프가 잠근 선물 보관함! 자물쇠 5개를 풀어요. 학년군마다 퍼즐이 달라요(세기·규칙 / 곱셈·시계 / 이진수·논리·암호).'},
+    {id:'quiz', title:'산타 퀴즈 쇼', cat:'game', grades:G3, icon:'santa', url:'games/quiz.html', desc:'학년군별 크리스마스·겨울 상식 퀴즈 16문제. 20초 타이머와 모둠 점수판 포함.'},
+    {id:'gift', title:'두근두근 선물 상자', cat:'game', grades:G3, icon:'gift', url:'games/gift-boxes.html', desc:'상자 20개 속에 퀴즈, 깜짝 점수, 몸 미션이 숨어 있어요. 어떤 상자를 열까?'},
+    {id:'memory', title:'짝꿍 카드 기억력 게임', cat:'game', grades:G3, icon:'star', url:'games/memory.html', desc:'카드를 뒤집어 짝을 찾아요. 12장 · 16장 · 그림↔낱말 24장.'},
+    {id:'hat', title:'산타 모자 야바위', cat:'game', grades:G3, icon:'hat', url:'games/hat-shuffle.html', desc:'선물이 숨은 산타 모자를 눈으로 따라가요. 학년이 오를수록 모자 수와 속도가 늘어요.'},
+    {id:'guess', title:'나는 누구일까요?', cat:'game', grades:G3, icon:'owl', url:'games/guess.html', desc:'그림자 퀴즈(저) · 확대 사진 퀴즈(중) · 흐린 그림 + 초성 퀴즈(고).'},
+    {id:'charades', title:'몸으로 말해요', cat:'game', grades:G3, icon:'penguin', url:'games/charades.html', desc:'말없이 몸짓으로 설명하는 스피드 게임. 학년별 제시어 18개.'},
+    {id:'bingo', title:'메리 빙고 뽑기', cat:'game', grades:G3, icon:'bell', url:'games/bingo-caller.html', desc:'그림·낱말 빙고 활동지와 짝을 이루는 뽑기 화면. 자동 뽑기 지원.'},
+    {id:'spinner', title:'리스 돌림판', cat:'tool', grades:G3, icon:'wreath', url:'games/spinner.html', desc:'번호 뽑기, 교실 미션, 마음 나누기 질문, 모둠 정하기. 내용은 마음대로 고쳐 써요.'},
+    {id:'timer', title:'눈사람 타이머 · 썰매 경주', cat:'tool', grades:G3, icon:'snowman', url:'games/timer.html', desc:'시간이 흐르면 눈사람이 녹는 타이머와, 점수만큼 썰매가 달리는 모둠 점수판.'},
+    {id:'carol', title:'캐럴 노래방', cat:'song', grades:G3, icon:'candle', url:'games/carol.html', desc:'징글벨·고요한 밤 등 4곡 반주와 따라 읽는 가사(한글 발음), 우리 반 개사 버전, 리듬 따라 하기.'},
+  ];
+  const CATS = {all:'전체', escape:'방탈출', game:'전자칠판 게임', song:'노래', tool:'교실 도구', color:'컬러링', make:'만들기', ori:'종이접기', play:'놀이·퍼즐', write:'글쓰기·마음 나눔', stem:'과학·코딩'};
+  const ORDER = ['escape','game','song','tool','color','make','ori','play','write','stem'];
+  const INTRO = {escape:['elf','전자칠판으로 반 전체가 함께 푸는 방탈출이에요.'], game:['santa','전체화면으로 띄우고 모둠 대항으로 즐겨요.'], song:['bell','반주에 맞춰 가사가 반짝여요.'], tool:['wreath','수업 진행을 돕는 도구예요.'], color:['tree','한 장 가득한 장면부터 만다라까지, 일러스트 컬러링 도안.'], make:['gift','오리고 접고 붙이는 만들기 도안.'], ori:['hat','색종이 한 장으로 만드는 종이접기 순서도.'], play:['star','미로·스도쿠·빙고·암호 같은 혼자 또는 함께 하는 퍼즐.'], write:['letter','편지·지원서·시상식처럼 마음을 나누는 글쓰기.'], stem:['snowflake','과학 실험, 공학 도전, 언플러그드 코딩.']};
+  const items = [...GAMES.map(x=>({...x, kind:'board'})), ...SHEETS.map(s=>({...s, kind:'sheet'}))];
+  let G = XK.store.get('idxg','all'), C = 'all';
+  const h = location.hash.slice(1); if(['all','low','mid','high'].includes(h)) G = h;
+  const pages = {}; SHEETS.forEach(s=>{ try{ pages[s.id] = s.gen({r:XK.rng(1),seed:1,ans:false}).length; }catch(e){ pages[s.id]=1; } });
+  const nPages = Object.values(pages).reduce((a,b)=>a+b,0);
+  $('#stats').innerHTML = `<span>인쇄 활동지 <b>${SHEETS.length}</b>종 · <b>${nPages}</b>쪽</span><span>전자칠판 게임·도구 <b>${GAMES.length}</b>개</span><span>일러스트 <b>${XArt.NAMES.length}</b>종 + 장면 그림 <b>10</b>장</span>`;
+  function tabs(){
+    $('#gtabs').innerHTML = [['all','전체 보기',''],...G3.map(g=>[g,XK.GRADES[g],XK.GRADE_SUB[g]])].map(([g,t,s])=>`<button class="gtab" data-g="${g}" aria-pressed="${g===G}">${t}<small>${s}</small></button>`).join('');
+    document.querySelectorAll('.gtab').forEach(b=>b.onclick=()=>{ G=b.dataset.g; XK.store.set('idxg',G); if(G!=='all') XK.store.set('grade',G); try{history.replaceState(null,'','#'+G);}catch(e){} tabs(); render(); });
+  }
+  const fit = (x)=> G==='all' || x.grades.includes(G);
+  function render(){
+    const vis = items.filter(fit);
+    $('#cats').innerHTML = ['all',...ORDER].map(c=>{ const n = c==='all'?vis.length:vis.filter(x=>x.cat===c).length; return n||c==='all'?`<button class="cat" data-c="${c}" aria-pressed="${c===C}">${CATS[c]}<b>${n}</b></button>`:''; }).join('');
+    document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{ C=b.dataset.c; render(); });
+    const gHash = G==='all' ? XK.store.get('grade','mid') : G;
+    $('#list').innerHTML = ORDER.filter(c=>C==='all'||C===c).map(c=>{
+      const L = vis.filter(x=>x.cat===c); if(!L.length) return '';
+      return `<section class="grp"><h2>${art(INTRO[c][0])}${CATS[c]}</h2><p>${INTRO[c][1]}</p><div class="grid">${L.map(x=>`<a class="card ${x.kind==='board'?'cb':''}" href="${x.kind==='board'?x.url+'#'+gHash:x.url}">${art(x.icon)}<div class="tx"><h3>${x.title}</h3><p>${x.desc}</p><div class="meta">${x.grades.length===3?'<span class="chip ghost">전 학년</span>':x.grades.map(g=>`<span class="chip ${g}">${XK.GRADES[g]}</span>`).join('')}<span class="chip ghost">${x.kind==='board'?'전자칠판':pages[x.id]+'쪽'}</span>${x.random?'<span class="chip ghost">매번 새 문제</span>':''}${x.answers?'<span class="chip ghost">정답 있음</span>':''}</div></div></a>`).join('')}</div></section>`;
+    }).join('') || '<p class="empty">이 학년군에 맞는 자료가 없어요.</p>';
+  }
+  tabs(); render();
+})();
+</script>
+</body>
+</html>

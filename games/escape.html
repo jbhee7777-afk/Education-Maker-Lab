@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>산타 작업실 방탈출</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.lay{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;flex:1;min-height:0}
+.scene{position:relative;border:4px solid var(--ink);border-radius:22px;overflow:hidden;background:#2a1a12 url(../assets/img/page/workshop.jpg) center/cover no-repeat;min-height:46vh}
+.scene::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(0,0,0,.35))}
+.lock{position:absolute;transform:translate(-50%,-50%);z-index:2;border:4px solid var(--ink);border-radius:50%;width:clamp(56px,7vw,92px);height:clamp(56px,7vw,92px);background:var(--gold);font-family:var(--f-display);font-size:clamp(1.3rem,2.6vw,2.2rem);box-shadow:0 5px 0 var(--ink);display:flex;align-items:center;justify-content:center;animation:wiggle 2.4s ease-in-out infinite}
+.lock.cur{background:var(--berry);color:#fff}
+.lock.done{background:var(--leaf);color:#fff;animation:none}
+.lock[disabled]{filter:saturate(.3) brightness(.85);animation:none;cursor:default}
+.panel{background:var(--paper);border:4px solid var(--ink);border-radius:22px;padding:clamp(12px,1.8vw,24px);display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.panel h2{font-size:clamp(1.4rem,2.6vw,2.2rem);color:var(--berry2)}
+.puz{font-size:clamp(1.05rem,1.8vw,1.5rem);line-height:1.55}
+.puz .art{display:inline-block;width:clamp(44px,5vw,72px);height:clamp(44px,5vw,72px);vertical-align:middle}
+.keypad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.keypad button,.opt{font-family:var(--f-display);font-size:clamp(1.2rem,2.2vw,1.8rem);border:3px solid var(--ink);border-radius:14px;background:var(--cream);padding:.35em 0;box-shadow:0 4px 0 var(--ink)}
+.keypad button:active,.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.opt{padding:.4em .5em;display:flex;align-items:center;justify-content:center;gap:.3em}
+.opt .art{width:56px;height:56px}
+.disp{font-family:var(--f-display);font-size:clamp(1.8rem,4vw,3rem);letter-spacing:.3em;text-align:center;border:4px solid var(--ink);border-radius:14px;background:#1d3b2f;color:var(--gold2);padding:.1em;min-height:1.5em;font-variant-numeric:tabular-nums}
+.disp.bad{animation:wiggle .2s 3;background:#7a2020}
+.keys{display:flex;gap:6px;flex-wrap:wrap}
+.keys .art{width:46px;height:46px}
+.keys .k0{filter:grayscale(1) opacity(.35)}
+.hintbox{background:#fff6dc;border:2px dashed #f0cf7a;border-radius:12px;padding:8px 12px}
+@media (max-width:900px){.lay{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const {$, shuffle} = XK, art = XArt.art, L = XArt.label;
+  let g = XK.grade(), cur = 0, solved = [], hints = 3, tm, P = [];
+  XK.topbar({title:'산타 작업실 방탈출', icon:'elf', grades:true, onGrade:(x)=>{g=x;intro();}});
+  const many = (n,k)=>XK.range(k,()=>art(n)).join('');
+  const dot = (on)=>`<span style="display:inline-block;width:1.4em;height:1.4em;border-radius:50%;border:3px solid var(--ink);background:${on?'#d93a3a':'#fff'};vertical-align:middle;margin:0 .1em"></span>`;
+  const bulb = (c,t='')=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:1.8em;height:2.3em;border-radius:50% 50% 45% 45%;border:3px solid var(--ink);background:${c};font-family:var(--f-display);margin:0 .15em;vertical-align:middle">${t}</span>`;
+  const chip = (c,t)=>`<span style="display:inline-block;padding:.1em .6em;border-radius:999px;border:3px solid var(--ink);background:${c};color:${t||'#fff'};font-family:var(--f-display);margin:.1em">${t?'?':''}</span>`;
+
+  function build(){
+    const r = Math.random;
+    if(g==='low'){
+      const nG = 5+Math.floor(r()*4), others = shuffle(['star','bell','cane','teddy','owl']).slice(0,3);
+      const pile = shuffle([...XK.range(nG,()=> 'gift'), ...others.flatMap(o=>[o,o])]);
+      const sil = shuffle(['rudolph','penguin','snowman','santa','bunny','owl']).slice(0,4);
+      const a = 2+Math.floor(r()*3), b = 1+Math.floor(r()*3);
+      const memo = shuffle(['bell','star','gift','cane','mitten','teddy']).slice(0,5), gone = memo[Math.floor(r()*5)];
+      return [
+        {t:'선물 상자를 세어라!', x:18, y:70, q:`엘프가 작업대 위에 선물을 쌓아 두었어요. <b>선물 상자</b>는 모두 몇 개일까요?<div style="margin-top:8px">${pile.map(n=>art(n)).join('')}</div>`, type:'num', ans:String(nG), hint:'선물 상자 그림에만 손가락을 하나씩 짚으며 세어 보세요. 다른 그림은 세지 않아요!'},
+        {t:'전구 순서 규칙', x:50, y:22, q:`벽에 걸린 전구가 규칙대로 반짝여요. 물음표 자리에 들어갈 색은?<div style="margin-top:8px">${bulb('#d93a3a')}${bulb('#2e9e5b')}${bulb('#f6b93b')}${bulb('#d93a3a')}${bulb('#2e9e5b')}${bulb('#fff','?')}</div>`, type:'opt', opts:[['빨강'],['초록'],['노랑'],['파랑']], ans:'노랑', hint:'빨강 → 초록 → 노랑, 세 가지 색이 되풀이돼요.'},
+        {t:'그림자의 주인은?', x:78, y:40, q:`창문에 비친 그림자예요. 누구의 그림자일까요?<div style="margin-top:8px">${art(sil[0],{shadow:true,style:'width:140px;height:140px;display:block;margin:0 auto'})}</div>`, type:'opt', opts:shuffle(sil).map(n=>[L(n),n]), ans:L(sil[0]), hint:'귀·뿔·모자처럼 튀어나온 부분을 잘 보세요.'},
+        {t:'트리 더하기', x:30, y:38, q:`작은 트리 묶음 두 개를 합치면 모두 몇 그루일까요?<div style="margin-top:8px">${many('tree',a)} <b style="font-size:2em">+</b> ${many('tree',b)}</div>`, type:'num', ans:String(a+b), hint:`왼쪽 ${a}그루에 오른쪽을 하나씩 더해 세어 보세요.`},
+        {t:'사라진 장난감', x:62, y:72, q:`<span id="memo">5초 동안 잘 보세요!<div style="margin-top:8px">${memo.map(n=>art(n)).join('')}</div></span>`, type:'opt', opts:shuffle(memo).map(n=>[L(n),n]), ans:L(gone), hint:'다시 보기를 눌러 한 번 더 볼 수 있어요.', after:(box)=>{ const sh=()=>{ box.querySelector('#memo').innerHTML=`5초 동안 잘 보세요!<div style="margin-top:8px">${memo.map(n=>art(n)).join('')}</div>`; setTimeout(()=>{ const m=box.querySelector('#memo'); if(m) m.innerHTML=`엘프가 장난감 하나를 몰래 가져갔어요! 사라진 것은?<div style="margin-top:8px">${memo.filter(n=>n!==gone).map(n=>art(n)).join('')}</div><button class="btn sm" id="again">다시 보기</button>`; const ag=box.querySelector('#again'); if(ag) ag.onclick=sh; },5000); }; sh(); }},
+      ];
+    }
+    if(g==='mid'){
+      const bv = 3+Math.floor(r()*4), tv = 2+Math.floor(r()*4), h = 1+Math.floor(r()*11), mm = [15,30,45][Math.floor(r()*3)];
+      const st = 2+Math.floor(r()*4), d = 3+Math.floor(r()*3), gv = 3+Math.floor(r()*5), sv = 2+Math.floor(r()*5);
+      const clock = (()=>{ const ha=((h%12)+mm/60)*30, ma=mm*6; return `<svg viewBox="0 0 120 120" width="180" height="180" style="display:block;margin:6px auto"><circle cx="60" cy="60" r="54" fill="#fffaf3" stroke="#3b2a25" stroke-width="6"/>${XK.range(12,i=>{const a=(i+1)*30*Math.PI/180;return `<text x="${60+42*Math.sin(a)}" y="${60-42*Math.cos(a)+5}" text-anchor="middle" font-size="13" font-family="Jua" fill="#3b2a25">${i+1}</text>`;}).join('')}<line x1="60" y1="60" x2="${60+26*Math.sin(ha*Math.PI/180)}" y2="${60-26*Math.cos(ha*Math.PI/180)}" stroke="#d93a3a" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="60" x2="${60+40*Math.sin(ma*Math.PI/180)}" y2="${60-40*Math.cos(ma*Math.PI/180)}" stroke="#1c6146" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="60" r="5" fill="#3b2a25"/></svg>`; })();
+      return [
+        {t:'그림 곱셈 암호', x:20, y:68, q:`${art('bell')} = ${bv}, ${art('tree')} = ${tv} 이에요.<div style="margin-top:8px">${art('bell')} × ${art('tree')} + ${art('bell')} = ?</div>`, type:'num', ans:String(bv*tv+bv), hint:`곱셈을 먼저! ${bv} × ${tv}를 구한 다음 ${bv}를 더해요.`},
+        {t:'뒤죽박죽 낱말', x:48, y:20, q:`엘프가 벽에 붙인 글자 조각이 뒤섞였어요. 순서대로 눌러 <b>다섯 글자 낱말</b>을 만드세요.`, type:'seq', ans:'크리스마스', hint:'12월 25일을 부르는 말이에요.'},
+        {t:'뻐꾸기시계의 비밀', x:82, y:22, q:`시계가 멈춘 시각이 비밀번호예요. (예: 3시 15분 → 315)${clock}<span class="note">빨간 바늘 = 짧은 바늘, 초록 바늘 = 긴 바늘</span>`, type:'num', ans:`${h}${String(mm).padStart(2,'0')}`, hint:'긴바늘이 3을 가리키면 15분, 6이면 30분, 9면 45분이에요.'},
+        {t:'썰매 번호판 수열', x:30, y:40, q:`썰매 번호판의 수가 규칙대로 커져요.<div class="big" style="margin-top:8px">${XK.range(4,i=>st+d*i).join(' → ')} → ?</div>`, type:'num', ans:String(st+d*4), hint:'이웃한 두 수의 차이를 구해 보세요.'},
+        {t:'선물 저울', x:66, y:62, q:`저울 두 개가 균형을 이뤘어요.<div style="margin-top:8px">${art('gift')} + ${art('gift')} = ${gv*2}</div><div>${art('gift')} + ${art('star')} = ${gv+sv}</div><div style="margin-top:4px">그렇다면 ${art('star')} 하나는?</div>`, type:'num', ans:String(sv), hint:`선물 상자 두 개가 ${gv*2}이면 하나는 얼마일까요?`},
+      ];
+    }
+    const n = 3+Math.floor(r()*26), bits = n.toString(2).padStart(5,'0');
+    const words = shuffle([['GIFT','HJGU'],['STAR','TUBS'],['SNOW','TOPX'],['TREE','USFF'],['BELL','CFMM']]); const cw = words[0];
+    const fibs=[1,1,2,3,5,8,13,21,34,55], fi = 6+Math.floor(r()*2);
+    const gridItems = shuffle(['gift','bell','star','cane','teddy','cookies','owl','lights','candle','hedgehog']);
+    const cells = {}; let k=0; for(let y=0;y<4;y++) for(let x=0;x<5;x++) if(!(x===0&&y===0)&&k<10&&r()<.55) cells[x+','+y]=gridItems[k++];
+    const tx = 2+Math.floor(r()*2), ty = 1+Math.floor(r()*3); cells[tx+','+ty] = cells[tx+','+ty] || gridItems[k++] || 'gift';
+    const ans5 = cells[tx+','+ty], mv = `동쪽(→) ${tx+1}칸, 남쪽(↓) ${ty}칸, 서쪽(←) 1칸`;
+    const gridHTML = `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:380px;margin:8px auto">${XK.range(20,i=>{const x=i%5,y=Math.floor(i/5),it=cells[x+','+y];return `<div style="aspect-ratio:1;border:2px solid #3b2a25;border-radius:8px;background:${x===0&&y===0?'#ffe9a8':'#fff'};display:flex;align-items:center;justify-content:center">${x===0&&y===0?art('sleigh',{style:'width:80%;height:80%'}):it?art(it,{style:'width:80%;height:80%'}):''}</div>`;}).join('')}</div>`;
+    const optItems = shuffle([...new Set([ans5, ...Object.values(cells)])]).slice(0,4); if(!optItems.includes(ans5)) optItems[0]=ans5;
+    return [
+      {t:'이진수 구슬 암호', x:20, y:66, q:`컴퓨터처럼 생각해요! 빨간 구슬 = 1, 흰 구슬 = 0. 자리값은 왼쪽부터 16, 8, 4, 2, 1이에요.<div style="margin-top:8px">${[...bits].map(b=>dot(b==='1')).join('')}</div>이 구슬이 나타내는 수는?`, type:'num', ans:String(n), hint:`빨간 구슬 자리의 값만 더해요: ${[...bits].map((b,i)=>b==='1'?[16,8,4,2,1][i]:null).filter(Boolean).join(' + ')}`},
+      {t:'카이사르 암호', x:50, y:20, q:`엘프의 쪽지는 알파벳을 <b>한 칸씩 뒤로</b> 밀어 쓴 암호예요. (A→B, B→C …)<div class="big" style="margin-top:8px;letter-spacing:.3em">${cw[1]}</div>원래 낱말은?`, type:'opt', opts:shuffle(words.slice(0,4).map(w=>[w[0]])), ans:cw[0], hint:'각 글자를 알파벳 순서에서 한 칸 앞으로 되돌려요. H → G'},
+      {t:'거짓말쟁이 엘프', x:82, y:42, q:`보물 열쇠를 가진 엘프는 한 명! 세 엘프 중 <b>딱 한 명만 진실</b>을 말해요.<ul style="margin:6px 0"><li>루미: “열쇠는 토토가 가지고 있어.”</li><li>토토: “나는 열쇠가 없어.”</li><li>콩이: “나는 열쇠가 없어.”</li></ul>열쇠를 가진 엘프는?`, type:'opt', opts:[['루미'],['토토'],['콩이']], ans:'콩이', hint:'한 명씩 「이 엘프가 진실이라면?」 하고 가정해 보세요. 모순이 생기면 그 가정은 틀린 거예요.'},
+      {t:'눈꽃 수열', x:32, y:40, q:`눈꽃 가지가 자라는 규칙이에요.<div class="big" style="margin-top:8px">${fibs.slice(0,fi).join(', ')}, ?</div>`, type:'num', ans:String(fibs[fi]), hint:'앞의 두 수를 더하면 다음 수가 돼요. (피보나치 수열)'},
+      {t:'북극 지도 탐험', x:64, y:70, q:`썰매(노란 칸)에서 출발해 순서대로 움직였어요: <b>${mv}</b>. 도착한 칸에 있는 물건은?${gridHTML}`, type:'opt', opts:optItems.map(x=>[L(x),x]), ans:L(ans5), hint:'손가락으로 한 칸씩 짚으며 이동해 보세요. 동쪽은 오른쪽, 남쪽은 아래쪽이에요.'},
+    ];
+  }
+  function intro(){
+    tm && tm.stop(); cur = 0; solved = []; hints = 3; P = build();
+    const min = {low:15, mid:20, high:25}[g];
+    $('#board').innerHTML = `<div class="lay"><div class="scene"></div><div class="panel center" style="text-align:center">
+      <div class="qimg">${art('elf')}${art('presents')}</div>
+      <h2>큰일 났어요! 크리스마스이브인데…</h2>
+      <p class="puz">장난꾸러기 엘프가 <b>선물 보관함</b>을 잠가 버리고 비밀번호를 작업실 곳곳에 숨겼어요. 자물쇠 <b>5개</b>를 모두 풀어 열쇠 조각을 모으면 보관함이 열려요!</p>
+      <p class="note">${XK.GRADES[g]} 문제 · 제한 시간 ${min}분 · 힌트 3번</p>
+      <button class="btn big red" id="go">작업실 들어가기</button></div></div>`;
+    $('#go').onclick = ()=>{ XK.sfx('bell'); room(min*60); };
+  }
+  function room(sec){
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${XK.GRADES[g]} 방탈출</span><div class="keys" id="keys"></div><span class="tag">남은 시간 <b id="t"></b></span><button class="btn sm gold" id="hint">힌트 (3)</button></div>
+      <div class="lay"><div class="scene" id="scene">${P.map((p,i)=>`<button class="lock" data-i="${i}" style="left:${p.x}%;top:${p.y}%" aria-label="${i+1}번 자물쇠">${i+1}</button>`).join('')}</div><div class="panel" id="panel"></div></div>`;
+    let left = sec; const tEl = $('#t'); const fmt=()=>tEl.textContent = `${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; fmt();
+    tm = { id: setInterval(()=>{ left--; fmt(); if(left<=0){ clearInterval(tm.id); fail(); } },1000), stop(){ clearInterval(this.id); } };
+    $('#hint').onclick = ()=>{ if(!hints) return; hints--; $('#hint').textContent=`힌트 (${hints})`; XK.sfx('pop'); const hb=$('#hb'); if(hb){ hb.hidden=false; } };
+    document.querySelectorAll('.lock').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(solved.includes(i)) return; cur=i; render(); });
+    render();
+  }
+  function keys(){ $('#keys').innerHTML = XK.range(5,i=>art('cane',{cls:solved.includes(i)?'':'k0'})).join(''); }
+  function render(){
+    keys();
+    document.querySelectorAll('.lock').forEach(b=>{ const i=+b.dataset.i; b.classList.toggle('cur',i===cur&&!solved.includes(i)); b.classList.toggle('done',solved.includes(i)); b.textContent = solved.includes(i)?'✔':i+1; });
+    const p = P[cur], box = $('#panel');
+    box.innerHTML = `<h2>자물쇠 ${cur+1}. ${p.t}</h2><div class="puz">${p.q}</div><div class="hintbox" id="hb" hidden><b>힌트</b> ${p.hint}</div><div id="inp"></div>`;
+    const inp = $('#inp');
+    if(p.type==='num'){
+      let v=''; inp.innerHTML = `<div class="disp" id="disp">&nbsp;</div><div class="keypad" style="margin-top:8px">${[1,2,3,4,5,6,7,8,9,0].map(d=>`<button data-d="${d}">${d}</button>`).join('')}<button data-c="1" style="grid-column:span 2">지우기</button><button data-ok="1" style="grid-column:span 3;background:var(--leaf);color:#fff">열기!</button></div>`;
+      const disp=$('#disp'); const sh=()=>disp.textContent=v||' ';
+      inp.querySelectorAll('button').forEach(b=>b.onclick=()=>{ XK.sfx('tick'); if(b.dataset.d!=null&&v.length<6) v+=b.dataset.d; if(b.dataset.c) v=''; sh(); if(b.dataset.ok) check(v, disp); });
+    } else if(p.type==='opt'){
+      inp.innerHTML = `<div class="opts">${p.opts.map(([t,ic])=>`<button class="opt" data-v="${t}">${ic?art(ic):''}${t}</button>`).join('')}</div><div class="disp" id="disp" style="margin-top:8px">&nbsp;</div>`;
+      inp.querySelectorAll('.opt').forEach(b=>b.onclick=()=>check(b.dataset.v, $('#disp')));
+    } else if(p.type==='seq'){
+      let v=''; const tiles = shuffle([...p.ans].map((c,i)=>({c,i})));
+      inp.innerHTML = `<div class="disp" id="disp">&nbsp;</div><div class="opts" style="margin-top:8px">${tiles.map(t=>`<button class="opt" data-c="${t.c}" data-i="${t.i}" style="font-size:2rem">${t.c}</button>`).join('')}</div><div class="row" style="margin-top:8px"><button class="btn sm" id="clr">다시</button></div>`;
+      const disp=$('#disp');
+      inp.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ if(b.disabled) return; b.disabled=true; b.style.opacity=.35; v+=b.dataset.c; disp.textContent=v; XK.sfx('tick'); if(v.length===p.ans.length) check(v, disp, ()=>{ v=''; inp.querySelectorAll('.opt').forEach(x=>{x.disabled=false;x.style.opacity=1;}); }); });
+      $('#clr').onclick=()=>{ v=''; disp.textContent=' '; inp.querySelectorAll('.opt').forEach(x=>{x.disabled=false;x.style.opacity=1;}); };
+    }
+    p.after && p.after(box);
+  }
+  function check(v, disp, onBad){
+    const p = P[cur];
+    if(v===p.ans){
+      XK.sfx('win'); XK.confetti(); solved.push(cur); keys();
+      if(solved.length===5){ win(); return; }
+      disp.textContent='찰칵! 열렸어요'; disp.style.background='#1c6146';
+      setTimeout(()=>{ cur = [0,1,2,3,4].find(i=>!solved.includes(i)); render(); },1300);
+    } else {
+      XK.sfx('no'); disp.textContent='삐빅! 다시'; disp.classList.add('bad'); setTimeout(()=>{ disp.classList.remove('bad'); disp.textContent=' '; onBad&&onBad(); },900);
+    }
+  }
+  function win(){
+    tm.stop(); XK.snow(true); XK.sfx('win'); setTimeout(()=>XK.confetti(),400);
+    $('#panel').innerHTML = `<div class="center" style="text-align:center"><div class="qimg">${art('presents')}${art('santa')}</div><h2>보관함이 열렸어요!</h2><p class="puz">여러분 덕분에 오늘 밤 모든 어린이에게 선물을 배달할 수 있게 되었어요. 고마워요, 꼬마 탐정들! <b>메리 크리스마스!</b></p><button class="btn big gold" id="ag">처음으로</button></div>`;
+    $('#ag').onclick = ()=>{ XK.snow(false); intro(); };
+  }
+  function fail(){
+    XK.sfx('boo');
+    XK.modal(`<div class="qimg">${art('elf')}</div><div class="huge">시간이 다 되었어요!</div><p class="big">자물쇠 ${solved.length}개를 풀었어요. 시간을 더 줄까요?</p><div class="row"><button class="btn big green" id="more">5분 더!</button><button class="btn big" data-close>그만하기</button></div>`)
+      .querySelector('#more').onclick = function(){ this.closest('.modal').remove(); const t=$('#t'); let left=300; tm.stop(); tm={id:setInterval(()=>{left--; t.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){clearInterval(tm.id); fail();}},1000),stop(){clearInterval(this.id);}}; };
+  }
+  intro();
+})();
+</script>
+</body>
+</html>

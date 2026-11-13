@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>두근두근 선물 상자</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.gboard{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1.4vw,18px);flex:1}
+.box{position:relative;border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:clamp(90px,15vh,170px)}
+.box .art{width:min(100%,150px);height:auto;max-height:15vh;transition:transform .2s}
+.box:hover .art{transform:rotate(-6deg) scale(1.06)}
+.box b{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-family:var(--f-display);font-weight:400;font-size:clamp(1.4rem,3vw,2.6rem);color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke}
+.box.open{opacity:.25;pointer-events:none}
+.box.open .art{filter:grayscale(1)}
+@media (max-width:640px){.gboard{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<div class="teams wrap" id="teams" style="margin-top:14px"></div>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script src="../assets/quiz-bank.js"></script>
+<script>
+(function(){
+  const {$, shuffle} = XK, art = XArt.art;
+  let g = XK.grade();
+  const teams = XK.teams($('#teams'));
+  XK.topbar({title:'두근두근 선물 상자', icon:'gift', grades:true, onGrade:(x)=>{g=x;build();}});
+  const SPECIAL = [
+    ['santa','산타의 깜짝 선물!','묻지도 따지지도 않고 +3점!',(t)=>teams.add(3,t)],
+    ['snowman','앗, 녹아 버린 눈사람','이번 상자는 꽝! 0점이에요.',()=>{}],
+    ['rudolph','루돌프의 반짝 코','점수가 가장 낮은 모둠에게 +2점을 선물해요.',()=>{const s=teams.scores.slice(0,teams.n);teams.add(2,s.indexOf(Math.min(...s)));}],
+    ['elf','엘프의 몸 미션','모둠 전원이 10초 동안 산타 웃음 「호호호」를 하면 +2점!',null],
+    ['bell','징글벨 미션','「징글벨」 후렴을 모둠이 함께 부르면 +2점!',null],
+    ['penguin','펭귄 미션','모둠 전원이 펭귄 걸음으로 교실 앞까지 다녀오면 +2점!',null],
+  ];
+  const COLORS = ['gift','presents','gift','presents','gift'];
+  function build(){
+    const qs = shuffle(QUIZ[g]).slice(0,14), sp = shuffle(SPECIAL);
+    const items = shuffle([...qs.map(q=>({q, pts:[1,1,2,2,3][Math.floor(Math.random()*5)]})), ...sp.slice(0,6).map(s=>({s}))]).slice(0,20);
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${XK.GRADES[g]} · 상자를 골라 열어요</span><span class="note" style="color:var(--ink2)">퀴즈 상자는 맞히면 상자에 적힌 점수, 깜짝 상자에는 행운과 미션이 숨어 있어요!</span></div>
+      <div class="gboard">${items.map((it,k)=>`<button class="box" data-k="${k}" aria-label="${k+1}번 상자">${art(COLORS[k%5])}<b>${k+1}</b></button>`).join('')}</div>`;
+    document.querySelectorAll('.box').forEach(b=>b.onclick=()=>open(items[+b.dataset.k], b));
+  }
+  function open(it, btn){
+    XK.sfx('pop'); btn.classList.add('open'); const t = teams.turn;
+    if(it.s){
+      const [ic, title, desc, fn] = it.s;
+      const m = XK.modal(`<div class="qimg">${art(ic)}</div><div class="huge" style="font-size:clamp(2rem,5vw,4rem)">${title}</div><p class="big">${desc}</p>
+        <div class="row">${fn?`<button class="btn big green" data-close>확인 (${t+1}모둠)</button>`:`<button class="btn big green" id="ok">성공! +2점</button><button class="btn big" data-close>아쉽지만 다음에</button>`}</div>`, ()=>teams.next());
+      if(fn){ fn(t); XK.sfx(ic==='snowman'?'boo':'win'); if(ic!=='snowman') XK.confetti(); }
+      const ok = m.querySelector('#ok'); if(ok) ok.onclick=()=>{ teams.add(2,t); XK.sfx('win'); XK.confetti(); m.close(); };
+      return;
+    }
+    const [q, ch, a, pic, ex] = it.q;
+    const m = XK.modal(`<span class="tag">${t+1}모둠 · ${it.pts}점 상자</span>${pic?`<div class="qimg">${art(pic)}</div>`:''}<div class="big">${q}</div>
+      <div class="choices">${ch.map((c,k)=>`<div class="choice" data-k="${k}"><span class="k">${k+1}</span><span>${c}</span></div>`).join('')}</div>
+      <div class="row" id="act"><button class="btn big gold" id="show">정답 보기</button></div>`, ()=>teams.next());
+    m.querySelector('#show').onclick = ()=>{
+      m.querySelectorAll('.choice').forEach(c=>{ if(+c.dataset.k===a) c.classList.add('right'); });
+      m.querySelector('#act').innerHTML = `${ex?`<p class="note" style="flex-basis:100%">${ex}</p>`:''}<button class="btn big green" id="y">맞혔어요 +${it.pts}</button><button class="btn big" id="n">틀렸어요</button>`;
+      m.querySelector('#y').onclick=()=>{ teams.add(it.pts,t); XK.sfx('win'); XK.confetti(); m.close(); };
+      m.querySelector('#n').onclick=()=>{ XK.sfx('no'); m.close(); };
+    };
+  }
+  build();
+})();
+</script>
+</body>
+</html>

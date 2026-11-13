@@ -1,0 +1,17 @@
+/* 전자칠판 게임 공통 */
+body.stage .wrap{max-width:1600px}
+main.board.wrap{width:100%}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.6vw,22px);width:100%}
+.choice{border:4px solid var(--ink);border-radius:22px;background:var(--paper);font-family:var(--f-display);font-size:clamp(1.2rem,2.8vw,2.4rem);
+  padding:.55em .7em;display:flex;align-items:center;gap:.5em;text-align:left;box-shadow:0 6px 0 var(--ink);min-height:2.6em;transition:transform .1s}
+.choice:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.choice .k{flex:none;width:1.6em;height:1.6em;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.8em;border:3px solid var(--ink)}
+.choice:nth-child(1) .k{background:var(--berry)}.choice:nth-child(2) .k{background:var(--leaf)}.choice:nth-child(3) .k{background:var(--high)}.choice:nth-child(4) .k{background:var(--gold);color:var(--ink)}
+.choice.right{background:#c9f1d6}.choice.wrong{background:#ffd3cf;opacity:.6}
+.qimg{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.qimg .art{width:clamp(70px,10vw,150px);height:clamp(70px,10vw,150px)}
+.tag{font-family:var(--f-display);background:var(--pine);color:#fff;border-radius:999px;padding:.15em .9em;font-size:clamp(.9rem,1.4vw,1.2rem)}
+.timerbig{font-family:var(--f-display);font-size:clamp(1.6rem,3vw,2.6rem);min-width:2.2em;text-align:center;background:var(--gold);border:4px solid var(--ink);border-radius:50%;width:2.4em;height:2.4em;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.hud{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.deco{position:absolute;pointer-events:none;opacity:.95}
+@media (max-width:640px){.choices{grid-template-columns:1fr}}

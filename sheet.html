@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>크리스마스 활동지</title>
+<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/sheet.css">
+</head>
+<body class="sheets">
+<div class="sbar wrap">
+  <a class="btn sm" href="index.html">← 키트</a>
+  <h1 id="st">활동지</h1>
+  <button class="btn sm" id="b-new" hidden>새 문제로 바꾸기</button>
+  <button class="btn sm" id="b-ans" hidden>정답 보기</button>
+  <a class="btn sm gold" id="b-pdf" target="_blank" rel="noopener">PDF 열기</a>
+  <button class="btn sm red" id="b-print">인쇄하기</button>
+  <div class="info" id="info"></div>
+</div>
+<main id="pages" class="wrap"></main>
+<script src="assets/art.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/sheets-core.js"></script>
+<script src="assets/sheets-a.js"></script>
+<script src="assets/sheets-b.js"></script>
+<script>
+(function(){
+  const $=XK.$; let seed=1225, ans=false;
+  function cur(){ const id=(location.hash||'').slice(1); return SHEETS.find(s=>s.id===id)||SHEETS[0]; }
+  function fit(){ XK.$$('.pagebox').forEach(b=>{ const p=b.firstElementChild; p.style.transform=''; const k=Math.min(1,b.clientWidth/p.offsetWidth); p.style.transform=k<1?`scale(${k})`:''; b.style.height=(p.offsetHeight*k)+'px'; }); }
+  function render(){
+    const s=cur(); document.title=s.title+' · 크리스마스 활동지'; $('#st').textContent=s.title;
+    const pages=s.gen({r:XK.rng(seed), seed, ans});
+    $('#pages').innerHTML=pages.map(p=>`<div class="pagebox ${/class="page land/.test(p)?'land':''}">${p}</div>`).join('');
+    $('#b-pdf').href='print/'+encodeURIComponent(SH.pdfName(s, ans && s.answers));
+    $('#b-new').hidden=!s.random; $('#b-ans').hidden=!s.answers; $('#b-ans').textContent=ans?'정답 숨기기':'정답 보기';
+    $('#info').textContent=`${pages.length}쪽 · A4 · ${SH.gname(s.grades)}${s.paper?' · 추천 용지: '+s.paper:''} · 인쇄 버튼이 안 되면 「PDF 열기」로 인쇄하세요. (PDF는 기본 문제와 정답지가 들어 있어요)`;
+    fit();
+  }
+  $('#b-new').onclick=()=>{ seed=Math.floor(Math.random()*1e9); render(); };
+  $('#b-ans').onclick=()=>{ ans=!ans; render(); };
+  $('#b-print').onclick=()=>{ window.print(); };
+  addEventListener('hashchange',()=>{ans=false;render();scrollTo(0,0);}); addEventListener('resize',fit);
+  window.__render=(sd,a)=>{seed=sd;ans=!!a;render();};
+  render(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

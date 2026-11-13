@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>산타 퀴즈 쇼</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<div class="teams wrap" id="teams" style="margin-top:14px"></div>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script src="../assets/quiz-bank.js"></script>
+<script>
+(function(){
+  const {$, shuffle, art} = {...XK, art: XArt.art};
+  let g = XK.grade(), qs = [], i = 0, T, tm;
+  const teams = XK.teams($('#teams'));
+  XK.topbar({title:'산타 퀴즈 쇼', icon:'santa', grades:true, onGrade:(x)=>{g=x;intro();}});
+  function intro(){
+    tm && tm.stop();
+    $('#board').innerHTML = `<div class="center">
+      <div class="qimg">${['santa','rudolph','elf','snowman'].map(n=>art(n)).join('')}</div>
+      <div class="huge">산타 퀴즈 쇼</div>
+      <p class="big" style="color:var(--pine2)">${XK.GRADES[g]} 문제 ${QUIZ[g].length}개 · 문제마다 20초</p>
+      <p class="note">모둠이 돌아가며 답해요. 맞히면 그 모둠에 +1점. 보기를 누르면 바로 채점됩니다.</p>
+      <button class="btn big red" id="go">시작하기</button></div>`;
+    $('#go').onclick = ()=>{ XK.sfx('bell'); qs = shuffle(QUIZ[g]); i = 0; show(); };
+  }
+  function show(){
+    if(i>=qs.length){ end(); return; }
+    const [q, ch, a, pic, ex] = qs[i];
+    const order = shuffle(ch.map((c,k)=>k));
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${i+1} / ${qs.length}번 문제</span><span class="tag" id="who"></span><span class="timerbig" id="t">20</span></div>
+      <div class="center" style="gap:2vh">${pic?`<div class="qimg pop">${art(pic)}</div>`:''}<div class="big pop">${q}</div>
+      <div class="choices">${order.map((k,n)=>`<button class="choice" data-k="${k}"><span class="k">${n+1}</span><span>${ch[k]}</span></button>`).join('')}</div>
+      <div id="fb" class="big" style="min-height:1.4em"></div></div>`;
+    const who = ()=>{ $('#who').textContent = `${teams.turn+1}모둠 차례`; }; who();
+    tm = XK.timer($('#t'), 20, ()=>reveal(-1)); tm.start();
+    document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>reveal(+b.dataset.k));
+    function reveal(k){
+      tm.stop();
+      document.querySelectorAll('.choice').forEach(b=>{ b.disabled=true; if(+b.dataset.k===a) b.classList.add('right'); else if(+b.dataset.k===k) b.classList.add('wrong'); });
+      const ok = k===a;
+      if(ok){ XK.sfx('win'); XK.confetti(); teams.add(1); } else XK.sfx('no');
+      $('#fb').innerHTML = (ok?'딩동댕! 정답이에요':(k<0?'시간 끝!':'아쉬워요!')+` 정답은 「${ch[a]}」`) + (ex?`<div class="note" style="font-family:var(--f-body);font-size:1.1rem;margin-top:.3em">${ex}</div>`:'') +
+        `<div style="margin-top:.5em"><button class="btn green" id="nx">다음 문제 →</button></div>`;
+      $('#nx').onclick=()=>{ teams.next(); i++; show(); };
+    }
+  }
+  function end(){
+    const s = teams.scores.slice(0,teams.n), m = Math.max(...s), w = s.map((v,k)=>v===m?k+1:0).filter(Boolean);
+    XK.sfx('win'); XK.confetti(); XK.snow(true);
+    $('#board').innerHTML = `<div class="center"><div class="qimg">${art('presents')}${art('santa')}${art('presents')}</div>
+      <div class="huge">${w.join(', ')}모둠 우승!</div><p class="big">모두 수고했어요. 메리 크리스마스!</p><button class="btn big gold" id="again">다시 하기</button></div>`;
+    $('#again').onclick = ()=>{ XK.snow(false); intro(); };
+  }
+  intro(); XK.snow(true);
+})();
+</script>
+</body>
+</html>

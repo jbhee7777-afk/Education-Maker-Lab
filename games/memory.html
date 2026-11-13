@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>짝꿍 카드 기억력 게임</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.mgrid{display:grid;gap:clamp(6px,1vw,14px);flex:1;align-content:center}
+.card{perspective:800px;border:0;background:transparent;padding:0;width:100%;height:var(--ch)}
+.card .in{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.card.flip .in,.card.done .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:16px;border:4px solid var(--ink);backface-visibility:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.card .b{background:repeating-linear-gradient(45deg,var(--berry) 0 14px,#e8574f 14px 28px);box-shadow:0 5px 0 var(--ink)}
+.card .b::after{content:"";width:46%;height:46%;background:url(../assets/img/c/star.png) center/contain no-repeat}
+.card .f{background:var(--paper);transform:rotateY(180deg);gap:2px}
+.card .f .art{width:78%;height:70%}
+.card .f span{font-family:var(--f-display);font-size:clamp(1rem,2.4vw,2rem)}
+.card.done .f{background:#d8f3e1}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<div class="teams wrap" id="teams" style="margin-top:14px"></div>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const {$, shuffle} = XK, art = XArt.art, L = XArt.label;
+  let g = XK.grade(), lock = false, open = [];
+  const teams = XK.teams($('#teams'));
+  XK.topbar({title:'짝꿍 카드 기억력 게임', icon:'star', grades:true, onGrade:(x)=>{g=x;build();}});
+  const CFG = { low:{pairs:6, cols:4, mode:'same', tip:'같은 그림 두 장을 찾아요.'}, mid:{pairs:8, cols:4, mode:'same', tip:'같은 그림 두 장을 찾아요. 카드가 16장!'}, high:{pairs:12, cols:6, mode:'word', tip:'그림 카드와 이름 카드를 짝지어요. 카드 24장!'} };
+  function build(){
+    const c = CFG[g], names = shuffle(XArt.NAMES).slice(0,c.pairs); open=[]; lock=false;
+    const cards = shuffle(names.flatMap(n=>[{n,t:'p'},{n,t:c.mode==='word'?'w':'p'}]));
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${XK.GRADES[g]} · ${c.tip}</span><span class="note" style="color:var(--ink2)">짝을 맞히면 1점, 그리고 한 번 더! 틀리면 다음 모둠 차례예요.</span><button class="btn sm" id="re">새 판</button></div>
+      <div class="mgrid" style="grid-template-columns:repeat(${c.cols},1fr);--ch:min(calc((100dvh - 300px) / ${cards.length/c.cols}),calc((100vw - 120px) / ${c.cols} * 1.1))">${cards.map((k,i)=>`<button class="card" data-i="${i}" aria-label="카드 ${i+1}"><div class="in"><div class="b"></div><div class="f">${k.t==='p'?art(k.n):`<span style="font-size:clamp(1.3rem,3vw,2.6rem)">${L(k.n)}</span>`}${k.t==='p'&&c.mode!=='word'?'':''}</div></div></button>`).join('')}</div>`;
+    $('#re').onclick = build;
+    document.querySelectorAll('.card').forEach(b=>b.onclick=()=>{
+      if(lock||b.classList.contains('flip')||b.classList.contains('done')) return;
+      XK.sfx('pop'); b.classList.add('flip'); open.push(b);
+      if(open.length<2) return;
+      lock = true; const [x,y] = open, a = cards[+x.dataset.i], d = cards[+y.dataset.i];
+      if(a.n===d.n){ setTimeout(()=>{ x.classList.add('done'); y.classList.add('done'); XK.sfx('ok'); teams.add(1); open=[]; lock=false;
+        if(document.querySelectorAll('.card.done').length===cards.length){ XK.sfx('win'); XK.confetti(); XK.modal(`<div class="qimg">${art('presents')}</div><div class="huge">모두 찾았어요!</div><button class="btn big green" data-close>확인</button>`); } },450); }
+      else setTimeout(()=>{ x.classList.remove('flip'); y.classList.remove('flip'); XK.sfx('no'); teams.next(); open=[]; lock=false; },1100);
+    });
+  }
+  build();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>산타 모자 야바위</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.table{position:relative;flex:1;min-height:42vh;background:radial-gradient(ellipse at 50% 85%,#f6e3c4 0 38%,transparent 39%);}
+.slot{position:absolute;bottom:14%;width:var(--w);height:calc(var(--w)*1.1);transform:translateX(-50%);transition:left var(--sp) ease-in-out}
+.slot .prize{position:absolute;left:50%;bottom:0;width:60%;transform:translateX(-50%)}
+.slot .hat{position:absolute;left:0;bottom:0;width:100%;border:0;background:transparent;padding:0;transition:transform .35s;z-index:2;cursor:pointer}
+.slot .hat .art{width:100%;height:auto}
+.slot.up .hat{transform:translateY(-62%)}
+.slot .num{position:absolute;left:50%;top:-1.6em;transform:translateX(-50%);font-family:var(--f-display);font-size:clamp(1.2rem,2.6vw,2rem)}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<div class="teams wrap" id="teams" style="margin-top:14px"></div>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const {$, pick} = XK, art = XArt.art;
+  let g = XK.grade(), busy = false, prize = 0, pos = [], N;
+  const teams = XK.teams($('#teams'));
+  const CFG = { low:{n:3, swaps:6, ms:650}, mid:{n:4, swaps:10, ms:480}, high:{n:5, swaps:16, ms:340} };
+  const PRIZES = ['gift','rudolph','star','cookies','teddy','ornament'];
+  XK.topbar({title:'산타 모자 야바위', icon:'hat', grades:true, onGrade:(x)=>{g=x;build();}});
+  function build(){
+    const c = CFG[g]; N = c.n; busy = false; pos = XK.range(N); prize = Math.floor(Math.random()*N);
+    const w = Math.min(22, 80/N);
+    const item = pick(PRIZES);
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${XK.GRADES[g]} · 모자 ${N}개 · ${c.swaps}번 섞기</span><span class="big" id="msg" style="font-size:clamp(1.1rem,2.4vw,2rem)">선물이 어느 모자 속에 숨는지 잘 보세요!</span>
+      <div class="row"><button class="btn red" id="mix">섞기 시작</button><button class="btn sm" id="faster">더 빠르게</button></div></div>
+      <div class="table" id="tb" style="--w:${w}vw;--sp:${c.ms}ms">${XK.range(N).map(i=>`<div class="slot up" data-i="${i}" style="left:${(i+.5)*100/N}%"><span class="num">${i+1}</span><div class="prize">${i===prize?art(item):''}</div><button class="hat" aria-label="${i+1}번 모자">${art('hat')}</button></div>`).join('')}</div>`;
+    let ms = c.ms;
+    $('#faster').onclick = ()=>{ ms = Math.max(160, ms-90); $('#tb').style.setProperty('--sp', ms+'ms'); XK.sfx('tick'); };
+    $('#mix').onclick = async ()=>{
+      if(busy) return; busy = true; $('#mix').disabled = true;
+      const slots = [...document.querySelectorAll('.slot')];
+      slots.forEach(s=>s.classList.remove('up')); XK.sfx('pop'); await wait(700);
+      $('#msg').textContent = '섞는 중… 눈을 떼지 마세요!';
+      for(let k=0;k<c.swaps;k++){
+        let a = Math.floor(Math.random()*N), b = Math.floor(Math.random()*(N-1)); if(b>=a) b++;
+        const sa = slots.find(s=>pos[+s.dataset.i]===a), sb = slots.find(s=>pos[+s.dataset.i]===b);
+        pos[+sa.dataset.i]=b; pos[+sb.dataset.i]=a;
+        sa.style.left = (b+.5)*100/N+'%'; sb.style.left = (a+.5)*100/N+'%';
+        sa.querySelector('.num').textContent=''; sb.querySelector('.num').textContent='';
+        XK.sfx('tick'); await wait(ms+60);
+      }
+      slots.forEach(s=>s.querySelector('.num').textContent=pos[+s.dataset.i]+1);
+      $('#msg').textContent = `${teams.turn+1}모둠! 선물은 몇 번 모자 속에 있을까요?`;
+      slots.forEach(s=>s.querySelector('.hat').onclick=()=>{
+        if(!busy) return; busy=false;
+        const hit = +s.dataset.i===prize;
+        slots.forEach(x=>{ if(x===s||+x.dataset.i===prize) x.classList.add('up'); });
+        if(hit){ XK.sfx('win'); XK.confetti(); teams.add(1); $('#msg').textContent='찾았다! +1점'; }
+        else { XK.sfx('boo'); $('#msg').textContent='아쉬워요! 선물은 다른 모자에 있었어요.'; }
+        $('#mix').disabled=false; $('#mix').textContent='다음 판'; $('#mix').onclick=()=>{teams.next();build();};
+      });
+    };
+  }
+  const wait = (ms)=>new Promise(r=>setTimeout(r,ms));
+  build();
+})();
+</script>
+</body>
+</html>

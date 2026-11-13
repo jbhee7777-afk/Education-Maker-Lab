@@ -1,0 +1,85 @@
+/* 크리스마스 활동 키트 공통 테마 — 솔숲 밤하늘 + 눈빛 크림 + 열매 빨강 + 금빛 전구 */
+@font-face{font-family:"Jua";src:url("fonts/Jua-Regular.woff2") format("woff2");font-display:swap}
+@font-face{font-family:"Gowun Dodum";src:url("fonts/GowunDodum-Regular.woff2") format("woff2");font-display:swap}
+@font-face{font-family:"Gaegu";src:url("fonts/Gaegu-Bold.woff2") format("woff2");font-display:swap}
+:root{
+  --pine:#0f3d2e;--pine2:#1c6146;--leaf:#2e9e5b;--mint:#e2f4e8;
+  --berry:#d93a3a;--berry2:#b52a2a;--rose:#ffe3e0;
+  --gold:#f6b93b;--gold2:#ffe9a8;
+  --snow:#fffaf3;--cream:#fbefd9;--paper:#ffffff;
+  --ink:#3b2a25;--ink2:#7a6a62;--line:#ead9bf;--sky:#dff0fb;
+  --low:#f2793c;--mid:#2e9e5b;--high:#3f7fd6;
+  --f-display:"Jua","Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-hand:"Gaegu","Jua","Malgun Gothic",sans-serif;
+  --r:22px;--shadow:0 6px 0 rgba(59,42,37,.12);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--snow);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:400;line-height:1.2;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+svg.art,img.art{display:block;max-width:100%;height:auto}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;border:3px solid var(--ink);background:var(--paper);color:var(--ink);
+  font-family:var(--f-display);font-size:1.05rem;padding:.5em 1.1em;border-radius:999px;box-shadow:0 4px 0 var(--ink);text-decoration:none;
+  transition:transform .08s,box-shadow .08s;user-select:none;touch-action:manipulation}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.btn.red{background:var(--berry);color:#fff}.btn.green{background:var(--leaf);color:#fff}.btn.gold{background:var(--gold);color:var(--ink)}
+.btn.big{font-size:1.5rem;padding:.55em 1.4em}.btn.sm{font-size:.9rem;padding:.3em .8em;border-width:2px;box-shadow:0 3px 0 var(--ink)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.chip{display:inline-block;font-family:var(--f-display);font-size:.8rem;padding:.12em .7em;border-radius:999px;color:#fff;white-space:nowrap}
+.chip.low{background:var(--low)}.chip.mid{background:var(--mid)}.chip.high{background:var(--high)}
+.chip.ghost{background:var(--cream);color:var(--ink2)}
+
+/* 전구 줄 */
+.lights{height:26px;background:
+  radial-gradient(circle at 20px 14px,var(--berry) 0 7px,transparent 8px) 0 0/160px 26px,
+  radial-gradient(circle at 60px 18px,var(--gold) 0 7px,transparent 8px) 0 0/160px 26px,
+  radial-gradient(circle at 100px 14px,#4fc37f 0 7px,transparent 8px) 0 0/160px 26px,
+  radial-gradient(circle at 140px 18px,#62b3f2 0 7px,transparent 8px) 0 0/160px 26px,
+  radial-gradient(ellipse 80px 16px at 40px -6px,transparent 0 78px,transparent 79px);
+  border-top:3px solid rgba(255,255,255,.35)}
+
+/* 게임·도구 화면 공통 (전자칠판용) */
+body.stage{background:var(--pine);color:#fff;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding-bottom:16px;
+  background-image:radial-gradient(circle at 12% 18%,rgba(255,255,255,.07) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.06) 0 2px,transparent 3px),radial-gradient(circle at 40% 85%,rgba(255,255,255,.05) 0 3px,transparent 4px),linear-gradient(#0c3326,#14503a);
+  background-size:220px 220px,300px 300px,260px 260px,100% 100%}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 0;flex-wrap:wrap}
+.topbar h1{font-size:clamp(1.3rem,2.6vw,2.2rem);flex:1;min-width:0;color:#fff;display:flex;align-items:center;gap:.4em}
+.topbar h1 .art{width:1.5em;height:1.5em;flex:none}
+.topbar .btn{font-size:.95rem;padding:.3em .9em}
+.seg{display:inline-flex;border:3px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper);box-shadow:0 4px 0 var(--ink)}
+.seg button{border:0;background:transparent;font-family:var(--f-display);padding:.3em .9em;font-size:.95rem;color:var(--ink)}
+.seg button[aria-pressed="true"]{color:#fff}
+.seg button[data-g="low"][aria-pressed="true"]{background:var(--low)}.seg button[data-g="mid"][aria-pressed="true"]{background:var(--mid)}.seg button[data-g="high"][aria-pressed="true"]{background:var(--high)}
+.seg button[data-g="all"][aria-pressed="true"]{background:var(--berry)}
+.board{flex:1;background:var(--snow);color:var(--ink);border-radius:28px;border:4px solid var(--ink);padding:clamp(14px,2.2vw,30px);position:relative;min-width:0;
+  box-shadow:0 8px 0 rgba(0,0,0,.25);display:flex;flex-direction:column;gap:16px}
+.board h2{font-size:clamp(1.5rem,3.4vw,2.8rem)}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;flex:1}
+.huge{font-family:var(--f-display);font-size:clamp(2.2rem,7vw,6rem);line-height:1.15;text-wrap:balance}
+.big{font-family:var(--f-display);font-size:clamp(1.4rem,3.4vw,2.8rem);line-height:1.3;text-wrap:balance}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+.note{color:var(--ink2);font-size:.95rem}
+.teams{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.team{background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:6px 10px;display:flex;align-items:center;gap:8px;font-family:var(--f-display);box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.team b{font-size:1.6rem;min-width:1.6em;text-align:center;font-weight:400;font-variant-numeric:tabular-nums}
+.team .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink)}
+.team button{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--cream);font-family:var(--f-display);font-size:1.2rem;line-height:1;padding:0}
+.team.turn{background:var(--gold2);transform:translateY(-3px)}
+.modal{position:fixed;inset:0;background:rgba(10,40,30,.72);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal>.box{background:var(--snow);color:var(--ink);border:4px solid var(--ink);border-radius:28px;padding:clamp(18px,3vw,40px);max-width:min(1100px,96vw);width:100%;max-height:94vh;overflow:auto;text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center}
+#snow{position:fixed;inset:0;pointer-events:none;z-index:40}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.pop{animation:pop .35s ease-out}

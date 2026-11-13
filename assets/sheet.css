@@ -1,0 +1,58 @@
+/* 인쇄용 활동지 (A4) */
+body.sheets{background:var(--pine);padding-bottom:60px}
+.sbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--pine);padding:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sbar h1{color:#fff;font-size:1.4rem;flex:1;min-width:0}
+.sbar .info{color:var(--gold2);font-size:.9rem;flex-basis:100%}
+#pages{display:flex;flex-direction:column;align-items:center;gap:22px}
+.pagebox{width:100%;max-width:210mm;overflow:hidden}
+.page{width:210mm;height:297mm;background:#fff;color:#2b2320;padding:10mm 12mm 8mm;display:flex;flex-direction:column;gap:3mm;position:relative;overflow:hidden;
+  font-family:var(--f-body);font-size:11.5pt;line-height:1.5;transform-origin:0 0;box-shadow:0 8px 0 rgba(0,0,0,.25);border-radius:2mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page.land{width:297mm;height:210mm}
+.pagebox.land{max-width:297mm}
+.ph{display:flex;align-items:center;gap:4mm;flex:none}
+.ph .ic{width:19mm;height:19mm;flex:none}
+.ph h1{font-size:21pt;color:#b52a2a;letter-spacing:-.01em}
+.ph p{font-size:10pt;color:#5d4d45;line-height:1.35;margin-top:.5mm}
+.ph .tt{flex:1;min-width:0}
+.ph .nm{flex:none;font-family:var(--f-display);font-size:9.5pt;color:#5d4d45;border:.5mm dashed #c9b8a4;border-radius:3mm;padding:1.6mm 3mm;line-height:2;text-align:right;white-space:nowrap}
+.ph .nm i{display:inline-block;border-bottom:.3mm solid #8a7a70;width:9mm;height:4mm;vertical-align:baseline}
+.ph .nm i.w{width:26mm}
+.stripe{flex:none;height:2.6mm;border-radius:2mm;background:repeating-linear-gradient(-45deg,#d93a3a 0 3mm,#fff 3mm 6mm);border:.3mm solid #d93a3a}
+.pb{flex:1;min-height:0;display:flex;flex-direction:column;gap:3mm}
+.pb>svg{width:100%;flex:1;min-height:0}
+.pf{flex:none;display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;color:#9a8a80;font-family:var(--f-display)}
+.pf span:first-child::before{content:"";display:inline-block;width:2.2mm;height:2.2mm;border-radius:50%;background:#d93a3a;box-shadow:2.8mm 0 0 #2e9e5b;margin-right:4.4mm}
+.tip{flex:none;background:#fff6dc;border:.4mm solid #f0cf7a;border-radius:3mm;padding:1.6mm 3.5mm;font-size:9.5pt;line-height:1.45}
+.tip b{font-family:var(--f-display);font-weight:400;color:#b06a00;margin-right:1mm}
+.q{font-family:var(--f-display);font-size:13pt;flex:none}
+.lines{flex:1;background:repeating-linear-gradient(transparent 0 9.6mm,#bfb1a5 9.6mm 10mm);min-height:20mm}
+.box{border:.6mm solid #432;border-radius:4mm;padding:3mm}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;flex:none}
+.steps.c2{grid-template-columns:repeat(2,1fr)}
+.steps.c4{grid-template-columns:repeat(4,1fr)}
+.steps .st{border:.5mm solid #d9c9b5;border-radius:4mm;padding:2mm;display:flex;flex-direction:column;gap:1mm;background:#fffdf8}
+.steps .st svg{width:100%;height:auto}
+.steps .st p{font-size:9.5pt;line-height:1.35}
+.steps .st b{font-family:var(--f-display);font-weight:400;color:#fff;background:#d93a3a;border-radius:50%;width:6mm;height:6mm;display:inline-flex;align-items:center;justify-content:center;font-size:10pt;margin-right:1mm}
+.page img.art{display:block;margin:0 auto}
+.sv text{font-family:"Jua","Malgun Gothic",sans-serif}
+table.t{border-collapse:collapse;width:100%;flex:none}
+table.t td,table.t th{border:.4mm solid #432;padding:1.5mm 2mm;text-align:center;font-size:10.5pt}
+table.t th{background:#ffe9e6;font-family:var(--f-display);font-weight:400}
+.cards{display:grid;gap:3mm}
+.card{border:.6mm dashed #8a7a70;border-radius:4mm;padding:3mm;display:flex;gap:3mm;align-items:center}
+.card svg{flex:none}
+.ans{color:#d93a3a;font-family:var(--f-display)}
+ol.ol,ul.ul{margin:0;padding-left:6mm;display:flex;flex-direction:column;gap:1.2mm}
+.h3{font-family:var(--f-display);font-size:13pt;color:#1c6146;flex:none}
+@page{size:A4;margin:0}
+@media print{
+  body.sheets{background:#fff;padding:0!important}
+  .sbar{display:none!important}
+  #pages{display:block}
+  .pagebox{max-width:none;overflow:visible;height:auto!important;width:auto}
+  .page{transform:none!important;box-shadow:none;border-radius:0;break-after:page;page-break-after:always;margin:0}
+  .pagebox.land{width:210mm;height:297mm!important;overflow:hidden;break-after:page;page-break-after:always;position:relative}
+  .pagebox.land .page{position:absolute;left:0;top:0;transform:translateX(210mm) rotate(90deg)!important;transform-origin:0 0;break-after:auto;page-break-after:auto}
+}

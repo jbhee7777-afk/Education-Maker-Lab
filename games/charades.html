@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>몸으로 말해요</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>.wordcard{background:var(--paper);border:5px solid var(--ink);border-radius:30px;padding:2vh 4vw;box-shadow:0 8px 0 var(--ink);min-width:min(70vw,800px)}
+.wordcard .art{width:clamp(90px,16vh,200px);height:clamp(90px,16vh,200px)}
+.blur{filter:blur(18px)}</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board"></main>
+<div class="teams wrap" id="teams" style="margin-top:14px"></div>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const {$, shuffle} = XK, art = XArt.art;
+  let g = XK.grade(), words = [], k = 0, got = 0, tm, sec = 60;
+  const W = {
+    low: [['산타 할아버지','santa'],['루돌프','rudolph'],['눈사람','snowman'],['펭귄','penguin'],['선물 포장하기','gift'],['눈싸움','snowflake'],['트리 꾸미기','tree'],['진저맨','ginger'],['장갑 끼기','mitten'],['코코아 마시기','cocoa'],['종 흔들기','bell'],['토끼','bunny'],['북극곰','polarbear'],['썰매 타기','sleigh'],['곰 인형 안아 주기','teddy'],['기차 놀이','train'],['천사','angel'],['부엉이','owl']],
+    mid: [['굴뚝으로 내려가는 산타','santa'],['양말 걸기','stocking'],['눈 치우기',''],['스케이트 타기',''],['호두까기 인형','nutcracker'],['쿠키 굽기','cookies'],['흔들목마 타기','horse'],['엘프의 장난감 만들기','elf'],['산타에게 편지 쓰기','letter'],['고슴도치','hedgehog'],['여우','fox'],['스노우볼 흔들기','globe'],['전구 달기','lights'],['캐럴 부르기','bell'],['촛불 끄기','candle'],['선물 풀어 보기','presents'],['눈꽃 받아먹기','snowflake'],['이글루 짓기','']],
+    high:[['굴뚝에 끼어 버린 산타','santa'],['길 잃은 루돌프','rudolph'],['녹고 있는 눈사람','snowman'],['겨울잠 자는 곰','teddy'],['캐럴 합창단 지휘자',''],['뜨개질하는 할머니','mitten'],['얼음 낚시',''],['선물을 몰래 숨기는 엘프','elf'],['미끄러운 빙판길 걷기',''],['과자 집을 먹는 아이','ginghouse'],['썰매 경주 선수','sleigh'],['산타 몰래 지켜보기',''],['포인세티아 화분 나르기','poinsettia'],['눈 결정 관찰하는 과학자','snowflake'],['크리스마스카드 쓰기','letter'],['북극 표지판 찾는 여행자','signpost'],['호두 깨는 호두까기 인형','nutcracker'],['우체부 산타','presents']],
+  };
+  const teams = XK.teams($('#teams'));
+  XK.topbar({title:'몸으로 말해요', icon:'elf', grades:true, onGrade:(x)=>{g=x;intro();}});
+  function intro(){
+    tm && tm.stop();
+    $('#board').innerHTML = `<div class="center"><div class="qimg">${['elf','santa','penguin'].map(n=>art(n)).join('')}</div><div class="huge">몸으로 말해요</div>
+      <p class="big">${teams.turn+1}모둠 차례 · 설명하는 친구 한 명만 화면을 봐요!</p>
+      <p class="note">말·소리 없이 몸짓으로만 설명해요. 모둠 친구들이 맞히면 「정답」, 어려우면 「통과」.</p>
+      <div class="row"><span class="tag">제한 시간</span>${[40,60,90].map(s=>`<button class="btn sm ${s===sec?'gold':''}" data-s="${s}">${s}초</button>`).join('')}</div>
+      <button class="btn big red" id="go">시작!</button></div>`;
+    document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{sec=+b.dataset.s;intro();});
+    $('#go').onclick = run;
+  }
+  function run(){
+    words = shuffle(W[g]); k = 0; got = 0; XK.sfx('bell');
+    $('#board').innerHTML = `<div class="hud"><span class="tag">${teams.turn+1}모둠 · 맞힌 개수 <b id="got">0</b></span><span class="timerbig" id="t">${sec}</span><button class="btn sm" id="hide">가리기</button></div>
+      <div class="center"><div class="wordcard" id="card"></div><div class="row"><button class="btn big green" id="ok">정답 ✔</button><button class="btn big" id="pass">통과 →</button></div></div>`;
+    const draw=()=>{ const [w,p]=words[k%words.length]; $('#card').innerHTML=`${p?art(p):''}<div class="huge">${w}</div>`; $('#card').classList.add('pop'); setTimeout(()=>$('#card').classList.remove('pop'),400); };
+    draw();
+    $('#ok').onclick=()=>{ got++; $('#got').textContent=got; XK.sfx('ok'); k++; draw(); };
+    $('#pass').onclick=()=>{ XK.sfx('pop'); k++; draw(); };
+    $('#hide').onclick=()=>$('#card').classList.toggle('blur');
+    tm = XK.timer($('#t'), sec, ()=>{
+      teams.add(got); XK.confetti();
+      $('#board').innerHTML=`<div class="center"><div class="huge">${teams.turn+1}모둠 ${got}개 성공!</div><p class="big">점수판에 +${got}점을 더했어요.</p><button class="btn big red" id="nx">다음 모둠</button></div>`;
+      $('#nx').onclick=()=>{teams.next();intro();};
+    }); tm.start();
+  }
+  intro();
+})();
+</script>
+</body>
+</html>

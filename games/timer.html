@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>눈사람 타이머와 썰매 경주</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.lay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;flex:1}
+.melt{position:relative;width:min(36vh,70vw);height:min(36vh,70vw);display:flex;align-items:flex-end;justify-content:center}
+.melt .art{width:100%;height:100%;transform-origin:50% 100%;transition:transform 1s linear}
+.puddle{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);height:16px;border-radius:50%;background:#bfe3fb;transition:width 1s linear}
+.clock{font-family:var(--f-display);font-size:clamp(3.4rem,10vw,8rem);font-variant-numeric:tabular-nums;line-height:1}
+.track{display:flex;flex-direction:column;gap:10px}
+.lane{position:relative;height:clamp(54px,9vh,90px);background:repeating-linear-gradient(90deg,#fff 0 40px,#eef7ff 40px 80px);border:3px solid var(--ink);border-radius:16px;overflow:hidden}
+.lane .sl{position:absolute;top:50%;transform:translate(-10%,-50%);height:90%;transition:left .6s cubic-bezier(.3,1.4,.6,1)}
+.lane .sl .art{height:100%;width:auto}
+.lane b{position:absolute;left:10px;top:4px;font-family:var(--f-display);font-weight:400;font-size:1rem;z-index:1}
+.lane .goal{position:absolute;right:6px;top:50%;transform:translateY(-50%);height:80%}
+.lane .goal .art{height:100%;width:auto}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board">
+  <div class="lay">
+    <div class="center" style="gap:14px">
+      <div class="melt"><span id="sm"></span><div class="puddle" id="pd" style="width:0"></div></div>
+      <div class="clock" id="clock">03:00</div>
+      <div class="row" id="pre"></div>
+      <div class="row"><button class="btn big green" id="go">시작</button><button class="btn big" id="stop">멈춤</button><button class="btn big" id="rs">다시</button></div>
+      <p class="note">시간이 흐를수록 눈사람이 녹아요. 다 녹기 전에 끝내 볼까요?</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div style="font-family:var(--f-display);font-size:1.4rem">썰매 경주 점수판 <span class="note">— 점수가 오르면 썰매가 트리를 향해 달려요 (10점 도착)</span></div>
+      <div class="track" id="track"></div>
+      <div class="teams" id="teams"></div>
+    </div>
+  </div>
+</main>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const $ = XK.$, art = XArt.art;
+  XK.topbar({title:'눈사람 타이머 · 썰매 경주', icon:'snowman'});
+  $('#sm').outerHTML = art('snowman'); const sm = document.querySelector('.melt .art');
+  let total = 180, left = 180, id = null;
+  const fmt = s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  const show = ()=>{ $('#clock').textContent = fmt(left); const p = left/total; sm.style.transform = `scale(${.25+.75*p},${.12+.88*p})`; $('#pd').style.width = (1-p)*80+'%'; };
+  $('#pre').innerHTML = [30,60,180,300,600].map(s=>`<button class="btn sm" data-s="${s}">${s<60?s+'초':s/60+'분'}</button>`).join('');
+  document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ clearInterval(id); id=null; total=left=+b.dataset.s; show(); });
+  $('#go').onclick=()=>{ if(id) return; XK.sfx('bell'); id=setInterval(()=>{ left--; show(); if(left<=10&&left>0) XK.sfx('tick'); if(left<=0){ clearInterval(id); id=null; XK.sfx('win'); XK.modal(`<div class="qimg">${art('snowman')}</div><div class="huge">시간 끝!</div><button class="btn big green" data-close>확인</button>`);} },1000); };
+  $('#stop').onclick=()=>{ clearInterval(id); id=null; };
+  $('#rs').onclick=()=>{ clearInterval(id); id=null; left=total; show(); };
+  show();
+  const T = XK.teams($('#teams')); const SL = ['sleigh','rudolph','penguin','polarbear','train','fox'];
+  const race = ()=>{ $('#track').innerHTML = XK.range(T.n,i=>`<div class="lane"><b>${i+1}모둠 · ${T.scores[i]}점</b><div class="sl" style="left:${14+Math.min(10,Math.max(0,T.scores[i]))*6.6}%">${art(SL[i])}</div><div class="goal">${art('tree')}</div></div>`).join(''); };
+  const od = T.draw; T.draw = ()=>{ od(); race(); }; T.draw();
+  $('#teams').addEventListener('click',()=>setTimeout(()=>{ race(); if(T.scores.slice(0,T.n).some(s=>s>=10)){ XK.confetti(); XK.sfx('win'); } },0));
+})();
+</script>
+</body>
+</html>

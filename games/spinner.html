@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>리스 돌림판</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/games.css">
+<style>
+.lay{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;flex:1}
+.wheelbox{position:relative;display:flex;align-items:center;justify-content:center}
+#wheel{width:min(62vh,92vw);height:auto;aspect-ratio:1;max-width:100%}
+.pin{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:clamp(50px,7vh,80px);z-index:2}
+textarea{width:100%;min-height:30vh;font:inherit;font-size:1.1rem;border:3px solid var(--ink);border-radius:16px;padding:10px;background:var(--paper);color:var(--ink);resize:vertical}
+@media (max-width:760px){.lay{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="stage">
+<main class="board wrap" id="board">
+  <div class="lay">
+    <div class="center" style="gap:12px">
+      <div class="wheelbox"><img class="pin" src="../assets/img/c/star.png" alt=""><canvas id="wheel" width="900" height="900"></canvas></div>
+      <button class="btn big red" id="spin">돌리기!</button>
+      <div class="big" id="res" style="min-height:1.4em"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div style="font-family:var(--f-display);font-size:1.3rem">돌림판 내용 (한 줄에 하나)</div>
+      <div class="row" style="justify-content:flex-start">
+        <button class="btn sm" data-p="num">번호 1~28</button><button class="btn sm" data-p="mission">교실 미션</button><button class="btn sm" data-p="talk">마음 나누기 질문</button><button class="btn sm" data-p="team">모둠 정하기</button>
+      </div>
+      <textarea id="items" aria-label="돌림판 내용"></textarea>
+      <label class="note"><input type="checkbox" id="rm"> 뽑힌 항목은 돌림판에서 빼기</label>
+    </div>
+  </div>
+</main>
+<script src="../assets/art.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  const $ = XK.$;
+  XK.topbar({title:'리스 돌림판', icon:'wreath'});
+  const P = {
+    num: XK.range(28,i=>i+1+'번').join('\n'),
+    mission: ['산타 웃음 「호호호」 3번','루돌프 코 만지기 10초','짝에게 칭찬 한마디','캐럴 한 소절 부르기','펭귄 걸음 5걸음','엘프 춤 10초','선생님과 하이파이브','눈사람처럼 10초 얼음','반 친구 3명에게 「메리 크리스마스」','한 해 동안 고마웠던 일 말하기'].join('\n'),
+    talk: ['받고 싶은 선물은?','올해 가장 뿌듯했던 일은?','내가 산타라면 누구에게 무엇을?','겨울에 제일 좋아하는 음식은?','새해에 꼭 해 보고 싶은 일은?','우리 반에서 가장 웃겼던 순간은?','가족과 하고 싶은 겨울 놀이는?','올해 고마운 사람은?'].join('\n'),
+    team: XK.range(6,i=>i+1+'모둠').join('\n'),
+  };
+  const ta = $('#items'); ta.value = XK.store.get('spin', P.mission);
+  const C = ['#d93a3a','#2e9e5b','#f6b93b','#3f7fd6','#f77b72','#1c6146','#ffe08a','#62b3f2'];
+  const cv = $('#wheel'), cx = cv.getContext('2d'); let ang = 0, spinning = false;
+  const items = ()=>ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  function draw(){
+    const L = items(), n = Math.max(L.length,1), R = 430, a = Math.PI*2/n;
+    cx.clearRect(0,0,900,900); cx.save(); cx.translate(450,450); cx.rotate(ang);
+    L.forEach((t,i)=>{
+      cx.beginPath(); cx.moveTo(0,0); cx.arc(0,0,R,i*a,(i+1)*a); cx.closePath();
+      cx.fillStyle = C[i%C.length]; cx.fill(); cx.lineWidth=5; cx.strokeStyle='#3b2a25'; cx.stroke();
+      cx.save(); const mid = i*a+a/2, wa = ((mid+ang)%(Math.PI*2)+Math.PI*2)%(Math.PI*2), flip = wa>Math.PI/2 && wa<Math.PI*1.5;
+      cx.rotate(mid); if(flip) cx.rotate(Math.PI); cx.textAlign=flip?'left':'right'; cx.textBaseline='middle';
+      const dark = ['#ffe08a','#f6b93b'].includes(C[i%C.length]);
+      cx.fillStyle = dark?'#3b2a25':'#fff'; const fs = Math.max(18, Math.min(44, 900/n, 560/Math.max(4,t.length)));
+      cx.font = `${fs}px Jua, sans-serif`; cx.fillText(t.length>16?t.slice(0,15)+'…':t, flip?-(R-26):R-26, 2); cx.restore();
+    });
+    cx.beginPath(); cx.arc(0,0,R,0,Math.PI*2); cx.lineWidth=14; cx.strokeStyle='#2e9e5b'; cx.stroke();
+    for(let k=0;k<24;k++){ cx.beginPath(); cx.arc(Math.cos(k*Math.PI/12)*R, Math.sin(k*Math.PI/12)*R, 9, 0, 7); cx.fillStyle=k%2?'#f6b93b':'#fff'; cx.fill(); }
+    cx.beginPath(); cx.arc(0,0,60,0,7); cx.fillStyle='#fffaf3'; cx.fill(); cx.lineWidth=6; cx.strokeStyle='#3b2a25'; cx.stroke();
+    cx.restore();
+  }
+  ta.oninput = ()=>{ XK.store.set('spin', ta.value); draw(); };
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ ta.value=P[b.dataset.p]; ta.oninput(); });
+  $('#spin').onclick = ()=>{
+    const L = items(); if(spinning||!L.length) return; spinning = true; $('#res').textContent='';
+    const n=L.length, a=Math.PI*2/n, target = Math.floor(Math.random()*n);
+    const end = ang + Math.PI*2*(6+Math.random()*2) + ((-Math.PI/2 - (target*a+a/2) - ang) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+    const st = ang, t0 = performance.now(), D = 5200; let lastSeg = -1;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function f(now){
+      const p = still ? 1 : Math.min(1,(now-t0)/D), e = 1-Math.pow(1-p,4); ang = st + (end-st)*e; draw();
+      const seg = Math.floor(((-Math.PI/2-ang)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)/a); if(seg!==lastSeg){ lastSeg=seg; XK.sfx('tick'); }
+      if(p<1) requestAnimationFrame(f); else { spinning=false; XK.sfx('win'); XK.confetti(); $('#res').textContent = '🎉 '+L[target];
+        if($('#rm').checked){ setTimeout(()=>{ const LL=items(); LL.splice(target,1); ta.value=LL.join('\n'); ta.oninput(); },1600); } }
+    })(t0);
+  };
+  draw(); if(document.fonts) document.fonts.ready.then(draw);
+})();
+</script>
+</body>
+</html>
