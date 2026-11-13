@@ -219,39 +219,84 @@
   const dash = (d) => `<path d="${d}" fill="none" stroke="#ffffff" stroke-width="1.3" filter="none"/><path d="${d}" fill="none" stroke="#3b2a25" stroke-dasharray="2 1.4" stroke-width=".6" filter="none"/>`;
   const mtn = (d) => `<path d="${d}" fill="none" stroke="#ffffff" stroke-width="1.3" filter="none"/><path d="${d}" fill="none" stroke-dasharray="3 1 .6 1" stroke-width=".7" stroke="#ff6f00" filter="none"/>`;
   const arrow = (d) => `<path d="${d}" fill="none" stroke="#ffffff" stroke-width="2.4" filter="none"/><path d="${d}" fill="none" stroke="#1565c0" stroke-width="1.2" marker-end="url(#ah)" filter="none"/>`;
-  const defs = `<svg width="0" height="0" style="position:absolute"><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#1565c0"/></marker><linearGradient id="pr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f05a50"/><stop offset="1" stop-color="#c62828"/></linearGradient><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5cbf6a"/><stop offset="1" stop-color="#2e7d32"/></linearGradient><linearGradient id="pb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8925f"/><stop offset="1" stop-color="#8d5a3b"/></linearGradient><filter id="psh" x="-15%" y="-15%" width="140%" height="140%"><feDropShadow dx=".5" dy=".8" stdDeviation=".55" flood-color="#3b2a25" flood-opacity=".28"/></filter></defs></svg>`;
-  const ORIPHOTO = { 'ori-hat': ['santa', '산타 모자를 접어 얼굴을 붙이면 산타 완성!'], 'ori-reindeer': ['reindeer', '갈색 색종이 한 장이면 루돌프 얼굴!'], 'ori-bookmark': ['bookmark', '책 모서리에 쏙 끼우는 루돌프 책갈피'], 'ori-tree': ['tree', '세모 세 개를 겹친 트리'], 'snowflake-cut': ['snowflake', '펼치면 여섯 갈래 눈꽃'] };
-  const oriPage = (self, o) => { const [ph, cap] = ORIPHOTO[self.id] || ['tree', '']; return page(self, { ...o, body: defs + `<div style="display:flex;gap:5mm;align-items:center;flex:none;background:#fffdf8;border:.4mm solid #ead9bf;border-radius:4mm;padding:2.5mm"><img src="${XArt.img('ori/' + ph + '.jpg')}" alt="" style="height:36mm;width:auto;border-radius:3mm;background:#fff"><div style="display:flex;flex-direction:column;gap:2mm"><div class="h3" style="font-size:15pt">완성하면 이런 모습!</div><div style="font-size:11pt">${cap}</div><div style="display:flex;gap:4mm;font-size:9.5pt;flex-wrap:wrap"><span>┄┄ 골짜기 접기(앞으로)</span><span style="color:#ff6f00">─·─ 산 접기(뒤로)</span><span style="color:#1565c0">➜ 접는 방향</span></div></div></div>` + steps(o.st, o.cls || '') + (o.extra || '') }); };
+  const defs = `<svg width="0" height="0" style="position:absolute"><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#1565c0"/></marker><linearGradient id="pr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f05a50"/><stop offset="1" stop-color="#c62828"/></linearGradient><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5cbf6a"/><stop offset="1" stop-color="#2e7d32"/></linearGradient><linearGradient id="py" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe082"/><stop offset="1" stop-color="#e0a800"/></linearGradient><linearGradient id="pb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8925f"/><stop offset="1" stop-color="#8d5a3b"/></linearGradient><filter id="psh" x="-15%" y="-15%" width="140%" height="140%"><feDropShadow dx=".5" dy=".8" stdDeviation=".55" flood-color="#3b2a25" flood-opacity=".28"/></filter></defs></svg>`;
+  const ORIPHOTO = { 'ori-hat': ['santa', '산타 모자를 접어 얼굴을 붙이면 산타 완성!'], 'ori-reindeer': ['reindeer', '갈색 색종이 한 장이면 루돌프 얼굴!'], 'ori-bookmark': ['bookmark', '책 모서리에 쏙 끼우는 루돌프 책갈피'], 'ori-tree': ['tree', '세모 세 개를 겹친 트리'], 'snowflake-cut': ['snowflake', '펼치면 여섯 갈래 눈꽃'], 'ori-masu': ['masu', '풀 없이 접는 뚜껑 있는 선물 상자'], 'ori-shuriken': ['shuriken', '두 장을 끼워 맞추는 표창 별 오너먼트'], 'ori-crane': ['crane', '트리에 거는 금빛 종이학'] };
+  const oriPage = (self, o) => { const [ph, cap] = ORIPHOTO[self.id] || ['tree', '']; return page(self, { ...o, body: defs + `<div style="display:flex;gap:5mm;align-items:center;flex:none;background:#fffdf8;border:.4mm solid #ead9bf;border-radius:4mm;padding:2.5mm"><img src="${XArt.img('ori/' + ph + '.jpg')}" alt="" style="height:27mm;width:auto;border-radius:3mm;background:#fff"><div style="display:flex;flex-direction:column;gap:2mm"><div class="h3" style="font-size:15pt">완성하면 이런 모습!</div><div style="font-size:11pt">${cap}</div><div style="display:flex;gap:4mm;font-size:9.5pt;flex-wrap:wrap"><span>┄┄ 골짜기 접기(앞으로)</span><span style="color:#ff6f00">─·─ 산 접기(뒤로)</span><span style="color:#1565c0">➜ 접는 방향</span></div></div></div>` + steps(o.st, o.cls || '') + (o.extra || '') }); };
+  /* 여러 쪽 종이접기: 첫 쪽은 완성 그림 + 6단계, 다음 쪽부터 9단계씩 */
+  const oriPages = (self, o) => {
+    const out = [oriPage(self, { ...o, st: o.st.slice(0, 9) })];
+    for (let k = 9; k < o.st.length; k += 9) {
+      const part = o.st.slice(k, k + 9).map((x, i) => x);
+      out.push(page(self, { title: self.title + ' (이어서)', sub: o.sub2 || '앞 장에 이어서 접어요.', body: defs + `<div style="font-size:10pt;color:#555;flex:none">${k + 1}단계부터</div>` + `<div class="steps">${part.map((x, i) => `<div class="st">${x[0]}<p><b>${k + i + 1}</b>${x[1]}</p></div>`).join('')}</div>`, tip: o.tip2 }));
+    }
+    return out;
+  };
+  const Y = 'url(#py)', G2 = 'url(#pg)';
+  const P = (pts, fill, extra = '') => `<polygon points="${pts}" fill="${fill}" ${extra}/>`;
+
+  /* ── 선물 상자 (마스 박스) ── */
   reg({
-    id: 'ori-hat', title: '종이접기: 산타 모자', cat: 'ori', grades: ['low', 'mid'], icon: 'hat', paper: '빨간 색종이',
-    desc: '세 번만 접으면 완성! 얼굴을 그려 붙이면 산타 카드가 돼요.',
+    id: 'ori-masu', title: '종이접기: 선물 상자 (마스 박스)', cat: 'ori', grades: G3, icon: 'gift', paper: '정사각형 색종이 2장',
+    desc: '풀 없이 접는 뚜껑 있는 상자. 같은 방법으로 1cm 큰 종이를 접으면 뚜껑이 돼요. 8단계.',
     gen() {
       const st = [
-        [D(`<rect x="10" y="5" width="40" height="40" fill="${R}"/>${dash('M10 37 H50')}${arrow('M30 47 Q38 42 30 35')}`), '빨간 면이 보이게 놓고, 아래를 손가락 한 마디만큼 위로 접어요.'],
-        [D(`<rect x="10" y="5" width="40" height="32" fill="${R}"/><rect x="10" y="29" width="40" height="8" fill="${W}"/>${mtn('M30 5 L10 37 M30 5 L50 37')}${arrow('M14 9 Q8 16 12 24')}${arrow('M46 9 Q52 16 48 24')}`), '흰 띠가 생겼어요. 위쪽 두 모서리를 빨간 선을 따라 「뒤로」 접어요.'],
-        [D(`<path d="M30 5 L10 37 L50 37Z" fill="${R}"/><path d="M15 29 L45 29 L50 37 L10 37Z" fill="${W}"/>`), '세모 모자가 되었어요!'],
-        [D(`<path d="M24 14 L10 37 L50 37 L36 14Z" fill="${R}"/><path d="M24 14 L36 14 L44 22Z" fill="#b71c1c"/><path d="M15 29 L45 29 L50 37 L10 37Z" fill="${W}"/><circle cx="45" cy="23" r="4" fill="${W}"/>`), '꼭대기를 옆으로 살짝 접고, 솜이나 흰 종이로 방울을 붙여요.'],
-        [D(`<path d="M24 6 L12 26 L48 26 L36 6Z" fill="${R}"/><path d="M16 19 L44 19 L48 26 L12 26Z" fill="${W}"/><circle cx="42" cy="10" r="3.5" fill="${W}"/><path d="M15 26 Q15 46 30 47 Q45 46 45 26Z" fill="#ffe3cf"/><path d="M15 32 Q30 54 45 32 Q30 40 15 32Z" fill="${W}"/><circle cx="24" cy="31" r="1.2" fill="#432"/><circle cx="36" cy="31" r="1.2" fill="#432"/><circle cx="30" cy="35" r="2" fill="#ff8a80"/>`), '모자 아래에 얼굴과 수염을 그려 붙이면 산타 완성!'],
-        [D(`${artG('santa', 15, 8, 30)}${txt(30, 44, '메리 크리스마스!', 4)}`), '카드에 붙이고 인사말을 써요.'],
+        [D(`${P('14,7 46,7 46,39 14,39', W)}${dash('M14 7 L46 39 M46 7 L14 39')}`), '<strong>색깔 면이 아래로</strong> 가게 놓고, 대각선으로 두 번 접었다 펴요.'],
+        [D(`${P('14,7 46,7 46,39 14,39', W)}${dash('M30 7 L46 23 L30 39 L14 23Z')}${arrow('M16 9 Q22 12 27 20')}${arrow('M44 9 Q38 12 33 20')}${arrow('M16 37 Q22 34 27 26')}${arrow('M44 37 Q38 34 33 26')}`), '네 귀퉁이를 가운데 점에 맞춰 접어요.'],
+        [D(`${P('18,8 42,8 42,32 18,32', R)}<path d="M18 8 L42 32 M42 8 L18 32" fill="none" stroke-width=".5"/>${dash('M18 14 H42 M18 26 H42')}${arrow('M30 4 Q34 8 30 12')}${arrow('M30 36 Q34 32 30 28')}`), '위아래 변을 가운데 선에 맞춰 접었다 펴요.'],
+        [D(`${P('18,8 42,8 42,32 18,32', R)}<path d="M18 8 L42 32 M42 8 L18 32" fill="none" stroke-width=".5"/>${dash('M18 14 H42 M18 26 H42 M24 8 V32 M36 8 V32')}${arrow('M14 20 Q18 16 22 20')}${arrow('M46 20 Q42 16 38 20')}`), '양옆 변도 가운데에 맞춰 접었다 펴요. 4×4 칸 자국이 생겨요.'],
+        [D(`${P('20,15 30,5 40,15 40,35 30,45 20,35', W)}${P('20,15 30,25 20,35', R)}${P('40,15 30,25 40,35', R)}${dash('M20 20 H40 M20 30 H40 M25 15 V35 M35 15 V35')}`), '위·아래 귀퉁이만 다시 펼쳐요. 가운데 양옆 세모는 그대로!'],
+        [D(`${P('18,30 32,23 46,30 32,37', W)}${P('18,30 32,37 32,27 18,20', R)}${P('32,23 46,30 46,20 32,13', R, 'opacity=".85"')}${P('18,30 32,23 15,17', W)}${P('46,30 32,37 49,42', W)}${arrow('M12 34 Q10 24 16 18')}`), '양옆을 접힌 자국대로 세워 벽 두 개를 만들어요.'],
+        [D(`${P('16,22 30,15 44,22 30,29', W)}${P('16,22 30,29 30,40 16,33', R)}${P('30,29 44,22 44,33 30,40', R, 'opacity=".85"')}${P('16,22 30,15 30,6 16,13', R, 'opacity=".7"')}${P('16,13 30,6 22,2', W)}${arrow('M22 3 Q30 6 26 14')}`), '한쪽 끝을 세워 벽을 만들고, 남은 뾰족한 부분을 상자 안쪽 바닥까지 접어 넣어요.'],
+        [D(`${P('14,20 30,12 46,20 30,28', '#f3d6d3')}${P('14,20 30,28 30,41 14,33', R)}${P('30,28 46,20 46,33 30,41', R, 'opacity=".85"')}<path d="M18 21 L30 15 L42 21" fill="none" stroke-width=".5"/><path d="M30 28 V41 M22 24 V37 M38 24 V37" stroke="#ffd54f" stroke-width="1.6" filter="none"/>`), '반대쪽도 똑같이 하면 상자 완성! 1cm 더 큰 종이로 하나 더 접으면 뚜껑이에요.'],
       ];
-      return [oriPage(this, { sub: '준비물: 빨간 색종이 1장(뒷면이 흰색), 풀, 솜 조금. 선을 손톱으로 꾹꾹 눌러 접어요.', st, tip: '색종이를 1/4 크기로 잘라 접으면 손가락 인형용 꼬마 모자가 돼요.' })];
+      return oriPages(this, { sub: '준비물: 정사각형 색종이 2장(상자용 15cm, 뚜껑용 16cm). 접힌 자국을 손톱으로 꾹꾹 눌러야 상자가 반듯해요.', st, tip: '처음에는 큰 종이(A4를 정사각형으로 자른 것)로 연습하면 쉬워요. 안에 사탕을 넣어 친구에게 선물해 보세요!', tip2: '벽을 세울 때 이미 생긴 접힌 자국을 따라가면 저절로 상자 모양이 돼요.' });
+    }
+  });
+
+  /* ── 표창 별 오너먼트 (2장 끼우기) ── */
+  reg({
+    id: 'ori-shuriken', title: '종이접기: 표창 별 오너먼트', cat: 'ori', grades: ['mid', 'high'], icon: 'star', paper: '빨강·초록 색종이 2장',
+    desc: '두 장을 따로 접어 서로 끼워 맞추는 별. 실을 달면 트리 장식이 돼요. 9단계.',
+    gen() {
+      const strip = (fill) => `${P('10,21 50,21 50,29 10,29', fill)}`;
+      const unit = (fill, flip) => { const s = flip ? 'transform="translate(60 0) scale(-1 1)"' : ''; return `<g ${s}>${P('17,21 43,21 50,14 50,21 43,29 17,29 10,36 10,29', fill)}${P('10,29 17,29 10,36', fill, 'opacity=".75"')}${P('43,21 50,14 50,21', fill, 'opacity=".75"')}</g>`; };
+      const st = [
+        [D(`${P('15,8 45,8 45,38 15,38', R)}${dash('M15 23 H45')}${arrow('M48 34 Q54 23 48 12')}`), '색종이 두 장을 각각 반으로 접었다 펴요.'],
+        [D(`${P('15,8 45,8 45,38 15,38', R)}${dash('M15 15.5 H45 M15 30.5 H45')}${arrow('M30 5 Q35 10 30 14')}${arrow('M30 41 Q35 36 30 32')}`), '위아래 변을 가운데 선에 맞춰 접어요.'],
+        [D(`${P('10,16 50,16 50,32 10,32', R)}${dash('M10 24 H50')}${arrow('M52 30 Q56 24 52 18')}`), '한 번 더 반으로 접어 긴 띠를 만들어요.'],
+        [D(`${strip(R)}${dash('M10 21 L18 29 M50 29 L42 21')}${arrow('M8 24 Q6 34 14 38')}${arrow('M52 26 Q54 16 46 12')}`), '왼쪽 끝은 아래로, 오른쪽 끝은 위로 비스듬히(45°) 꺾어 접어요.'],
+        [D(`${P('17,21 43,21 43,29 17,29', R)}${P('17,21 17,29 10,36 10,28', R, 'opacity=".8"')}${P('43,21 43,29 50,22 50,14', R, 'opacity=".8"')}${dash('M10 36 L17 29 M50 14 L43 21')}${arrow('M8 34 Q8 28 14 26')}${arrow('M52 16 Q52 22 46 24')}`), '꺾은 끝을 다시 대각선으로 접어 뾰족한 세모를 만들어요. 빨간 조각 완성!'],
+        [D(`${unit(G2, true)}${txt(30, 44, '초록은 거울처럼 반대로!', 3.6, { fill: '#1b5e20' })}`), '초록 종이도 1~5처럼 접되, 방향을 거울처럼 반대로 해요.'],
+        [D(`<g transform="rotate(90 30 25)">${unit(G2, true)}</g>${unit(R, false)}`), '초록 조각을 뒤집어 세로로 놓고, 빨간 조각을 그 위에 십자(+)로 겹쳐요.'],
+        [D(`<g transform="rotate(90 30 25)">${unit(G2, true)}</g>${unit(R, false)}${arrow('M12 38 Q20 34 24 28')}${arrow('M48 12 Q40 16 36 22')}`), '초록 조각의 뾰족한 끝을 빨간 조각의 주머니(틈)에 끼워 넣어요.'],
+        [D(`${P('30,4 35,20 30,25 25,20', R)}${P('56,25 40,30 35,25 40,20', G2)}${P('30,46 25,30 30,25 35,30', R)}${P('4,25 20,20 25,25 20,30', G2)}${P('25,20 35,20 35,30 25,30', R, 'opacity=".9"')}<path d="M30 4 V0" stroke="#d4a017" stroke-width="1" filter="none"/>`), '뒤집어서 나머지 끝도 끼우면 표창 별 완성! 실을 달아 트리에 걸어요.'],
+      ];
+      return oriPages(this, { sub: '준비물: 빨강·초록 정사각형 색종이 2장(같은 크기). 두 조각을 서로 거울처럼 접는 것이 핵심이에요.', st, tip: '끼울 때 뾰족한 끝을 주머니 깊숙이 밀어 넣어야 별이 풀리지 않아요.', tip2: '끼우기가 어려우면 짝과 한 명은 잡아 주고 한 명은 끼워 보세요.' });
+    }
+  });
+
+  /* ── 종이학 오너먼트 ── */
+  reg({
+    id: 'ori-crane', title: '종이접기: 종이학 오너먼트', cat: 'ori', grades: ['high'], icon: 'star', paper: '금색(노란) 색종이',
+    desc: '사각 기본형 → 새 기본형 → 학 완성까지 9단계. 금색 종이로 접어 트리에 걸면 근사한 장식이 돼요.',
+    gen() {
+      const dia = (fill, ex = '') => P('30,5 47,25 30,45 13,25', fill, ex);
+      const st = [
+        [D(`${P('14,9 46,9 46,41 14,41', Y)}${dash('M14 9 L46 41 M46 9 L14 41')}${mtn('M30 9 V41 M14 25 H46')}`), '<strong>색깔 면이 위로</strong>. 대각선은 골짜기, 가로·세로는 산 접기로 접었다 펴요.'],
+        [D(`${dia(Y)}<path d="M30 5 V45" stroke-width=".5" fill="none"/>${txt(30, 49, '열린 쪽이 아래', 3.4, { fill: '#555' })}`), '접힌 자국대로 모아 접어 작은 마름모(사각 기본형)를 만들어요.'],
+        [D(`${dia(Y)}${dash('M30 45 L19.5 21 M30 45 L40.5 21 M19.5 21 H40.5')}${arrow('M14 30 Q18 36 24 34')}${arrow('M46 30 Q42 36 36 34')}`), '윗장의 아래쪽 두 변을 가운데 선에 맞춰 접고, 위 세모도 내려 접은 뒤 모두 펴요.'],
+        [D(`${dia(Y, 'opacity=".55"')}${P('30,2 36,21 30,45 24,21', Y)}${arrow('M30 44 Q38 30 32 10')}`), '윗장 아래 꼭짓점을 들어 올리면서 양옆을 안으로 모아 길쭉하게 접어요.'],
+        [D(`${P('30,2 37,21 30,47 23,21', Y)}<path d="M30 21 V47" stroke-width=".5" fill="none"/>${txt(48, 10, '뒤집기', 3.6, { fill: '#1565c0' })}<path d="M44 14 q4 4 0 8" fill="none" stroke="#1565c0" stroke-width=".9" marker-end="url(#ah)" filter="none"/>`), '뒤집어서 3~4를 똑같이 하면 새 기본형이 돼요.'],
+        [D(`${P('30,2 37,21 30,47 23,21', Y)}${dash('M30 47 L25.5 21 M30 47 L34.5 21')}${arrow('M20 32 Q24 36 27 34')}${arrow('M40 32 Q36 36 33 34')}`), '아래 갈라진 부분의 양쪽 변을 가운데 선에 맞춰 접어 가늘게 해요. 뒷면도 똑같이!'],
+        [D(`${P('30,6 36,22 30,30 24,22', Y)}${P('29,29 31,29 21,47 19,45', Y)}${P('29,29 31,29 41,45 39,47', Y)}${arrow('M14 44 Q10 30 18 24')}${arrow('M46 44 Q50 30 42 24')}`), '가는 두 다리를 안쪽 뒤집어 접기로 비스듬히 올려 목과 꼬리를 만들어요.'],
+        [D(`${P('30,10 37,26 30,32 23,26', Y)}${P('26,28 29,30 14,8 12,9', Y)}${P('34,28 31,30 46,8 48,9', Y)}${dash('M13 13 L16 11')}${arrow('M8 8 Q6 14 12 16')}`), '한쪽 끝을 안쪽 뒤집어 접기로 꺾어 머리를 만들어요.'],
+        [D(`${P('26,30 34,30 37,5', Y, 'opacity=".8"')}${P('21,31 39,31 34,38 26,38', Y)}${P('25,31 33,31 21,7', Y)}${P('22,32 25,34 9,19 8,20', Y)}${P('8,20 9,19 5,24', Y)}${P('38,32 35,34 53,19 54,20', Y)}<path d="M29 18 V2" stroke="#c62828" stroke-width=".8" filter="none"/>`), '날개를 양옆으로 내리고 살짝 벌리면 종이학 완성! 실을 꿰어 트리에 걸어요.'],
+      ];
+      return oriPages(this, { sub: '준비물: 색종이 1장(금색이면 더 예뻐요). 「안쪽 뒤집어 접기」는 접힌 부분을 안으로 밀어 넣어 방향을 바꾸는 접기예요.', st, tip2: '작은 종이(7.5cm)로 접으면 트리에 거는 앙증맞은 학이 돼요. 여러 마리를 실에 꿰어 가랜드를 만들어 보세요.' });
     }
   });
   reg({
-    id: 'ori-reindeer', title: '종이접기: 루돌프 얼굴', cat: 'ori', grades: ['low', 'mid'], icon: 'rudolph', paper: '갈색 색종이',
-    desc: '강아지 접기를 응용한 루돌프. 빨간 코 스티커가 포인트!',
-    gen() {
-      const st = [
-        [D(`<path d="M30 3 L54 25 L30 47 L6 25Z" fill="${Bc}"/>${dash('M6 25 H54')}${arrow('M36 6 Q44 22 36 42')}`), '마름모로 놓고 위 꼭짓점을 아래 꼭짓점에 맞춰 반으로 접어요.'],
-        [D(`<path d="M6 10 L54 10 L30 40Z" fill="${Bc}"/>${dash('M20 10 L10 15 M40 10 L50 15')}${arrow('M7 7 Q4 16 11 20')}${arrow('M53 7 Q56 16 49 20')}`), '양쪽 귀퉁이를 비스듬히 아래로 접어 귀를 만들어요.'],
-        [D(`<path d="M20 10 L40 10 L50 15 L30 40 L10 15Z" fill="${Bc}"/><path d="M20 10 L10 15 L11.6 21.2Z M40 10 L50 15 L48.4 21.2Z" fill="#7a4a2a"/>${dash('M25.2 34 H34.8')}${arrow('M30 44 Q36 40 31 35')}`), '아래 뾰족한 끝을 조금 위로 접어 코 자리를 만들어요.'],
-        [D(`<path d="M20 10 L40 10 L50 15 L34.8 34 L25.2 34 L10 15Z" fill="${Bc}"/><path d="M20 10 L10 15 L11.6 21.2Z M40 10 L50 15 L48.4 21.2Z" fill="#7a4a2a"/><circle cx="30" cy="32" r="4" fill="#ef3b36"/><circle cx="24" cy="21" r="1.6" fill="#432"/><circle cx="36" cy="21" r="1.6" fill="#432"/><path d="M24 10 Q20 4 14 2 M22 6 Q18 6 16 8 M36 10 Q40 4 46 2 M38 6 Q42 6 44 8" fill="none" stroke-width="1.6"/>`), '눈을 그리고 빨간 코를 붙여요. 뿔은 그리거나 나뭇가지 모양 종이를 붙여요.'],
-      ];
-      return [oriPage(this, { sub: '준비물: 갈색 색종이 1장, 빨간 동그라미 스티커(또는 색종이), 사인펜.', st, cls: 'c2', tip: '여러 마리를 접어 줄에 붙이면 「산타 썰매 끄는 순록 가랜드」가 됩니다. 한 마리만 빨간 코!' })];
-    }
-  });
-  reg({
-    id: 'ori-bookmark', title: '종이접기: 루돌프 모서리 책갈피', cat: 'ori', grades: ['mid', 'high'], icon: 'rudolph', paper: '색종이',
+    id: 'ori-bookmark', title: '종이접기: 루돌프 모서리 책갈피', cat: 'ori', grades: ['low', 'mid'], icon: 'rudolph', paper: '색종이',
     desc: '책 모서리에 쏙 끼우는 포켓 책갈피. 뿔과 코를 달면 책을 무는 루돌프!',
     gen() {
       const st = [
@@ -263,22 +308,6 @@
         [D(`<path d="M30 44 L46 28 L30 12 L14 28Z" fill="${Bc}"/><path d="M14 28 L46 28 L30 44Z" fill="#7a4a2a"/><circle cx="30" cy="40" r="3.6" fill="#ef3b36"/><circle cx="25" cy="33" r="1.5" fill="#432"/><circle cx="35" cy="33" r="1.5" fill="#432"/><path d="M22 20 Q16 12 10 10 M18 15 Q13 16 11 19 M38 20 Q44 12 50 10 M42 15 Q47 16 49 19" fill="none" stroke-width="1.8"/>`), '주머니 쪽에 얼굴을 그리고 뿔을 붙이면 완성. 책 모서리에 끼워요!'],
       ];
       return [oriPage(this, { sub: '준비물: 색종이 1장(15cm), 꾸미기 재료. 5번의 「끼워 넣기」가 핵심이에요.', st, tip: '같은 방법으로 흰 종이는 눈사람, 빨간 종이는 산타, 초록 종이는 트리 책갈피가 됩니다.' })];
-    }
-  });
-  reg({
-    id: 'ori-tree', title: '종이접기: 3단 트리', cat: 'ori', grades: G3, icon: 'tree', paper: '초록 색종이',
-    desc: '크기가 다른 세모 3개를 겹쳐 만드는 트리. 카드·게시판 꾸미기에 좋아요.',
-    gen() {
-      const tri = (x, y, w, c = Gc) => `<path d="M${x} ${y} L${x + w / 2} ${y + w / 2} L${x - w / 2} ${y + w / 2}Z" fill="${c}"/>`;
-      const st = [
-        [D(`<rect x="4" y="12" width="26" height="26" fill="${Gc}"/><rect x="34" y="18" width="20" height="20" fill="${Gc}"/><rect x="40" y="2" width="14" height="14" fill="${Gc}"/>${txt(17, 44, '큰 것', 3.4)}${txt(44, 44, '중간·작은 것', 3.4)}`), '초록 색종이로 큰·중간·작은 정사각형 3장을 준비해요(15cm, 12cm, 9cm).'],
-        [D(`<rect x="12" y="5" width="36" height="36" fill="${Gc}"/>${dash('M12 5 L48 41')}${arrow('M16 38 Q28 34 44 9')}`), '세 장 모두 대각선으로 반 접어 세모를 만들어요.'],
-        [D(`<path d="M6 38 L54 38 L30 14Z" fill="${Gc}"/>${dash('M30 14 V38')}${arrow('M10 36 Q30 24 50 36')}`), '한 번 더 반으로 접어 작은 세모로 만들어요.'],
-        [D(`${tri(30, 24, 40)}${tri(30, 13, 30, '#2e7d32')}${tri(30, 4, 20, '#1b5e20')}`), '큰 세모 위에 중간, 작은 세모를 차례로 겹쳐 끼우고 풀로 붙여요.'],
-        [D(`${tri(30, 22, 36)}${tri(30, 13, 28, '#2e7d32')}${tri(30, 6, 20, '#1b5e20')}<rect x="26" y="40" width="8" height="7" fill="${Bc}"/><polygon points="${starPts(30, 6, 4.4, 2)}" fill="#ffd54f"/><circle cx="24" cy="30" r="1.6" fill="#ef5350"/><circle cx="35" cy="35" r="1.6" fill="#42a5f5"/><circle cx="31" cy="22" r="1.6" fill="#ffd54f"/>`), '갈색 줄기와 별을 붙이고 스티커로 장식해요.'],
-        [D(`${artG('tree', 6, 8, 34)}${artG('gift', 38, 26, 16)}`), '카드에 붙이거나 줄에 달아 장식해요!'],
-      ];
-      return [oriPage(this, { sub: '준비물: 초록 색종이, 갈색·노란 색종이 조금, 풀, 스티커.', st })];
     }
   });
   reg({
