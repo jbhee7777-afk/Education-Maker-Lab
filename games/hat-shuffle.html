@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>산타 모자 야바위</title>
+<title>산타 모자 속 선물 찾기</title>
 <link rel="stylesheet" href="../assets/theme.css">
 <link rel="stylesheet" href="../assets/games.css">
 <style>
 .table{position:relative;flex:1;min-height:42vh;background:radial-gradient(ellipse at 50% 85%,#f6e3c4 0 38%,transparent 39%);}
 .slot{position:absolute;bottom:14%;width:var(--w);height:calc(var(--w)*1.1);transform:translateX(-50%);transition:left var(--sp) ease-in-out}
-.slot .prize{position:absolute;left:50%;bottom:0;width:60%;transform:translateX(-50%)}
+.slot .prize{position:absolute;left:50%;bottom:4%;width:48%;transform:translateX(-50%);opacity:1;transition:opacity .25s .2s}
+.slot:not(.up) .prize{opacity:0;visibility:hidden;transition:none}
 .slot .hat{position:absolute;left:0;bottom:0;width:100%;border:0;background:transparent;padding:0;transition:transform .35s;z-index:2;cursor:pointer}
 .slot .hat .art{width:100%;height:auto}
 .slot.up .hat{transform:translateY(-62%)}
@@ -29,7 +30,7 @@
   const teams = XK.teams($('#teams'));
   const CFG = { low:{n:3, swaps:6, ms:650}, mid:{n:4, swaps:10, ms:480}, high:{n:5, swaps:16, ms:340} };
   const PRIZES = ['gift','rudolph','star','cookies','teddy','ornament'];
-  XK.topbar({title:'산타 모자 야바위', icon:'hat', grades:true, onGrade:(x)=>{g=x;build();}});
+  XK.topbar({title:'산타 모자 속 선물 찾기', icon:'hat', grades:true, onGrade:(x)=>{g=x;build();}});
   function build(){
     const c = CFG[g]; N = c.n; busy = false; pos = XK.range(N); prize = Math.floor(Math.random()*N);
     const w = Math.min(22, 80/N);
