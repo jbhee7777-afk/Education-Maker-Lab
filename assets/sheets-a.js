@@ -165,21 +165,20 @@
   });
 
   /* 점 잇기 */
-  const DOT = {
-    star: XArt.starPts(93, 98, 84, 36).split(' ').map(p => p.split(',').map(Number)),
-    tree: [[93, 8], [116, 48], [104, 48], [130, 92], [114, 92], [146, 142], [104, 142], [104, 170], [82, 170], [82, 142], [40, 142], [72, 92], [56, 92], [82, 48], [70, 48]],
-    bell: [[93, 14], [112, 20], [126, 36], [132, 60], [134, 90], [140, 114], [154, 134], [160, 146], [112, 146], [108, 160], [93, 166], [78, 160], [74, 146], [26, 146], [32, 134], [46, 114], [52, 90], [54, 60], [60, 36], [74, 20]],
-  };
+  const DOTSET = { low: [['bell', 1], ['star', 1], ['stocking', 1]], mid: [['tree', 2], ['ginger', 5], ['mitten', 3]] };
   const dotSheet = (g) => reg({
     id: 'dots-' + g, title: g === 'low' ? '점 잇기 (1부터 차례로)' : '뛰어 세기 점 잇기', cat: 'play', grades: [g], icon: 'star',
-    desc: g === 'low' ? '1부터 차례로 이으면 별·트리·종이 나타나요.' : '2씩, 5씩, 3씩 뛰어 세며 점을 이어요.',
+    desc: g === 'low' ? '1부터 차례로 이으면 종·별·양말이 나타나요. 다 이으면 색칠까지!' : '2씩, 5씩, 3씩 뛰어 세며 이으면 트리·진저맨·장갑이 나타나요.',
     gen() {
-      return ['star', 'tree', 'bell'].map((k, i) => {
-        const base = DOT[k], sub = g === 'low' ? (k === 'star' ? 2 : 1) : (k === 'bell' ? 2 : 3), pts = [];
-        base.forEach((p, j) => { const q = base[(j + 1) % base.length]; for (let t = 0; t < sub; t++) pts.push([p[0] + (q[0] - p[0]) * t / sub, p[1] + (q[1] - p[1]) * t / sub]); });
-        const step = g === 'low' ? 1 : [2, 5, 3][i]; const cx = 93, cy = 95;
-        const s = pts.map(([x, y], j) => { const d = Math.hypot(x - cx, y - cy) || 1, lx = x + (x - cx) / d * 5.5, ly = y + (y - cy) / d * 5.5; return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${j ? 1 : 1.6}" fill="${j ? '#432' : '#d93a3a'}"/>${txt(f1(lx), f1(ly), (j + 1) * step, 3.6)}`; }).join('');
-        return page(this, { title: `${this.title} ${i + 1}`, sub: g === 'low' ? '빨간 점 1부터 시작! 숫자 순서대로 선을 긋고, 완성한 그림을 예쁘게 꾸며요.' : `${step}씩 뛰어 세기: ${step}, ${step * 2}, ${step * 3}… 순서대로 이어요. 마지막 점은 처음 점과 이어요.`, body: svg(186, 190, s) + `<div class="q">무엇이 나타났나요? <span style="display:inline-block;border-bottom:.4mm solid #432;width:60mm"></span></div>` });
+      return DOTSET[g].map(([n, step], k) => {
+        const D = window.DOTS[n], boxW = 160, boxH = 190, sc = Math.min(boxW / D.w, boxH / D.h), w = D.w * sc, h = D.h * sc, x0 = (186 - w) / 2, y0 = 4;
+        let s2 = `<image href="${XArt.img('dots/' + n + '.png')}" x="${x0}" y="${y0}" width="${w}" height="${h}"/>`;
+        D.pts.forEach(([fx, fy], i) => {
+          const x = x0 + fx * w, y = y0 + fy * h, cx = x0 + D.cx * w, cy = y0 + D.cy * h, dd = Math.hypot(x - cx, y - cy) || 1;
+          const lx = x + (x - cx) / dd * 5.2, ly = y + (y - cy) / dd * 5.2;
+          s2 += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${i ? 1.2 : 1.8}" fill="${i ? '#432' : '#d93a3a'}"/>` + txt(lx.toFixed(1), ly.toFixed(1), (i + 1) * step, 4.2, { fill: i ? '#2b2320' : '#d93a3a' });
+        });
+        return page(this, { title: `${this.title} ${k + 1}`, sub: step === 1 ? '빨간 점 1부터 숫자 순서대로 선을 이어요. 마지막 점은 1번과 이어요. 다 이으면 예쁘게 색칠해요!' : `${step}씩 뛰어 세기: ${step}, ${step * 2}, ${step * 3}… 순서대로 이어요. 마지막 점은 처음 점과 이어요.`, body: svg(186, boxH + 8, s2) + `<div class="q">무엇이 나타났나요? <span style="display:inline-block;border-bottom:.4mm solid #432;width:60mm"></span></div>` });
       });
     }
   });
@@ -227,23 +226,18 @@
   });
   G3.forEach(mazeSheet);
 
-  /* ───────── 숨은 그림 세기 ───────── */
+  /* ───────── 숨은그림찾기 (장면 속에 숨은 물건) ───────── */
+  const HIDSET = { low: [['gingerhouse', '과자 집 마을'], ['rudolph', '선물 더미 속 루돌프']], mid: [['sleigh', '산타의 밤하늘 비행'], ['forest', '숲속 동물들의 트리 꾸미기']], high: [['livingroom', '크리스마스이브 거실'], ['market', '크리스마스 마켓의 밤']] };
   const ispy = (g) => reg({
-    id: 'ispy-' + g, title: g === 'high' ? '찾아 세고 그래프 그리기' : '찾아라! 크리스마스 숨은 그림 세기', cat: 'play', grades: [g], icon: 'gift', random: true, answers: true,
-    desc: { low: '흩어진 그림을 종류별로 세어 숫자로 써요.', mid: '더 많고 더 작은 그림! 세어 보고 합계도 구해요.', high: '그림을 세어 표로 정리하고 막대그래프로 나타내요. (수학 자료 정리 연계)' }[g],
+    id: 'ispy-' + g, title: '크리스마스 숨은그림찾기', cat: 'play', grades: [g], icon: 'gift', answers: true,
+    desc: { low: '그림 속에 숨은 물건 6개를 찾아요. 2장면.', mid: '그림 속에 숨은 물건 8개를 찾아요. 2장면.', high: '복잡한 그림 속에 숨은 물건 10개를 찾아요. 2장면.' }[g],
     gen(c) {
-      const r = c.r, [k, mx, cols, rows, H] = { low: [5, 5, 7, 6, 170], mid: [6, 9, 10, 9, 176], high: [6, 12, 11, 8, 128] }[g];
-      const kinds = shuffle(ICONS, r).slice(0, k), counts = kinds.map(() => 2 + Math.floor(r() * (mx - 1)));
-      const cw = 186 / cols, ch = H / rows, sz = Math.min(cw, ch) * .92, cells = shuffle(range(cols * rows), r); let s = `<rect x=".5" y=".5" width="185" height="${H - 1}" rx="5" fill="#f3fbf6" stroke="#432" stroke-width=".9"/>`, ci = 0;
-      kinds.forEach((n, i) => range(counts[i], () => { const cell = cells[ci++], x = (cell % cols) * cw + (cw - sz) / 2 + (r() - .5) * (cw - sz + 1), y = Math.floor(cell / cols) * ch + (ch - sz) / 2 + (r() - .5) * (ch - sz + 1); s += artG(n, f1(x), f1(y), sz, { sw: 5, rot: Math.round((r() - .5) * 50) }); }));
-      const tb = `<table class="t"><tr>${kinds.map(n => `<th style="width:${100 / (k + (g !== 'low' ? 1 : 0))}%">${art(n, { size: 44 })}</th>`).join('')}${g !== 'low' ? '<th>모두</th>' : ''}</tr><tr>${kinds.map((n, i) => `<td style="height:11mm"><span class="ans">${c.ans ? counts[i] : ''}</span> 개</td>`).join('')}${g !== 'low' ? `<td><span class="ans">${c.ans ? counts.reduce((a, b) => a + b) : ''}</span> 개</td>` : ''}</tr></table>`;
-      let graph = '';
-      if (g === 'high') {
-        let q = ''; for (let y = 0; y <= 12; y++) q += `<path d="M14 ${52 - y * 4} H180" stroke="#8a7a70" stroke-width="${y % 2 ? .15 : .3}"/>` + (y % 2 ? '' : txt(10, 52 - y * 4, y, 3.2));
-        kinds.forEach((n, i) => { const x = 22 + i * 27; q += artG(n, x, 53.5, 10) + `<path d="M${x - 4} 4 V52 M${x + 14} 4 V52" stroke="#8a7a70" stroke-width=".15"/>` + (c.ans ? `<rect x="${x}" y="${52 - counts[i] * 4}" width="10" height="${counts[i] * 4}" fill="#f77b72" stroke="#432" stroke-width=".4"/>` : ''); });
-        graph = `<div class="q">막대그래프로 나타내기 <span style="font-size:10pt;color:#777">(개)</span></div>` + svg(186, 65, q + `<path d="M14 4 V52 H180" fill="none" stroke="#432" stroke-width=".7"/>`, 'style="flex:none;height:62mm"');
-      }
-      return [page(this, { sub: g === 'high' ? '그림을 종류별로 세어 표를 채우고, 막대그래프를 그려 가장 많은 것과 적은 것을 찾아요.' : '같은 그림을 모두 찾아 몇 개인지 세어 보세요. 센 것은 ○표 하면 헷갈리지 않아요.', body: svg(186, H, s, `style="flex:none;height:${H}mm"`) + tb + graph })];
+      return HIDSET[g].map(([f, t]) => {
+        const D = window.HIDDEN[f], H2 = 196, w = H2 * D.w / D.h, x0 = (186 - w) / 2;
+        const marks = c.ans ? D.spots.map(([x, y, r]) => `<circle cx="${(x0 + x * w).toFixed(1)}" cy="${(y * H2).toFixed(1)}" r="${Math.max(5, r * w * 1.3).toFixed(1)}" fill="none" stroke="#d93a3a" stroke-width="1.1"/>`).join('') : '';
+        const legend = `<div style="display:flex;gap:2mm;flex-wrap:wrap;justify-content:center;flex:none">${D.spots.map(([, , , n]) => `<div style="border:.4mm solid #432;border-radius:3mm;padding:1mm 2mm;display:flex;align-items:center;gap:1mm;background:#fffdf5">${art(n, { line: true, size: 40 })}<span style="font-family:var(--f-display);font-size:11pt">${XArt.label(n)} ☐</span></div>`).join('')}</div>`;
+        return page(this, { title: `숨은그림찾기: ${t}`, sub: `그림 속에 아래 물건 ${D.spots.length}개가 숨어 있어요. 찾으면 ○표 하고 아래 칸에 ✔ 하세요. 물건은 기울어지거나 거꾸로 숨어 있기도 해요!`, body: svg(186, H2, `<image href="${XArt.img('hidden/' + f + '.png')}" x="${x0.toFixed(1)}" y="0" width="${w.toFixed(1)}" height="${H2}"/>` + marks, `style="flex:none;height:${H2}mm"`) + legend });
+      });
     }
   });
   G3.forEach(ispy);
@@ -275,20 +269,20 @@
   G3.forEach(wsSheet);
 
   /* ───────── 암호 ───────── */
-  const RID = [['산타 할아버지가 가장 싫어하는 면은?', '울면'], ['세상에서 가장 추운 바다는?', '썰렁해'], ['눈이 녹으면 무엇이 될까?', '봄'], ['눈사람의 반대말은?', '일어선사람'], ['겨울에 가장 많이 쓰는 끈은?', '따끈따끈'], ['산타가 굴뚝에서 하는 말은?', '아이고좁다'], ['루돌프가 길을 잃지 않는 까닭은?', '코가내비게이션'], ['트리가 미용실을 무서워하는 까닭은?', '가지치기']];
+  const RID = [['산타 할아버지가 가장 싫어하는 면은?', '울면'], ['세상에서 가장 추운 바다는?', '썰렁해'], ['눈이 녹으면 무엇이 될까?', '봄'], ['눈사람의 반대말은?', '일어선사람'], ['겨울에 가장 많이 쓰는 끈은?', '따끈따끈'], ['산타가 굴뚝에서 하는 말은?', '아이고좁다'], ['루돌프가 길을 잃지 않는 까닭은?', '코가내비게이션'], ['트리가 미용실을 무서워하는 까닭은?', '가지치기'], ['오리가 얼면?', '언덕'], ['소가 웃는 소리는?', '우하하'], ['세상에서 가장 큰 코는?', '멕시코'], ['물고기의 반대말은?', '불고기'], ['세상에서 가장 빠른 닭은?', '후다닥'], ['왕이 넘어지면?', '킹콩']];
   reg({
     id: 'cipher-mid', title: '그림 암호 수수께끼', cat: 'play', grades: ['low', 'mid'], icon: 'elf', random: true, answers: true,
     desc: '그림 암호표를 보고 넌센스 수수께끼의 답을 풀어요.',
     gen(c) {
       const r = c.r; let qs = [], syl = new Set();
-      for (const q of shuffle(RID, r)) { const s2 = new Set([...syl, ...q[1]]); if (s2.size <= 16 && qs.length < 4) { qs.push(q); syl = s2; } }
+      for (const q of shuffle(RID, r)) { const s2 = new Set([...syl, ...q[1]]); if (s2.size <= 16 && qs.length < 3) { qs.push(q); syl = s2; } }
       const all = shuffle([...syl, ...shuffle([...'눈별밤종솔달'].filter(x => !syl.has(x)), r)].slice(0, 18), r), ics = shuffle(ICONS, r), key = {}; all.forEach((ch, i) => key[ch] = ics[i]);
       const keyT = `<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:1.5mm;flex:none">${all.map(ch => `<div style="border:.4mm solid #432;border-radius:2.5mm;text-align:center;padding:1mm 0;background:#fffdf5">${art(key[ch], { size: 40 })}<div style="font-family:var(--f-display);font-size:14pt;line-height:1.2">${ch}</div></div>`).join('')}</div>`;
       const qh = qs.map(([q, a], i) => `<div class="box" style="flex:none"><div class="q">${i + 1}. ${q}</div><div style="display:flex;gap:2mm;margin-top:2mm;flex-wrap:wrap">${[...a].map(ch => `<div style="text-align:center">${art(key[ch], { size: 40 })}<div style="border:.5mm solid #432;border-radius:2mm;width:14mm;height:13mm;margin-top:1mm;font-family:var(--f-display);font-size:17pt;line-height:13mm" class="ans">${c.ans ? ch : ''}</div></div>`).join('')}</div></div>`).join('');
       return [page(this, { sub: '엘프들이 남긴 그림 암호! 암호표에서 그림을 찾아 글자로 바꾸면 수수께끼의 답이 나와요.', body: `<div class="q">암호표</div>${keyT}${qh}` })];
     }
   });
-  const MSG = ['오늘의비밀임무', '친구세명에게칭찬하기', '선생님께메리크리스마스외치기', '짝과하이파이브하고웃기', '캐럴한소절흥얼거리기'];
+  const MSG = ['오늘의비밀임무', '친구세명에게칭찬하기', '선생님께메리크리스마스외치기', '짝과하이파이브하고웃기', '캐럴한소절흥얼거리기', '짝의좋은점세가지말하기', '급식실에서감사인사하기', '친구자리정리도와주기', '가족에게사랑한다고말하기', '교실쓰레기세개줍기'];
   reg({
     id: 'cipher-high', title: '좌표 암호: 비밀 임무 해독', cat: 'play', grades: ['high'], icon: 'elf', random: true, answers: true,
     desc: '(가로, 세로) 좌표로 글자를 찾아 산타의 비밀 임무를 해독하고, 나만의 암호문도 만들어요.',
@@ -416,13 +410,17 @@
   /* ───────── 수학 ───────── */
   const qa = (list, ans) => list.map(([q, a], i) => `<div class="box" style="flex:none;padding:2mm 3mm"><b style="font-family:var(--f-display);font-weight:400;color:#b52a2a">${i + 1}.</b> ${q}<div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:2mm;min-height:${ans ? 7 : 15}mm"><span style="font-size:9.5pt;color:#777">답</span><span class="ans" style="border-bottom:.4mm solid #432;min-width:50mm;text-align:center;font-size:12pt">${ans ? a : '&nbsp;'}</span></div></div>`).join('');
   reg({
-    id: 'math-mid', title: '산타 마을 선물 가게', cat: 'play', grades: ['mid'], icon: 'stocking', answers: true,
-    desc: '가격표를 보고 푸는 덧셈·뺄셈·곱셈·나눗셈 문장제 6문제.',
+    id: 'math-mid', title: '산타 마을 수학 문장제', cat: 'play', grades: ['mid'], icon: 'stocking', answers: true,
+    desc: '선물 가게(덧셈·뺄셈), 장난감 공장(곱셈·나눗셈), 달력과 시계 문장제 3쪽 18문제.',
     gen(c) {
       const items = [['cane', '지팡이 사탕', 300], ['ornament', '오너먼트', 800], ['stocking', '양말', 1200], ['cocoa', '코코아', 1500], ['mitten', '장갑', 2500], ['wreath', '리스', 4000]];
       const shop = `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2mm;flex:none">${items.map(([n, l, p]) => `<div style="border:.5mm solid #432;border-radius:3mm;text-align:center;padding:1.5mm;background:#fffdf5">${art(n, { size: 70 }).replace('<svg', '<svg style="margin:0 auto"')}<div style="font-size:10pt">${l}</div><div style="font-family:var(--f-display);color:#b52a2a">${p.toLocaleString()}원</div></div>`).join('')}</div>`;
       const Q = [['지팡이 사탕 4개의 값은 얼마인가요?', '1,200원'], ['장갑 1켤레와 코코아 2잔을 사면 모두 얼마인가요?', '5,500원'], ['5,000원을 내고 양말 1켤레와 오너먼트 3개를 샀어요. 거스름돈은 얼마인가요?', '1,400원'], ['리스 1개 값으로 오너먼트를 몇 개 살 수 있나요?', '5개'], ['10,000원으로 장갑 3켤레를 살 수 있나요? 살 수 있다면 얼마가 남나요?', '살 수 있다, 2,500원'], ['나에게 10,000원이 있다면? 사고 싶은 것을 정하고 식으로 나타내 보세요.', '(자유롭게)']];
-      return [page(this, { sub: '엘프들이 가게를 열었어요. 가격표를 잘 보고 문제를 풀어 주세요.', body: shop + qa(Q, c.ans) })];
+      const Q2 = [['엘프 한 명이 하루에 장난감을 8개 만들어요. 엘프 6명이 하루에 만드는 장난감은 모두 몇 개인가요?', '48개'], ['곰 인형 42개를 상자 7개에 똑같이 나누어 담으면 한 상자에 몇 개씩 담을 수 있나요?', '6개'], ['썰매 한 대에 선물 자루가 9개씩 실려 있어요. 썰매 4대에 실린 선물 자루는 모두 몇 개인가요?', '36개'], ['사탕 56개를 엘프 8명이 똑같이 나누어 가지면 한 명이 몇 개씩 가지나요?', '7개'], ['순록 한 마리의 다리는 4개예요. 순록 9마리의 다리는 모두 몇 개인가요?', '36개'], ['공장 이야기로 곱셈이나 나눗셈 문제를 직접 만들고 짝과 바꿔 풀어 보세요.', '(자유롭게)']];
+      const Q3 = [['오늘이 12월 18일이에요. 크리스마스(12월 25일)까지 며칠 남았나요?', '7일'], ['12월 1일부터 하루에 한 칸씩 어드벤트 달력을 열면, 12월 24일까지 모두 몇 칸을 열까요?', '24칸'], ['캐럴 공연이 오후 2시 30분에 시작해서 45분 동안 했어요. 공연이 끝난 시각은?', '오후 3시 15분'], ['산타가 밤 11시에 출발해서 3시간 뒤에 돌아왔어요. 돌아온 시각은?', '새벽 2시'], ['쿠키를 굽는 데 25분, 식히는 데 15분 걸려요. 모두 몇 분 걸리나요?', '40분'], ['크리스마스(12월 25일)에서 일주일 뒤는 몇 월 며칠인가요?', '1월 1일']];
+      return [page(this, { title: '산타 마을 선물 가게', sub: '엘프들이 가게를 열었어요. 가격표를 잘 보고 문제를 풀어 주세요.', body: shop + qa(Q, c.ans) }),
+        page(this, { title: '엘프 장난감 공장', icon: 'elf', sub: '장난감 공장에서 일어난 일이에요. 곱셈과 나눗셈으로 풀어 보세요.', body: `<div style="display:flex;justify-content:center;gap:4mm;flex:none">${['elf', 'teddy', 'train', 'presents', 'sleigh'].map(n => art(n, { size: 70 })).join('')}</div>` + qa(Q2, c.ans) }),
+        page(this, { title: '크리스마스 달력과 시계', icon: 'candle', sub: '날짜와 시각을 계산해 보세요. 달력을 그려 보거나 시계를 떠올리면 쉬워요.', body: `<div style="display:flex;justify-content:center;gap:4mm;flex:none">${['candle', 'cookies', 'santa', 'bell', 'tree'].map(n => art(n, { size: 70 })).join('')}</div>` + qa(Q3, c.ans) })];
     }
   });
   const PARTY = [
@@ -463,5 +461,12 @@
       const tok = ['santa', 'rudolph', 'snowman', 'penguin'].map((n, i) => `<g transform="translate(${10 + i * 44} 0)"><circle cx="15" cy="15" r="14" fill="#fff" stroke="#432" stroke-width=".7" stroke-dasharray="2 1.2"/>${artG(n, 4, 4, 22)}</g>`).join('');
       return [page(this, { noname: true, sub: '주사위를 굴려 나온 수만큼 이동! 분홍 칸에 서면 미션을 해요. 트리에 먼저 도착하면 승리.', body: svg(186, 186, s) + `<div class="q">✂ 말 — 오려서 지우개에 붙여 세워요</div>` + svg(186, 30, tok, 'style="flex:none;height:30mm"') })];
     }
+  });
+  /* 문제가 한 쪽뿐인 퍼즐은 서로 다른 문제로 3쪽 */
+  const MULTI = { 'words-low': 3, 'words-mid': 3, 'words-high': 3, 'cipher-mid': 3, 'cipher-high': 3, 'shadow-low': 3, 'pattern-low': 3, 'count-low': 3 };
+  SHEETS.forEach(sh => {
+    const n = MULTI[sh.id]; if (!n) return; const g1 = sh.gen;
+    sh.gen = function (c) { return range(n, i => g1.call(this, { ...c, r: XK.rng(c.seed + i * 7919), seed: c.seed + i * 7919 })).flat(); };
+    sh.desc = sh.desc.replace(/\.$/, '') + ` (서로 다른 문제 ${n}쪽)`;
   });
 })();
