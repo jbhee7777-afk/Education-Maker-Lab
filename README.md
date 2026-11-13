@@ -39,6 +39,19 @@
 2. 활동지는 `인쇄하기`(Ctrl+P)로 인쇄하거나 `print/` 폴더의 PDF를 씁니다. A4, 여백 없음, 배경 그래픽 켜기를 추천합니다.
 3. 게임은 전자칠판에서 열고 `전체화면`을 누릅니다. 효과음이 있으니 스피커를 켜 두세요.
 
+## 바로 인쇄하기
+
+- **PDF**: `print/`, `print-small/`의 모든 PDF는 열면 바로 인쇄 창이 뜨도록 만들어 두었어요(크롬·엣지·아크로뱃). 사파리 등 일부 뷰어에서는 직접 인쇄 버튼을 눌러 주세요.
+- **활동지 화면**: 일반 브라우저에서 열면 「인쇄하기」를 누르는 즉시 인쇄 창이 떠요. 주소 뒤에 `?print=1`을 붙이면(예: `sheet.html?print=1#maze-low`) 열자마자 인쇄 창이 떠요. 정답지는 `&ans=1`을 더해요.
+- **claude.ai 게시 페이지**: 보안 때문에 그 안에서는 인쇄가 막혀 있어요. 대신 「인쇄하기」를 누르면 아래 웹사이트(GitHub Pages)의 같은 활동지가 새 탭에서 열리며 인쇄 창이 떠요.
+
+### 웹사이트(GitHub Pages) 켜기
+웹사이트 주소: https://jbhee7777-afk.github.io/Education-Maker-Lab/
+
+1. 저장소를 공개로 바꿔요: **Settings → General → Danger Zone → Change visibility → Public** (비공개 저장소의 Pages는 유료 요금제에서만 돼요)
+2. **Settings → Pages → Build and deployment**에서 Source를 **Deploy from a branch**, Branch를 **main / (root)**로 고르고 **Save**
+3. 1~2분 뒤 위 주소가 열리면 끝이에요.
+
 ## 출처와 라이선스
 
 - 일러스트: Figma AI 이미지 생성으로 이 키트를 위해 만든 그림입니다. 원본 그림은 Figma 파일 「크리스마스 활동 키트 일러스트」에 있습니다.

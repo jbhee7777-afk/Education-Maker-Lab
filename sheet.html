@@ -24,6 +24,13 @@
   addEventListener('hashchange', go);
   window.__render = (sd, a)=>V.rerender(sd, a);
   go();
+  /* ?print=1 이면 그림이 다 불러와진 뒤 바로 인쇄 창 (정답지는 &ans=1) */
+  const q = new URLSearchParams(location.search);
+  if (q.get('ans') === '1') V.rerender(1225, true);
+  if (q.get('print') === '1') {
+    const ready = () => Promise.all([document.fonts ? document.fonts.ready : 0, ...[...document.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; }))]);
+    addEventListener('load', () => ready().then(() => setTimeout(() => window.print(), 600)));
+  }
 })();
 </script>
 </body>

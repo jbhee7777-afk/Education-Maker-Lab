@@ -6,6 +6,9 @@
   const SUF = /-(low|mid|high)$/;
   const EXTRA = [{ low: 'cipher-mid', mid: 'cipher-mid', high: 'cipher-high' }, { low: 'letter-low', mid: 'letter', high: 'letter' }];
   const find = (id) => SHEETS.find(s => s.id === id);
+  /* claude.ai 화면(틀 안)에서는 인쇄가 막혀 있어서, 인쇄는 웹사이트(GitHub Pages)의 같은 활동지를 새 탭으로 열어 바로 인쇄 */
+  const SITE = 'https://jbhee7777-afk.github.io/Education-Maker-Lab/';
+  const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
   function family(s) {
     const m = {};
     if (SUF.test(s.id)) { const b = s.id.replace(SUF, ''); SHEETS.forEach(x => { if (SUF.test(x.id) && x.id.replace(SUF, '') === b) x.grades.forEach(g => { if (!m[g]) m[g] = x.id; }); }); m[s.id.match(SUF)[1]] = s.id; }
@@ -23,7 +26,7 @@
       <button class="btn sm" id="b-new" hidden>새 문제로 바꾸기</button>
       <button class="btn sm" id="b-ans" hidden>정답 보기</button>
       <a class="btn sm gold" id="b-pdf" target="_blank" rel="noopener">PDF 열기</a>
-      <button class="btn sm red" id="b-print">인쇄하기</button>
+      <a class="btn sm red" id="b-print" target="_blank" rel="noopener">인쇄하기</a>
       <div class="info" id="info"></div>
     </div><main id="pages" class="wrap"></main>`;
     let seed = 1225, ans = false, curId = null, G = XK.store.get('grade', 'mid');
@@ -48,15 +51,17 @@
       if (opt.home) $('#v-back', root).href = '#' + opt.home();
       const pages = s.gen({ r: XK.rng(seed), seed, ans });
       $('#pages', root).innerHTML = pages.map(p => `<div class="pagebox ${/class="page land/.test(p) ? 'land' : ''}">${p}</div>`).join('');
-      $('#b-pdf', root).href = 'print/' + encodeURIComponent(SH.pdfName(s, ans && s.answers));
+      const pdf = 'print/' + encodeURIComponent(SH.pdfName(s, ans && s.answers));
+      $('#b-pdf', root).href = framed ? SITE + pdf : pdf;
+      $('#b-print', root).href = framed ? `${SITE}sheet.html?print=1${ans ? '&ans=1' : ''}#${s.id}` : '#';
       $('#b-new', root).hidden = !s.random; $('#b-ans', root).hidden = !s.answers; $('#b-ans', root).textContent = ans ? '정답 숨기기' : '정답 보기';
-      $('#info', root).textContent = `${pages.length}쪽 · A4 · ${SH.gname(s.grades)}${s.paper ? ' · 추천 용지: ' + s.paper : ''} · 인쇄 버튼이 안 되면 「PDF 열기」나 학년별 PDF 묶음을 이용하세요.`;
+      $('#info', root).textContent = `${pages.length}쪽 · A4 · ${SH.gname(s.grades)}${s.paper ? ' · 추천 용지: ' + s.paper : ''} · ${framed ? '「인쇄하기」를 누르면 새 탭에서 활동지가 열리고 인쇄 창이 바로 떠요.' : '「인쇄하기」를 누르면 바로 인쇄 창이 떠요. PDF는 열면 바로 인쇄 창이 떠요.'}`;
       gradeUI(s);
       requestAnimationFrame(fit);
     }
     $('#b-new', root).onclick = () => { seed = Math.floor(Math.random() * 1e9); render(); };
     $('#b-ans', root).onclick = () => { ans = !ans; render(); };
-    $('#b-print', root).onclick = () => { window.print(); };
+    $('#b-print', root).onclick = (e) => { if (framed) return; e.preventDefault(); window.print(); };
     addEventListener('resize', fit);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
     return {
