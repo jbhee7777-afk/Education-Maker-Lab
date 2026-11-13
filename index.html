@@ -6,8 +6,11 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>크리스마스 활동 키트</title>
 <link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/sheet.css">
 <style>
 body{padding-bottom:60px}
+body.sheets::before{background:var(--pine)}
+@media print{#home{display:none!important}}
 .hero{position:relative;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-right,0px)));background:#123a2b url(assets/img/page/hero.jpg) center 40%/cover no-repeat;min-height:clamp(260px,38vw,460px);display:flex;align-items:flex-end}
 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,40,30,.05) 30%,rgba(10,40,30,.82))}
 .hero .in{position:relative;width:100%;padding:0 max(16px,env(safe-area-inset-left,0px)) 26px max(16px,env(safe-area-inset-right,0px))}
@@ -51,6 +54,7 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
 </style>
 </head>
 <body>
+<div id="home">
 <header class="hero"><div class="in wrap">
   <h1>크리스마스 활동 키트</h1>
   <p>저·중·고학년 맞춤 활동지와 전자칠판 게임을 한곳에 모았어요. 컬러링, 만들기, 종이접기, 퍼즐, 노래, 방탈출까지 학년만 고르면 바로 시작!</p>
@@ -70,12 +74,15 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
   </div>
   <footer class="ft">그림: Figma AI로 만든 키트 전용 일러스트 · 글꼴: 주아, 고운돋움, 개구 (SIL OFL) · 캐럴 4곡은 저작권이 만료된 공개 저작물입니다.</footer>
 </div>
+</div>
+<div id="viewer" hidden></div>
 <script src="assets/art.js"></script>
 <script src="assets/core.js"></script>
 <script src="assets/diff-data.js"></script>
 <script src="assets/sheets-core.js"></script>
 <script src="assets/sheets-a.js"></script>
 <script src="assets/sheets-b.js"></script>
+<script src="assets/viewer.js"></script>
 <script>
 (function(){
   const $ = XK.$, art = XArt.art, G3 = ['low','mid','high'];
@@ -113,10 +120,27 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
     const gHash = G==='all' ? XK.store.get('grade','mid') : G;
     $('#list').innerHTML = ORDER.filter(c=>C==='all'||C===c).map(c=>{
       const L = vis.filter(x=>x.cat===c); if(!L.length) return '';
-      return `<section class="grp"><h2>${art(INTRO[c][0])}${CATS[c]}</h2><p>${INTRO[c][1]}</p><div class="grid">${L.map(x=>`<a class="card ${x.kind==='board'?'cb':''}" href="${x.kind==='board'?x.url+'#'+gHash:x.url}">${art(x.icon)}<div class="tx"><h3>${x.title}</h3><p>${x.desc}</p><div class="meta">${x.grades.length===3?'<span class="chip ghost">전 학년</span>':x.grades.map(g=>`<span class="chip ${g}">${XK.GRADES[g]}</span>`).join('')}<span class="chip ghost">${x.kind==='board'?'전자칠판':pages[x.id]+'쪽'}</span>${x.random?'<span class="chip ghost">매번 새 문제</span>':''}${x.answers?'<span class="chip ghost">정답 있음</span>':''}</div></div></a>`).join('')}</div></section>`;
+      return `<section class="grp"><h2>${art(INTRO[c][0])}${CATS[c]}</h2><p>${INTRO[c][1]}</p><div class="grid">${L.map(x=>`<a class="card ${x.kind==='board'?'cb':''}" href="${x.kind==='board'?x.url+'#'+gHash:'#'+x.id}">${art(x.icon)}<div class="tx"><h3>${x.title}</h3><p>${x.desc}</p><div class="meta">${x.grades.length===3?'<span class="chip ghost">전 학년</span>':x.grades.map(g=>`<span class="chip ${g}">${XK.GRADES[g]}</span>`).join('')}<span class="chip ghost">${x.kind==='board'?'전자칠판':pages[x.id]+'쪽'}</span>${x.random?'<span class="chip ghost">매번 새 문제</span>':''}${x.answers?'<span class="chip ghost">정답 있음</span>':''}</div></div></a>`).join('')}</div></section>`;
     }).join('') || '<p class="empty">이 학년군에 맞는 자료가 없어요.</p>';
   }
   tabs(); render();
+  /* 활동지는 이 페이지 안에서 열어요 (주소 #활동지id) */
+  let V = null, lastY = 0;
+  function route(){
+    const id = location.hash.slice(1), sh = XViewer.find(id);
+    if(sh){
+      if(!V) V = XViewer.mount($('#viewer'), { home: ()=>G });
+      if($('#viewer').hidden) lastY = scrollY;
+      $('#home').hidden = true; $('#viewer').hidden = false; document.body.classList.add('sheets');
+      V.open(id); scrollTo(0,0);
+    } else {
+      const wasOpen = !$('#viewer').hidden;
+      $('#viewer').hidden = true; $('#home').hidden = false; document.body.classList.remove('sheets'); document.title = '크리스마스 활동 키트';
+      if(['all','low','mid','high'].includes(id) && id!==G){ G = id; tabs(); render(); }
+      if(wasOpen) scrollTo(0, lastY);
+    }
+  }
+  addEventListener('hashchange', route); route();
 })();
 </script>
 </body>

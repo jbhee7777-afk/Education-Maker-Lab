@@ -20,6 +20,7 @@
 .sy small{font-family:var(--f-body);font-size:.42em;color:#a9cdb8}
 .sy.on{color:var(--gold);transform:translateY(-4px) scale(1.08)}
 .sy.past{color:#fff}
+.tr{color:var(--gold2);font-size:clamp(.95rem,1.7vw,1.4rem);margin:-.2em 0 .3em;padding-left:.2em;border-left:4px solid var(--gold);padding-left:.6em}
 .ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .ctrl label{font-family:var(--f-display)}
 .rhy{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
@@ -43,6 +44,7 @@
         <span id="tv" class="note" style="min-width:4em">120</span>
         <label><input type="checkbox" id="beat" checked> 방울 박자</label>
         <label><input type="checkbox" id="pron" checked> 한글 발음</label>
+        <label><input type="checkbox" id="tr" checked> 우리말 뜻</label>
       </div>
     </div>
   </div>
@@ -58,11 +60,11 @@
   const toClass = (src, words)=>{ const t = src.split(' '); let w = 0; return t.map(x=>{ if(x==='|') return x; const p = x.split(':'); return `${words[w++]||'라'}:${p[1]}:${p[2]}`; }).join(' '); };
   const CL = '우 리 반 우 리 반 신 나 는 우 리 함 께 웃 고 함 께 노 는 반 최 고 의 우 리 반 우 리 반 우 리 반 다 정 한 우 리 서 로 돕 고 아 껴 주 는 반 우 리 반 최 고'.split(' ');
   const SONGS = [
-    {id:'jb', t:'Jingle Bells', k:'징글벨', ic:'bell', bpm:132, info:'1857년 미국 · 제임스 로드 피어폰트 작곡 (공개 저작물)', s:JB},
+    {id:'jb', t:'Jingle Bells', k:'징글벨', ic:'bell', bpm:132, info:'1857년 미국 · 제임스 로드 피어폰트 작곡 (공개 저작물)', s:JB, tr:['징글벨, 징글벨, 가는 길 내내 방울이 딸랑딸랑', '말 한 마리가 끄는 지붕 없는 썰매를 타면 얼마나 신날까, 헤이!', '징글벨, 징글벨, 가는 길 내내 방울이 딸랑딸랑', '말 한 마리가 끄는 지붕 없는 썰매를 타면 정말 신나요!']},
     {id:'class', t:'우리 반 징글벨', k:'개사 예시', ic:'star', bpm:120, info:'「캐럴 노랫말 바꿔 부르기」 활동지의 보기 가사예요. 우리 반 가사로 바꿔 불러 보세요!', s:toClass(JB, CL)},
-    {id:'ww', t:'We Wish You a Merry Christmas', k:'즐거운 성탄', ic:'gift', bpm:150, info:'영국 전래 캐럴 (공개 저작물)', s:'We/위:D4:1 wish/위시:G4:1 you/유:G4:.5 a/어:A4:.5 mer/메:G4:.5 ry/리:F#4:.5 Christ/크리스:E4:1 mas,/마스:E4:1 | we/위:E4:1 wish/위시:A4:1 you/유:A4:.5 a/어:B4:.5 mer/메:A4:.5 ry/리:G4:.5 Christ/크리스:F#4:1 mas,/마스:D4:1 | we/위:D4:1 wish/위시:B4:1 you/유:B4:.5 a/어:C5:.5 mer/메:B4:.5 ry/리:A4:.5 Christ/크리스:G4:1 mas/마스:E4:1 | and/앤드:D4:.5 a/어:D4:.5 hap/해:E4:1 py/피:A4:1 new/뉴:F#4:1 year!/이어:G4:2'},
-    {id:'dh', t:'Deck the Halls', k:'홀을 꾸며요', ic:'holly', bpm:126, info:'웨일스 전래 캐럴 (공개 저작물) · 「Fa la la」는 다 함께!', s:'Deck/덱:G4:1.5 the/더:F4:.5 halls/홀스:E4:1 with/위드:D4:1 boughs/바우즈:C4:1 of/오브:D4:1 hol/할:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | \'Tis/티즈:G4:1.5 the/더:F4:.5 sea/시:E4:1 son/즌:D4:1 to/투:C4:1 be/비:D4:1 jol/졸:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | Don/돈:D4:1.5 we/위:E4:.5 now/나우:F4:1 our/아워:D4:1 gay/게이:E4:1.5 ap/어:F4:.5 par/패:G4:1 el,/럴:D4:1 | Fa/파:E4:.5 la/라:F#4:.5 la,/라:G4:1 la/라:A4:.5 la/라:B4:.5 la,/라:C5:1 la/라:B4:1 la/라:A4:1 la!/라:G4:2 | Troll/트롤:G4:1.5 the/디:F4:.5 an/에인:E4:1 cient/션트:D4:1 Yule/율:C4:1 tide/타이드:D4:1 car/캐:E4:1 ol,/럴:C4:1 | Fa/파:A4:.5 la/라:A4:.5 la/라:A4:.5 la/라:A4:.5 la,/라:G4:1.5 la/라:F4:.5 la/라:E4:1 la/라:D4:1 la!/라:C4:2'},
-    {id:'sn', t:'Silent Night', k:'고요한 밤', ic:'candle', bpm:84, info:'1818년 오스트리아 · 프란츠 그루버 작곡 (공개 저작물)', s:'Si/사:G4:1.5 lent/일런트:A4:.5 ~:G4:1 night,/나잇:E4:3 | Ho/홀:G4:1.5 ly/리:A4:.5 ~:G4:1 night,/나잇:E4:3 | All/올:D5:2 is/이즈:D5:1 calm,/캄:B4:3 all/올:C5:2 is/이즈:C5:1 bright,/브라잇:G4:3 | Round/라운드:A4:2 yon/연:A4:1 vir/버:C5:1.5 gin/진:B4:.5 moth/마:A4:1 er/더:G4:1.5 and/앤:A4:.5 child,/차일드:G4:1 ~:E4:3 | Ho/홀:A4:2 ly/리:A4:1 in/인:C5:1.5 fant/펀트:B4:.5 so/소:A4:1 ten/텐:G4:1.5 der/더:A4:.5 and/앤:G4:1 mild,/마일드:E4:3 | Sleep/슬립:D5:2 in/인:D5:1 hea/헤:F5:1.5 ven/븐:D5:.5 ly/리:B4:1 peace,/피스:C5:3 ~:E5:3 | Sleep/슬립:C5:1 in/인:G4:1 hea/헤:E4:1 ven/븐:G4:1.5 ly/리:F4:.5 peace./피스:D4:1 ~:C4:5'},
+    {id:'ww', t:'We Wish You a Merry Christmas', k:'즐거운 성탄', ic:'gift', bpm:150, info:'영국 전래 캐럴 (공개 저작물)', tr:['즐거운 크리스마스 보내길 바라요,', '즐거운 크리스마스 보내길 바라요,', '즐거운 크리스마스 보내길 바라요,', '그리고 행복한 새해 맞으세요!'], s:'We/위:D4:1 wish/위시:G4:1 you/유:G4:.5 a/어:A4:.5 mer/메:G4:.5 ry/리:F#4:.5 Christ/크리스:E4:1 mas,/마스:E4:1 | we/위:E4:1 wish/위시:A4:1 you/유:A4:.5 a/어:B4:.5 mer/메:A4:.5 ry/리:G4:.5 Christ/크리스:F#4:1 mas,/마스:D4:1 | we/위:D4:1 wish/위시:B4:1 you/유:B4:.5 a/어:C5:.5 mer/메:B4:.5 ry/리:A4:.5 Christ/크리스:G4:1 mas/마스:E4:1 | and/앤드:D4:.5 a/어:D4:.5 hap/해:E4:1 py/피:A4:1 new/뉴:F#4:1 year!/이어:G4:2'},
+    {id:'dh', t:'Deck the Halls', k:'홀을 꾸며요', ic:'holly', bpm:126, info:'웨일스 전래 캐럴 (공개 저작물) · 「Fa la la」는 다 함께!', tr:['호랑가시나무 가지로 집 안을 꾸며요,', '파라라라라 라라라라 (신나게 흥얼거리는 소리)', '지금은 즐겁게 지내는 계절이에요,', '파라라라라 라라라라', '이제 우리 멋진 옷을 차려입고,', '파라라 라라라 라라라', '오래된 크리스마스 노래를 함께 불러요,', '파라라라라 라라라라'], s:'Deck/덱:G4:1.5 the/더:F4:.5 halls/홀스:E4:1 with/위드:D4:1 boughs/바우즈:C4:1 of/오브:D4:1 hol/할:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | \'Tis/티즈:G4:1.5 the/더:F4:.5 sea/시:E4:1 son/즌:D4:1 to/투:C4:1 be/비:D4:1 jol/졸:E4:1 ly,/리:C4:1 | Fa/파:D4:.5 la/라:E4:.5 la/라:F4:.5 la/라:D4:.5 la,/라:E4:1.5 la/라:D4:.5 la/라:C4:1 la/라:B3:1 la!/라:C4:2 | Don/돈:D4:1.5 we/위:E4:.5 now/나우:F4:1 our/아워:D4:1 gay/게이:E4:1.5 ap/어:F4:.5 par/패:G4:1 el,/럴:D4:1 | Fa/파:E4:.5 la/라:F#4:.5 la,/라:G4:1 la/라:A4:.5 la/라:B4:.5 la,/라:C5:1 la/라:B4:1 la/라:A4:1 la!/라:G4:2 | Troll/트롤:G4:1.5 the/디:F4:.5 an/에인:E4:1 cient/션트:D4:1 Yule/율:C4:1 tide/타이드:D4:1 car/캐:E4:1 ol,/럴:C4:1 | Fa/파:A4:.5 la/라:A4:.5 la/라:A4:.5 la/라:A4:.5 la,/라:G4:1.5 la/라:F4:.5 la/라:E4:1 la/라:D4:1 la!/라:C4:2'},
+    {id:'sn', t:'Silent Night', k:'고요한 밤', ic:'candle', bpm:84, info:'1818년 오스트리아 · 프란츠 그루버 작곡 (공개 저작물)', tr:['고요한 밤,', '거룩한 밤,', '모든 것이 고요하고, 모든 것이 환히 빛나요.', '저기 어머니와 아기 곁에', '거룩한 아기는 참 여리고 온화해요.', '하늘의 평화 속에 잠들어요,', '하늘의 평화 속에 잠들어요.'], s:'Si/사:G4:1.5 lent/일런트:A4:.5 ~:G4:1 night,/나잇:E4:3 | Ho/홀:G4:1.5 ly/리:A4:.5 ~:G4:1 night,/나잇:E4:3 | All/올:D5:2 is/이즈:D5:1 calm,/캄:B4:3 all/올:C5:2 is/이즈:C5:1 bright,/브라잇:G4:3 | Round/라운드:A4:2 yon/연:A4:1 vir/버:C5:1.5 gin/진:B4:.5 moth/마:A4:1 er/더:G4:1.5 and/앤:A4:.5 child,/차일드:G4:1 ~:E4:3 | Ho/홀:A4:2 ly/리:A4:1 in/인:C5:1.5 fant/펀트:B4:.5 so/소:A4:1 ten/텐:G4:1.5 der/더:A4:.5 and/앤:G4:1 mild,/마일드:E4:3 | Sleep/슬립:D5:2 in/인:D5:1 hea/헤:F5:1.5 ven/븐:D5:.5 ly/리:B4:1 peace,/피스:C5:3 ~:E5:3 | Sleep/슬립:C5:1 in/인:G4:1 hea/헤:E4:1 ven/븐:G4:1.5 ly/리:F4:.5 peace./피스:D4:1 ~:C4:5'},
   ];
   const NOTE = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
   const freq = (n)=>{ const m = n.match(/^([A-G]#?)(\d)$/); return 440*Math.pow(2,(NOTE[m[1]]+(+m[2]+1)*12-69)/12); };
@@ -77,7 +79,8 @@
   function show(){
     $('#st').textContent = cur.t; $('#sinfo').textContent = cur.info;
     const pr = $('#pron').checked && cur.id!=='class';
-    $('#ly').innerHTML = parse(cur.s).map(l=>`<div class="ln">${l.map(x=>x.w==='~'?'<span class="sy" style="display:none"></span>':`<span class="sy">${x.w}${pr?`<small>${x.p}</small>`:''}</span>`).join('')}</div>`).join('');
+    const showTr = $('#tr').checked && cur.tr;
+    $('#ly').innerHTML = parse(cur.s).map((l,li)=>`<div class="ln">${l.map(x=>x.w==='~'?'<span class="sy" style="display:none"></span>':`<span class="sy">${x.w}${pr?`<small>${x.p}</small>`:''}</span>`).join('')}</div>${showTr && cur.tr[li] ? `<div class="tr">${cur.tr[li]}</div>` : ''}`).join('');
   }
   /* 모든 소리는 연주마다 새로 만드는 master 음량을 거쳐 나가요. 멈추면 master를 꺼서 예약된 소리까지 바로 사라져요. */
   let master = null, sched = null;
@@ -124,7 +127,7 @@
   }
   $('#play').onclick = play; $('#stop').onclick = stop;
   $('#tempo').oninput = (e)=>$('#tv').textContent = e.target.value;
-  $('#pron').onchange = show;
+  $('#pron').onchange = show; $('#tr').onchange = show;
   /* 리듬 따라 하기 */
   const RHY = {
     '쉬움': [[1,1,1,0],[1,1,1,1],[1,0,1,0],[1,1,0,1]],
