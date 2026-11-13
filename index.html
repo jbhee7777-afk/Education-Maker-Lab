@@ -57,7 +57,7 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
 <div id="home">
 <header class="hero"><div class="in wrap">
   <h1>크리스마스 활동 키트</h1>
-  <p>저·중·고학년 맞춤 활동지와 전자칠판 게임을 한곳에 모았어요. 컬러링, 만들기, 종이접기, 퍼즐, 노래, 방탈출까지 학년만 고르면 바로 시작!</p>
+  <p>저·중·고학년 맞춤 활동지와 전자칠판 게임을 한곳에 모았어요. 컬러링, 만들기, 퍼즐, 노래, 방탈출까지 학년만 고르면 바로 시작!</p>
   <div class="stats" id="stats"></div>
 </div></header>
 <div class="lights"></div>
@@ -100,9 +100,9 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
     {id:'timer', title:'눈사람 타이머 · 썰매 경주', cat:'tool', grades:G3, icon:'snowman', url:'games/timer.html', desc:'시간이 흐르면 눈사람이 녹는 타이머와, 점수만큼 썰매가 달리는 모둠 점수판.'},
     {id:'carol', title:'캐럴 노래방', cat:'song', grades:G3, icon:'candle', url:'games/carol.html', desc:'징글벨·고요한 밤 등 4곡 반주와 따라 읽는 가사(한글 발음), 우리 반 개사 버전, 리듬 따라 하기.'},
   ];
-  const CATS = {all:'전체', escape:'방탈출', game:'전자칠판 게임', song:'노래', tool:'교실 도구', color:'컬러링', make:'만들기', ori:'종이접기', play:'놀이·퍼즐', write:'글쓰기·마음 나눔'};
-  const ORDER = ['escape','game','song','tool','color','make','ori','play','write'];
-  const INTRO = {escape:['elf','전자칠판으로 반 전체가 함께 푸는 방탈출이에요.'], game:['santa','전체화면으로 띄우고 모둠 대항으로 즐겨요.'], song:['bell','캐럴 반주, 컵타 악보, 노랫말 바꿔 부르기.'], tool:['wreath','수업 진행을 돕는 도구예요.'], color:['tree','학년별 장면 컬러링, 만다라, 픽셀 아트, 카드 표지, 쿠키 꾸미기까지 일러스트 도안.'], make:['gift','오리고 접고 붙이는 만들기 도안.'], ori:['hat','색종이 한 장으로 만드는 종이접기 순서도.'], play:['star','미로·다른 그림 찾기·빙고·암호·추리 같은 퍼즐과 교실 놀이.'], write:['letter','편지·지원서·세계의 크리스마스처럼 마음을 나누는 글쓰기.']};
+  const CATS = {all:'전체', escape:'방탈출', game:'전자칠판 게임', song:'노래', tool:'교실 도구', color:'컬러링', make:'만들기', play:'놀이·퍼즐', write:'글쓰기·마음 나눔'};
+  const ORDER = ['escape','game','song','tool','color','make','play','write'];
+  const INTRO = {escape:['elf','전자칠판으로 반 전체가 함께 푸는 방탈출이에요.'], game:['santa','전체화면으로 띄우고 모둠 대항으로 즐겨요.'], song:['bell','캐럴 반주, 컵타 악보, 노랫말 바꿔 부르기.'], tool:['wreath','수업 진행을 돕는 도구예요.'], color:['tree','학년별 장면 컬러링, 만다라, 픽셀 아트, 카드 표지, 쿠키 꾸미기까지 일러스트 도안.'], make:['gift','오리고 접고 붙이는 만들기 도안.'], play:['star','미로·다른 그림 찾기·빙고·암호·추리 같은 퍼즐과 교실 놀이.'], write:['letter','편지·지원서·세계의 크리스마스처럼 마음을 나누는 글쓰기.']};
   const items = [...GAMES.map(x=>({...x, kind:'board'})), ...SHEETS.map(s=>({...s, kind:'sheet'}))];
   let G = XK.store.get('idxg','all'), C = 'all';
   const h = location.hash.slice(1); if(['all','low','mid','high'].includes(h)) G = h;
