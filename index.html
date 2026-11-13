@@ -64,7 +64,7 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
   </nav>
   <main id="list"></main>
   <div class="guide">
-    <div><h3>활동지 인쇄하기</h3><ul><li>활동지를 열고 <b>인쇄하기</b>(또는 Ctrl+P, ⌘P)를 누르세요. A4 · 여백 없음 · 배경 그래픽 켜기를 추천해요.</li><li>「새 문제로 바꾸기」가 있는 활동지는 누를 때마다 미로·스도쿠·암호가 새로 만들어져요.</li><li>「정답 보기」를 켜고 인쇄하면 채점용 답지가 됩니다.</li><li>바로 인쇄할 수 있는 PDF는 <b>print</b> 폴더에 있어요.</li></ul></div>
+    <div><h3>활동지 인쇄하기</h3><ul><li>활동지를 열고 <b>인쇄하기</b>(또는 Ctrl+P, ⌘P)를 누르세요. A4 · 여백 없음 · 배경 그래픽 켜기를 추천해요.</li><li>「새 문제로 바꾸기」가 있는 활동지는 누를 때마다 미로·낱말 찾기·암호가 새로 만들어져요.</li><li>「정답 보기」를 켜고 인쇄하면 채점용 답지가 됩니다.</li><li>활동지 위쪽 <b>저학년/중학년/고학년</b> 버튼으로 같은 활동의 다른 학년용으로 바로 바꿀 수 있어요.</li><li>바로 인쇄할 수 있는 PDF는 활동지의 <b>PDF 열기</b>(또는 <b>print</b> 폴더)에 있어요.</li></ul></div>
     <div><h3>전자칠판에서 게임하기</h3><ul><li>게임 화면 오른쪽 위 <b>전체화면</b>을 누르고, 학년군 버튼으로 난이도를 고르세요.</li><li>아래 <b>모둠 점수판</b>에서 모둠 수(1~6)를 바꾸고, 모둠 이름을 누르면 차례가 넘어가요.</li><li>소리가 나요. 스피커를 켜 두세요. (끄려면 「소리 켜짐」 버튼)</li></ul></div>
     <div><h3>이렇게 묶어 쓰면 좋아요</h3><ul><li><b>40분 파티</b>: 퀴즈 쇼 → 몸으로 말해요 → 선물 상자 → 캐럴 합창</li><li><b>빙고 세트</b>: 빙고 활동지 + 「메리 빙고 뽑기」</li><li><b>방탈출 데이</b>: 「산타 작업실 방탈출」 + 「좌표 암호」 활동지로 마무리</li><li><b>조용한 오후</b>: 만다라·젠탱글 컬러링 + 「고요한 밤」 반주</li></ul></div>
   </div>
@@ -72,6 +72,7 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
 </div>
 <script src="assets/art.js"></script>
 <script src="assets/core.js"></script>
+<script src="assets/diff-data.js"></script>
 <script src="assets/sheets-core.js"></script>
 <script src="assets/sheets-a.js"></script>
 <script src="assets/sheets-b.js"></script>
@@ -91,15 +92,15 @@ footer.ft{margin-top:34px;font-size:.85rem;color:var(--ink2);text-align:center}
     {id:'timer', title:'눈사람 타이머 · 썰매 경주', cat:'tool', grades:G3, icon:'snowman', url:'games/timer.html', desc:'시간이 흐르면 눈사람이 녹는 타이머와, 점수만큼 썰매가 달리는 모둠 점수판.'},
     {id:'carol', title:'캐럴 노래방', cat:'song', grades:G3, icon:'candle', url:'games/carol.html', desc:'징글벨·고요한 밤 등 4곡 반주와 따라 읽는 가사(한글 발음), 우리 반 개사 버전, 리듬 따라 하기.'},
   ];
-  const CATS = {all:'전체', escape:'방탈출', game:'전자칠판 게임', song:'노래', tool:'교실 도구', color:'컬러링', make:'만들기', ori:'종이접기', play:'놀이·퍼즐', write:'글쓰기·마음 나눔', stem:'과학·코딩'};
-  const ORDER = ['escape','game','song','tool','color','make','ori','play','write','stem'];
-  const INTRO = {escape:['elf','전자칠판으로 반 전체가 함께 푸는 방탈출이에요.'], game:['santa','전체화면으로 띄우고 모둠 대항으로 즐겨요.'], song:['bell','반주에 맞춰 가사가 반짝여요.'], tool:['wreath','수업 진행을 돕는 도구예요.'], color:['tree','한 장 가득한 장면부터 만다라까지, 일러스트 컬러링 도안.'], make:['gift','오리고 접고 붙이는 만들기 도안.'], ori:['hat','색종이 한 장으로 만드는 종이접기 순서도.'], play:['star','미로·스도쿠·빙고·암호 같은 혼자 또는 함께 하는 퍼즐.'], write:['letter','편지·지원서·시상식처럼 마음을 나누는 글쓰기.'], stem:['snowflake','과학 실험, 공학 도전, 언플러그드 코딩.']};
+  const CATS = {all:'전체', escape:'방탈출', game:'전자칠판 게임', song:'노래', tool:'교실 도구', color:'컬러링', make:'만들기', ori:'종이접기', play:'놀이·퍼즐', write:'글쓰기·마음 나눔'};
+  const ORDER = ['escape','game','song','tool','color','make','ori','play','write'];
+  const INTRO = {escape:['elf','전자칠판으로 반 전체가 함께 푸는 방탈출이에요.'], game:['santa','전체화면으로 띄우고 모둠 대항으로 즐겨요.'], song:['bell','캐럴 반주, 컵타 악보, 노랫말 바꿔 부르기.'], tool:['wreath','수업 진행을 돕는 도구예요.'], color:['tree','학년별 장면 컬러링, 만다라, 픽셀 아트, 카드 표지, 쿠키 꾸미기까지 일러스트 도안.'], make:['gift','오리고 접고 붙이는 만들기 도안.'], ori:['hat','색종이 한 장으로 만드는 종이접기 순서도.'], play:['star','미로·다른 그림 찾기·빙고·암호·추리 같은 퍼즐과 교실 놀이.'], write:['letter','편지·지원서·세계의 크리스마스처럼 마음을 나누는 글쓰기.']};
   const items = [...GAMES.map(x=>({...x, kind:'board'})), ...SHEETS.map(s=>({...s, kind:'sheet'}))];
   let G = XK.store.get('idxg','all'), C = 'all';
   const h = location.hash.slice(1); if(['all','low','mid','high'].includes(h)) G = h;
   const pages = {}; SHEETS.forEach(s=>{ try{ pages[s.id] = s.gen({r:XK.rng(1),seed:1,ans:false}).length; }catch(e){ pages[s.id]=1; } });
   const nPages = Object.values(pages).reduce((a,b)=>a+b,0);
-  $('#stats').innerHTML = `<span>인쇄 활동지 <b>${SHEETS.length}</b>종 · <b>${nPages}</b>쪽</span><span>전자칠판 게임·도구 <b>${GAMES.length}</b>개</span><span>일러스트 <b>${XArt.NAMES.length}</b>종 + 장면 그림 <b>10</b>장</span>`;
+  $('#stats').innerHTML = `<span>인쇄 활동지 <b>${SHEETS.length}</b>종 · <b>${nPages}</b>쪽</span><span>전자칠판 게임·도구 <b>${GAMES.length}</b>개</span><span>일러스트 <b>${XArt.NAMES.length}</b>종 + 장면·도안 그림 <b>30</b>장</span>`;
   function tabs(){
     $('#gtabs').innerHTML = [['all','전체 보기',''],...G3.map(g=>[g,XK.GRADES[g],XK.GRADE_SUB[g]])].map(([g,t,s])=>`<button class="gtab" data-g="${g}" aria-pressed="${g===G}">${t}<small>${s}</small></button>`).join('');
     document.querySelectorAll('.gtab').forEach(b=>b.onclick=()=>{ G=b.dataset.g; XK.store.set('idxg',G); if(G!=='all') XK.store.set('grade',G); try{history.replaceState(null,'','#'+G);}catch(e){} tabs(); render(); });

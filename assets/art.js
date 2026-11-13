@@ -32,6 +32,7 @@
   }
   /* 전면 그림 (컬러링 페이지·배경) */
   const page = (n) => `${BASE}img/page/${n}`;
+  const img = (p) => `${BASE}img/${p}`;
   const thauma = (n) => `${BASE}img/t/${n}.png`;
   const starPts = (cx, cy, R, r, n = 5, rot = -90) => {
     const p = [];
@@ -40,5 +41,5 @@
   };
   /* 미리 불러오기 (인쇄 전 모든 그림이 준비되도록) */
   const preload = (line) => Promise.all(NAMES.map(n => new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = src(n, line); })));
-  window.XArt = { art, artG, NAMES, CORE, label: n => LABEL[n] || '?', src, page, thauma, starPts, preload, O: '#432' };
+  window.XArt = { art, artG, NAMES, CORE, label: n => LABEL[n] || '?', src, page, img, thauma, starPts, preload, O: '#432' };
 })();

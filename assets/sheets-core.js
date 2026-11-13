@@ -3,7 +3,7 @@
   const S = window.SHEETS = [];
   const { art, artG, NAMES } = XArt;
   const H = window.SH = {};
-  H.CAT = { color: '컬러링', make: '만들기', ori: '종이접기', play: '놀이·퍼즐', write: '글쓰기·마음 나눔', stem: '과학·코딩', song: '노래' };
+  H.CAT = { color: '컬러링', make: '만들기', ori: '종이접기', play: '놀이·퍼즐', write: '글쓰기·마음 나눔', song: '노래' };
   H.reg = (o) => { o.type = 'sheet'; o.url = 'sheet.html#' + o.id; S.push(o); };
   H.pdfName = (s, ans) => `[${s.grades.length === 3 ? '전학년' : s.grades.map(g => XK.GRADES[g]).join('·')}] ${s.title.replace(/[\\/:*?"<>|]/g, '')}${ans ? ' (정답)' : ''}.pdf`;
   H.gname = (gs) => gs.length === 3 ? '전 학년' : gs.map(g => XK.GRADES[g]).join('·');

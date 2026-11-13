@@ -1,4 +1,4 @@
-/* 활동지 B: 만들기 도안 · 종이접기 · 글쓰기 · 과학/코딩 · 놀이 카드 */
+/* 활동지 B: 만들기 도안 · 종이접기 · 글쓰기 · 놀이 카드 · 노래 */
 (function () {
   const { reg, page, svg, txt, lines, steps } = SH;
   const { art, artG, label, starPts } = XArt;
@@ -12,27 +12,33 @@
   const KIND = ['먼저 인사하기', '친구 칭찬 한 가지', '교실 쓰레기 3개 줍기', '고마운 사람에게 쪽지 쓰기', '급식 골고루 먹기', '친구 이야기 끝까지 듣기', '가족 안아 주기', '친구 책상 정리 돕기', '「고마워」 다섯 번 말하기', '혼자 있는 친구에게 말 걸기', '실내화 가지런히 놓기', '선생님께 감사 인사', '양보 한 번 하기', '집안일 한 가지 돕기', '웃는 얼굴로 하루 보내기', '필요한 친구에게 빌려주기', '친구의 좋은 점 찾아 말하기', '뒷사람 위해 문 잡아 주기', '동생·후배 도와주기', '고운 말만 쓰기', '내 물건 스스로 챙기기', '가족에게 사랑한다고 말하기', '크리스마스 카드 쓰기', '나 자신 칭찬하기'];
 
   /* ───────── 만들기 ───────── */
+  const D3 = [['tree', '입체 트리', 'tree', [860, 1046], '스스로 서는 트리'], ['snowman', '입체 눈사람', 'snowman', [860, 1032], '스스로 서는 눈사람'], ['star', '입체 별 오너먼트', 'star', [928, 930], '실을 달아 거는 별'], ['bauble', '입체 공 오너먼트', 'ornament', [748, 922], '실을 달아 거는 공 장식']];
   reg({
-    id: 'tree3d', title: '끼워 세우는 입체 트리', cat: 'make', grades: G3, icon: 'tree', paper: '도화지',
-    desc: '두 장을 십자로 끼우면 풀 없이 서는 3D 트리. 색칠하고 스티커로 꾸며요.',
+    id: 'craft3d', title: '끼워 만드는 입체 장식', cat: 'make', grades: G3, icon: 'tree', paper: '도화지',
+    desc: '똑같은 그림 두 장을 열십자로 끼우면 입체가 돼요. 세우는 트리·눈사람, 거는 별·공 오너먼트 4종.',
     gen() {
-      const tree = (cx, slotTop) => artG('tree', cx - 52, 4, 130, { line: true }) + `<path d="M${cx} ${slotTop ? 10 : 130} V70" ${CUT} stroke-width="1.8"/><circle cx="${cx}" cy="70" r="1.6" fill="#d93a3a"/>`;
-      const body = legend + svg(186, 196, tree(47, true) + tree(139, false) + txt(47, 142, '가: 위에서 가운데까지 자르기', 4.2) + txt(139, 142, '나: 아래에서 가운데까지 자르기', 4.2) +
-        artG('star', 46, 152, 38, { line: true }) + artG('star', 102, 152, 38, { line: true }) + txt(93, 194, '별 2개: 오려서 맞붙여 꼭대기에 끼워요', 3.8));
-      return [page(this, { sub: '① 색칠하고 꾸미기 → ② 두 트리 오리기 → ③ 빨간 선을 가위로 자르기 → ④ 「가」를 「나」 위에서 아래로 끼우기', body, tip: '트리 바깥 테두리를 따라 오리면 됩니다. 도화지에 인쇄하면 튼튼하게 서요. 모둠별로 크기를 달리 복사(141%, 71%)해 「트리 숲」을 만들어도 예뻐요.' })];
+      return D3.map(([f, t, ic, [iw, ih], kind]) => {
+        const h = Math.min(120, 86 * ih / iw), w = h * iw / ih, top = 6;
+        const copy = (cx, fromTop, lab) => `<image href="${XArt.img('d3/' + f + '.png')}" x="${(cx - w / 2).toFixed(2)}" y="${top}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" preserveAspectRatio="none"/>` +
+          `<path d="M${cx} ${fromTop ? top - 2 : top + h + 2} V${(top + h / 2).toFixed(2)}" stroke="#d93a3a" stroke-width="1.6"/><circle cx="${cx}" cy="${(top + h / 2).toFixed(2)}" r="1.4" fill="#d93a3a"/>` +
+          txt(cx, top + h + 8, lab, 5.2, { fill: '#b52a2a' }) + txt(cx, top + h + 15, fromTop ? '빨간 선: 위에서 가운데까지 자르기' : '빨간 선: 아래에서 가운데까지 자르기', 3.8, { fill: '#555' });
+        const body = legend + svg(186, top + h + 20, copy(47, true, '가') + copy(139, false, '나'), `style="flex:none;height:${top + h + 20}mm"`) + SH.steps([
+          ['', '그림 두 장을 색칠해요. 앞뒤가 다 보이니 <strong>뒷면도</strong> 칠하면 더 예뻐요.'],
+          ['', '바깥 테두리를 따라 오리고, 빨간 선을 가위로 잘라요. 가위 날로 한 번 더 살짝 잘라 <strong>종이 두께만큼 틈</strong>을 내요.'],
+          ['', `「가」를 거꾸로 들고 「나」의 틈에 위에서부터 끼워 내려요. 두 장이 열십자(+)가 되면 완성! ${kind.includes('거는') ? '꼭대기에 구멍을 뚫어 실을 달아요.' : '책상 위에 세워 보세요.'}`],
+        ]);
+        return page(this, { title: `${t} (${kind})`, icon: ic, sub: '두 장의 그림은 완전히 똑같고, 빨간 선은 정확히 가운데에 있어요. 「가」는 위쪽 절반, 「나」는 아래쪽 절반을 잘라 서로 끼워요.', body, tip: '도화지(180g 이상)에 인쇄해야 쓰러지지 않아요. 크기를 141%로 확대 복사하면 교실 장식용 큰 트리가 돼요.' });
+      });
     }
   });
   reg({
     id: 'wish-ornaments', title: '소원 오너먼트', cat: 'make', grades: G3, icon: 'ornament',
-    desc: '소원·고마운 사람·새해 다짐을 적어 교실 트리에 다는 오너먼트 4종.',
+    desc: '귀여운 테두리 오너먼트 4종에 소원·고마운 사람·새해 다짐·친구에게 한마디를 적어 트리에 걸어요.',
     gen() {
-      const cap = (cx, y) => `<rect x="${cx - 6}" y="${y - 8}" width="12" height="8" rx="2" ${L}/><circle cx="${cx}" cy="${y - 11}" r="2.2" ${L}/>`;
-      const wl = (cx, y, w, t) => txt(cx, y, t, 5, { fill: '#b52a2a' }) + range(3, i => `<path d="M${cx - w / 2} ${y + 14 + i * 11} h${w}" stroke="#8a7a70" stroke-width=".35"/>`).join('');
-      const s = `${cap(47, 20)}<circle cx="47" cy="62" r="42" ${L}/>${wl(47, 42, 56, '나의 소원')}
-        ${cap(139, 20)}<path d="M139 20 Q183 30 181 76 Q178 106 139 110 Q100 106 97 76 Q95 30 139 20Z" ${L}/>${wl(139, 44, 56, '올해 고마운 사람')}
-        ${cap(47, 132)}<polygon points="${starPts(47, 180, 50, 30)}" ${L}/>${wl(47, 166, 36, '새해 다짐')}
-        ${cap(139, 132)}<path d="M139 132 L181 222 L97 222Z" ${L}/>${wl(139, 178, 44, '친구에게 한마디')}`;
-      return [page(this, { sub: '칸에 글을 쓰고 테두리를 색칠한 뒤 오려요. 고리에 구멍을 뚫어 끈을 달면 완성!', body: svg(186, 232, s) })];
+      const W = 172, H = W * 1280 / 960, x0 = (186 - W) / 2;
+      const L = [['나의 소원', .25, .19], ['올해 고마운 사람', .75, .2], ['새해 다짐', .25, .735], ['친구에게 한마디', .75, .765]];
+      const s2 = `<image href="${XArt.page('wishorn.png')}" x="${x0}" y="0" width="${W}" height="${H}"/>` + L.map(([t, fx, fy]) => txt(x0 + fx * W, fy * H, t, 5.4, { fill: '#b52a2a' })).join('');
+      return [page(this, { sub: '오너먼트 가운데 빈칸에 글을 쓰고, 테두리 그림을 색칠한 뒤 오려요. 고리에 구멍을 뚫어 끈을 달면 완성!', body: svg(186, H, s2, `style="flex:1;min-height:0"`), tip: '교실 트리나 창문에 모두의 오너먼트를 걸어 「우리 반 소원 트리」를 만들어 보세요.' })];
     }
   });
   reg({
@@ -58,50 +64,51 @@
     const tab = (x1, y1, x2, y2, nx, ny) => `<path d="M${x1} ${y1} L${x1 + (x2 - x1) * .15 + nx * 7} ${y1 + (y2 - y1) * .15 + ny * 7} L${x1 + (x2 - x1) * .85 + nx * 7} ${y1 + (y2 - y1) * .85 + ny * 7} L${x2} ${y2}" fill="#eee" stroke="#432" stroke-width=".8"/>`;
     const X = (c) => x0 + c * a, Y = (r) => y0 + r * a;
     s += tab(X(1), Y(0), X(2), Y(0), 0, -1) + tab(X(1), Y(0), X(1), Y(1), -1, 0) + tab(X(2), Y(0), X(2), Y(1), 1, 0) + tab(X(1), Y(2), X(1), Y(3), -1, 0) + tab(X(2), Y(2), X(2), Y(3), 1, 0) + tab(X(1), Y(3), X(2), Y(3), 0, 1) + tab(X(0), Y(1), X(0), Y(2), -1, 0);
-    P.forEach(([c, r], i) => { const [ic, t] = faces[i]; s += `<rect x="${X(c)}" y="${Y(r)}" width="${a}" height="${a}" fill="#fff" stroke="#432" stroke-width=".5" stroke-dasharray="2.5 1.5"/>` + artG(ic, X(c) + a / 2 - 10, Y(r) + 3, 20, { line: true, sw: 5 }) + t.split('\n').map((q, k) => txt(X(c) + a / 2, Y(r) + 29 + k * 5.6, q, 4.4)).join(''); });
+    const NUM = [1, 2, 3, 5, 4, 6];
+    P.forEach(([c, r], i) => { const [ic, t] = faces[NUM[i] - 1]; s += `<rect x="${X(c)}" y="${Y(r)}" width="${a}" height="${a}" fill="#fff" stroke="#432" stroke-width=".5" stroke-dasharray="2.5 1.5"/>` + artG(ic, X(c) + a / 2 - 9, Y(r) + 4, 20, { line: true }) + t.split('\n').map((q, k) => txt(X(c) + a / 2, Y(r) + 29 + k * 5.6, q, 4.4)).join('') + `<circle cx="${X(c) + 7}" cy="${Y(r) + 7}" r="5.2" fill="#d93a3a"/>` + txt(X(c) + 7, Y(r) + 7.4, NUM[i], 7, { fill: '#fff' }); });
     s += `<path d="M${X(1)} ${Y(0)} H${X(2)} M${X(1)} ${Y(3)} H${X(2)} M${X(0)} ${Y(1)} H${X(1)} M${X(2)} ${Y(1)} H${X(4)} V${Y(2)} H${X(2)} M${X(0)} ${Y(2)} H${X(1)} M${X(0)} ${Y(1)} V${Y(2)} M${X(1)} ${Y(0)} V${Y(1)} M${X(2)} ${Y(0)} V${Y(1)} M${X(1)} ${Y(2)} V${Y(3)} M${X(2)} ${Y(2)} V${Y(3)}" fill="none" stroke="#432" stroke-width="1"/>`;
     return svg(186, 152, s);
   };
   reg({
-    id: 'mission-cube', title: '크리스마스 미션 주사위', cat: 'make', grades: G3, icon: 'gift', paper: '도화지',
-    desc: '전개도를 접어 만드는 주사위 2종(몸 놀이 / 마음 나누기 질문). 쉬는 시간·아침 활동용.',
+    id: 'mission-cube', title: '미션 주사위 말판 놀이', cat: 'make', grades: G3, icon: 'gift', paper: '도화지',
+    desc: '숫자와 미션이 함께 적힌 주사위 2종 + 말판. 나온 숫자만큼 가고, 윗면의 미션도 해요!',
     gen() {
-      const A = [['santa', '산타처럼\n호호호 웃기'], ['rudolph', '루돌프처럼\n다섯 걸음'], ['snowman', '눈사람처럼\n5초 얼음!'], ['bell', '캐럴\n한 소절'], ['mitten', '짝과\n하이파이브'], ['tree', '트리처럼\n반짝반짝 춤']];
-      const B = [['gift', '받고 싶은\n선물은?'], ['candle', '올해 가장\n고마운 사람은?'], ['snowflake', '겨울에 제일\n좋아하는 것은?'], ['santa', '산타에게\n묻고 싶은 것은?'], ['stocking', '내가 산타라면\n누구에게 무엇을?'], ['star', '새해에 꼭\n하고 싶은 일은?']];
-      return [[A, '몸 놀이 주사위', '굴려서 나온 미션을 다 함께 해요.'], [B, '마음 나누기 주사위', '굴려서 나온 질문에 돌아가며 대답해요.']].map(([f, t, sb]) => page(this, { title: t, noname: true, sub: sb + ' 색칠 → 굵은 선 오리기 → 점선 접기 → 회색 풀칠 날개에 풀칠해 붙이기.', body: legend + cube(f), tip: '도화지에 인쇄해야 잘 굴러가요. 고학년은 빈 종이에 전개도를 직접 그려 「우리 반 미션 주사위」를 만들게 해 보세요.' }));
-    }
-  });
-  reg({
-    id: 'fortune', title: '크리스마스 동서남북', cat: 'make', grades: G3, icon: 'star',
-    desc: '접어서 노는 동서남북(해외에서는 「포춘 텔러」). 숫자를 고르면 깜짝 미션이 나와요.',
-    gen() {
-      const u = 84, cx = 93, cy = 88, f = ['칭찬\n한마디', '캐럴\n부르기', '하이\n파이브', '산타\n웃음', '엄지\n척!', '윙크\n하기', '춤추기', '악수\n하기'];
-      let s = `<rect x="${cx - u}" y="${cy - u}" width="${u * 2}" height="${u * 2}" fill="#fff" stroke="#432" stroke-width="1.2"/><path d="M${cx} ${cy - u} L${cx + u} ${cy} L${cx} ${cy + u} L${cx - u} ${cy}Z" ${FOLD}/>` +
-        [-.5, 0, .5].map(k => `<path d="M${cx + k * u} ${cy - u} v${u * 2} M${cx - u} ${cy + k * u} h${u * 2}" ${FOLD}/>`).join('');
-      [['santa', 1, -1], ['tree', -1, -1], ['snowman', -1, 1], ['rudolph', 1, 1]].forEach(([n, sx, sy]) => { s += artG(n, cx + sx * u * .75 - 15, cy + sy * u * .75 - 15, 30, { line: true, sw: 4.5 }); });
-      const num = [[.33, -.83], [.83, -.33], [.83, .33], [.33, .83], [-.33, .83], [-.83, .33], [-.83, -.33], [-.33, -.83]];
-      num.forEach(([x, y], i) => { s += txt(cx + x * u, cy + y * u, i + 1, 9, { fill: '#b52a2a' }); });
-      const fo = [[.19, -.66, 0], [.66, -.19, 90], [.66, .19, 90], [.19, .66, 180], [-.19, .66, 180], [-.66, .19, -90], [-.66, -.19, -90], [-.19, -.66, 0]];
-      fo.forEach(([x, y, rot], i) => { const X = cx + x * u, Y = cy + y * u; s += `<g transform="rotate(${rot} ${X} ${Y})">${f[i].split('\n').map((q, k, a) => txt(X, Y + (k - (a.length - 1) / 2) * 4.6, q, 4)).join('')}</g>`; });
-      s += `<polygon points="${starPts(cx, cy, 12, 5.5)}" ${L} stroke-width=".7"/>`;
-      const sq = (inner) => svg(40, 34, `<g ${L} stroke-width=".7">${inner}</g>`);
-      const st = steps([
-        [sq('<rect x="6" y="3" width="28" height="28"/><path d="M6 3 L20 17 M34 3 L20 17 M6 31 L20 17 M34 31 L20 17" stroke-dasharray="2 1.5"/>'), '그림이 바닥을 보게 놓고, 네 귀퉁이를 가운데로 접어요.'],
-        [sq('<path d="M20 3 L34 17 L20 31 L6 17Z"/><path d="M13 10 L20 17 L27 10 M13 24 L20 17 L27 24" stroke-dasharray="2 1.5"/>'), '뒤집어서 네 귀퉁이를 다시 가운데로 접어요.'],
-        [sq('<rect x="10" y="7" width="20" height="20"/><path d="M10 17 h20 M20 7 v20" stroke-dasharray="2 1.5"/>'), '반으로 접었다 펴고, 방향을 바꿔 또 접었다 펴요.'],
-        [sq('<path d="M20 4 L32 14 L20 20 L8 14Z M8 14 L14 30 L20 20 M32 14 L26 30 L20 20"/>'), '그림 주머니 4곳에 엄지와 검지를 넣고 벌렸다 오므렸다!'],
-      ], 'c4');
-      return [page(this, { noname: true, sub: '놀이법: 친구가 그림을 고르면 글자 수만큼 움직이고 → 보이는 숫자를 고르면 그 수만큼 움직이고 → 다시 고른 숫자 아래의 미션을 열어 함께 해요.', body: svg(186, 176, s) + st })];
+      const A = [['santa', '산타처럼\n「호호호!」'], ['rudolph', '루돌프 코\n만지며 「반짝!」'], ['snowman', '눈사람처럼\n3초 얼음'], ['bell', '캐럴\n한 소절'], ['mitten', '옆 친구와\n하이파이브'], ['tree', '트리처럼\n반짝 춤']];
+      const B = [['gift', '받고 싶은\n선물은?'], ['candle', '올해 고마운\n사람은?'], ['snowflake', '겨울에 좋아\n하는 것은?'], ['santa', '산타에게\n묻고 싶은 것?'], ['stocking', '내가 산타라면\n무슨 선물을?'], ['star', '새해에 하고\n싶은 일은?']];
+      const dice = [[A, '미션 주사위 ① 몸 놀이', '숫자만큼 말을 옮기고, 윗면에 나온 몸 미션을 해요.'], [B, '미션 주사위 ② 마음 나누기', '숫자만큼 말을 옮기고, 윗면의 질문에 대답해요.']].map(([f, t, sb]) => page(this, { title: t, noname: true, sub: sb + ' 색칠 → 굵은 선 오리기 → 점선 접기 → 회색 날개에 풀칠해 붙이기.', body: legend + cube(f), tip: '마주 보는 면의 숫자를 더하면 7이 되는 진짜 주사위 배치예요. 도화지에 인쇄해야 잘 굴러가요.' }));
+      const cols = 6, rows = 5, cw = 30, ch = 29, SPC = { 5: ['gift', '선물 칸\n2칸 앞으로'], 11: ['snowman', '눈사람 칸\n한 번 쉬기'], 16: ['rudolph', '루돌프 칸\n한 번 더!'], 21: ['gift', '선물 칸\n2칸 앞으로'], 25: ['snowman', '눈사람 칸\n한 번 쉬기'], 27: ['rudolph', '루돌프 칸\n한 번 더!'] };
+      const tint = ['#ffe9e6', '#e2f4e8', '#fff3cf'], deco = ['star', 'bell', 'holly', 'cane', 'snowflake', 'ornament', 'mitten', 'candle'];
+      let b2 = '';
+      range(cols * rows, i => {
+        const row = Math.floor(i / cols), c0 = i % cols, col = row % 2 ? cols - 1 - c0 : c0, x = 3 + col * cw, y = 3 + (rows - 1 - row) * ch, sp = SPC[i];
+        b2 += `<rect x="${x + 1}" y="${y + 1}" width="${cw - 2}" height="${ch - 2}" rx="6" fill="${i === 0 ? '#e2f4e8' : i === 29 ? '#ffe08a' : sp ? '#fff' : tint[i % 3]}" stroke="#432" stroke-width="${sp ? 1.3 : .8}"/>`;
+        if (i === 0) b2 += artG('santa', x + 6, y + 2, 18) + txt(x + 15, y + 23, '출발', 4.6);
+        else if (i === 29) b2 += artG('tree', x + 6, y + 2, 18) + txt(x + 15, y + 23, '도착!', 4.6);
+        else if (sp) b2 += artG(sp[0], x + 2, y + 6, 12) + sp[1].split('\n').map((q, k) => txt(x + 20.5, y + 11 + k * 5, q, 3.5)).join('') + txt(x + 5.5, y + 5.5, i, 3.6, { fill: '#b52a2a' });
+        else b2 += txt(x + 6, y + 6.5, i, 4, { fill: '#b52a2a' }) + artG(deco[i % deco.length], x + 9, y + 8, 13, { line: true });
+      });
+      const tok = ['santa', 'rudolph', 'snowman', 'penguin'].map((n2, i) => `<g transform="translate(${10 + i * 44} 0)"><circle cx="15" cy="15" r="14" fill="#fff" stroke="#432" stroke-width=".7" stroke-dasharray="2 1.2"/>${artG(n2, 4, 4, 22)}</g>`).join('');
+      const board = page(this, { title: '미션 주사위 말판', noname: true, sub: '① 주사위를 굴려 나온 숫자만큼 가요. ② 주사위 윗면의 미션을 해요(못 하면 한 칸 뒤로!). ③ 그림 칸에 서면 그 칸의 규칙을 따라요. ④ 트리에 먼저 도착하면 승리!', body: svg(186, 151, b2, 'style="flex:none;height:151mm"') + `<div class="q">✂ 말 — 오려서 지우개에 붙여 세워요</div>` + svg(186, 30, tok, 'style="flex:none;height:30mm"'), tip: '모둠마다 주사위 하나와 말판 하나면 돼요. 「몸 놀이」 주사위와 「마음 나누기」 주사위를 번갈아 써도 재미있어요.' });
+      return [...dice, board];
     }
   });
   reg({
     id: 'thaumatrope', title: '빙글빙글 착시 장난감 (소마트로프)', cat: 'make', grades: G3, icon: 'snowman', paper: '도화지',
-    desc: '돌리면 두 그림이 하나로 합쳐 보이는 200년 된 과학 장난감. 「잔상」 현상을 눈으로 확인!',
+    desc: '앞뒤 그림이 하나로 합쳐 보이는 착시 장난감. 큰 원 4쌍: 스노우볼 속 눈사람, 굴뚝 속 산타, 트리 꾸미기, 선물 가득 양말.',
     gen() {
-      const R = 31, im = (n, x, y) => `<image href="${XArt.thauma(n)}" x="${x - 23}" y="${y - 23}" width="46" height="46" preserveAspectRatio="xMidYMid meet"/>`;
-      const pair = (y, a, b, cap) => `<circle cx="${93 - R}" cy="${y}" r="${R}" ${L}/><circle cx="${93 + R}" cy="${y}" r="${R}" ${L}/><path d="M93 ${y - 10} v20" ${FOLD}/>${a ? im(a, 93 - R, y) : ''}${b ? im(b, 93 + R, y) : ''}${txt(12, y, cap, 4.4, { fill: '#1c6146', rot: -90 })}`;
-      const s = pair(34, 'globe', 'snowman', '① 스노우볼') + pair(102, 'chimney', 'santa', '② 굴뚝 속 산타') + pair(170, 'baretree', 'decor', '③ 트리 꾸미기');
-      return [page(this, { sub: '① 색칠하고 원 두 개를 붙은 채로 오려요 → ② 가운데 점선을 접어 등을 맞대요 → ③ 사이에 빨대(나무젓가락)를 끼워 붙여요 → ④ 손바닥 사이에 넣고 빠르게 비벼 돌려요!', body: svg(186, 204, s) + `<div class="q">도전! 나만의 짝 그림 설계하기 (빈 원을 그려 오려 쓰세요)</div>`, tipLabel: '왜 그럴까?', tip: '우리 눈은 방금 본 모습을 아주 잠깐(약 1/16초) 기억해요. 두 그림이 빠르게 번갈아 보이면 뇌가 하나로 합쳐 버리지요. 이것을 「잔상」이라고 하고, 만화 영화도 같은 원리예요.' })];
+      const R = 38, T = XArt.thauma, LL = (n) => XArt.src(n, true);
+      const im = (href, x, y, w, h) => `<image href="${href}" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" preserveAspectRatio="none"/>`;
+      const PAIRS = [
+        ['스노우볼 속 눈사람', (cx, cy) => im(T('globe'), cx - 25.9, cy - 33, 51.8, 66), (cx, cy) => im(T('snowman'), cx - 12.7, cy - 22, 25.3, 32)],
+        ['굴뚝 속 산타', (cx, cy) => im(T('chimney'), cx - 27, cy - 8, 54, 45), (cx, cy) => `<svg x="${(cx - 20.5).toFixed(2)}" y="${(cy - 29.2).toFixed(2)}" width="40" height="26.4" viewBox="0 0 766 506" preserveAspectRatio="none"><image href="${T('santa')}" width="766" height="872"/></svg>`],
+        ['트리 꾸미기', (cx, cy) => im(T('baretree'), cx - 27.3, cy - 34, 54.5, 68), (cx, cy) => { const x0 = cx - 27.3, y0 = cy - 34; return im(LL('star'), cx - 8, y0 - 6, 16, 16) + [[.44, .25, 'ornament'], [.58, .34, 'bell'], [.37, .45, 'ornament'], [.63, .55, 'candy'], [.3, .63, 'bell'], [.52, .66, 'ornament'], [.7, .74, 'ornament'], [.4, .79, 'cane']].map(([fx, fy, n]) => im(LL(n), x0 + fx * 54.5 - 5.5, y0 + fy * 68 - 5.5, 11, 11)).join(''); }],
+        ['선물 가득 양말', (cx, cy) => im(LL('stocking'), cx - 23, cy - 22, 46, 60), (cx, cy) => im(LL('cane'), cx - 19, cy - 33, 13, 19) + im(LL('gift'), cx - 8, cy - 31, 17, 17) + im(LL('teddy'), cx + 7, cy - 30, 14, 16)],
+      ];
+      const pair = (cy, [t, A, B]) => `<circle cx="${93 - R}" cy="${cy}" r="${R}" fill="#fff" stroke="#432" stroke-width="1"/><circle cx="${93 + R}" cy="${cy}" r="${R}" fill="#fff" stroke="#432" stroke-width="1"/>` +
+        `<clipPath id="ca${cy}"><circle cx="${93 - R}" cy="${cy}" r="${R - .6}"/></clipPath><clipPath id="cb${cy}"><circle cx="${93 + R}" cy="${cy}" r="${R - .6}"/></clipPath>` +
+        `<g clip-path="url(#ca${cy})">${A(93 - R, cy)}</g><g clip-path="url(#cb${cy})">${B(93 + R, cy)}</g><path d="M93 ${cy - 12} v24" ${FOLD}/>` + txt(8, cy, t, 4.8, { fill: '#1c6146', rot: -90 }) + txt(93 - R, cy + R + 4.5, '앞면', 3.8, { fill: '#777' }) + txt(93 + R, cy + R + 4.5, '뒷면', 3.8, { fill: '#777' });
+      const how = `<div class="tip" style="background:#f3fbf6;border-color:#bfe6cd"><b style="color:#1c6146">만드는 법</b> ① 색칠하고 두 원을 붙은 채로 오려요 → ② 가운데 점선을 접어 두 그림이 등을 맞대게 해요 → ③ 사이에 빨대(나무젓가락)를 세로로 끼우고 풀로 붙여요 → ④ 빨대를 두 손바닥 사이에 끼우고 빠르게 비벼 돌려요!</div>`;
+      return [0, 1].map(k => page(this, { title: `빙글빙글 착시 장난감 ${k + 1}`, sub: '빠르게 돌리면 앞면과 뒷면 그림이 하나로 합쳐져요. 두 그림은 서로 딱 맞는 자리에 그려져 있으니 위치를 바꾸지 말고 그대로 오려요.', body: svg(186, 172, pair(43, PAIRS[k * 2]) + pair(128, PAIRS[k * 2 + 1]), 'style="flex:none;height:172mm"') + how, tipLabel: '왜 그럴까?', tip: '우리 눈은 방금 본 모습을 아주 잠깐(약 1/16초) 기억해요. 두 그림이 빠르게 번갈아 보이면 뇌가 하나로 합쳐 버리지요. 이것을 「잔상」이라고 하고, 만화 영화도 같은 원리예요.' }));
     }
   });
   reg({
@@ -179,6 +186,31 @@
       return [`<section class="page"><div class="pb">${svg(186, 236, s)}</div><footer class="pf"><span>크리스마스 활동 키트</span><span>전 학년 · 인증서</span></footer></section>`];
     }
   });
+  reg({
+    id: 'snow-dressup', title: '눈사람 옷 입히기', cat: 'make', grades: ['low', 'mid'], icon: 'snowman', paper: '도화지',
+    desc: '모자·목도리·장갑·코·단추를 골라 오려 붙여 나만의 눈사람을 꾸며요.',
+    gen() { return [page(this, { sub: '오른쪽 조각들을 색칠하고 오려서 왼쪽 눈사람에게 입혀 주세요. 어떤 눈사람이 될까요?', body: SH.full('snowdoll.png'), tip: '조각을 바로 붙이지 말고 여러 번 바꿔 입혀 본 뒤 마음에 드는 모습으로 붙여요. 짝과 조각을 바꿔 써도 좋아요.' })]; }
+  });
+  reg({
+    id: 'gift-tags', title: '선물 이름표 만들기', cat: 'make', grades: G3, icon: 'gift',
+    desc: '귀여운 그림이 있는 선물 이름표(태그) 8종. 색칠하고 이름을 써서 선물에 달아요.',
+    gen() { return [page(this, { noname: true, sub: '색칠하고 오린 뒤, 빈칸에 「받는 사람」과 「주는 사람」 이름을 써요. 구멍에 끈을 끼워 선물에 달아요.', body: SH.full('tags.png'), tip: '마음 선물 쿠폰북이나 직접 만든 카드와 함께 쓰면 좋아요.' })]; }
+  });
+  reg({
+    id: 'card-covers', title: '크리스마스 카드 표지 컬러링', cat: 'color', grades: G3, icon: 'letter',
+    desc: '굴뚝 산타, 눈사람 가족, 눈 오는 집, 선물 든 순록 — 카드 앞면 그림 4종.',
+    gen() { return [page(this, { noname: true, sub: '마음에 드는 그림을 색칠해서 오리고, 반으로 접은 색도화지 앞면에 붙이면 카드가 돼요. 안쪽에는 고마운 마음을 적어요.', body: SH.full('cards.png'), tip: '「산타에게 보내는 편지」 활동지와 이어서 하면 좋아요.' })]; }
+  });
+  reg({
+    id: 'paper-ornaments', title: '오려 거는 종이 오너먼트', cat: 'make', grades: G3, icon: 'ornament', paper: '도화지',
+    desc: '공·물방울·종·과자 집·별·장갑 모양 오너먼트 6종. 색칠해서 오려 트리에 걸어요.',
+    gen() { return [page(this, { noname: true, sub: '색칠하고 바깥선을 따라 오린 뒤, 고리에 구멍을 뚫어 끈을 달아요. 뒷면에 이름을 쓰면 우리 반 트리 장식이 돼요.', body: SH.full('ornacut.png'), tip: '반짝이 풀이나 스팽글을 붙이면 훨씬 화려해져요.' })]; }
+  });
+  reg({
+    id: 'cookie-design', title: '나만의 쿠키 꾸미기', cat: 'color', grades: ['low', 'mid'], icon: 'ginger',
+    desc: '진저맨·별·트리·양말·종·장갑 쿠키에 아이싱 무늬를 디자인해요.',
+    gen() { return [page(this, { sub: '쿠키 제빵사가 되어 볼까요? 빈 쿠키에 아이싱 무늬, 단추, 표정을 그려 넣고 맛있게 색칠해요.', body: SH.full('cookies.png'), tip: '완성한 쿠키에 이름과 가격을 붙여 「교실 쿠키 가게」 놀이로 이어 가 보세요.' })]; }
+  });
 
   /* ───────── 종이접기 ───────── */
   const R = '#ffc9c4', W = '#ffffff', Gc = '#bfe6cd', Bc = '#e3c3a4';
@@ -187,7 +219,8 @@
   const mtn = (d) => `<path d="${d}" fill="none" stroke-dasharray="3 1 .6 1" stroke-width=".55" stroke="#d93a3a"/>`;
   const arrow = (d) => `<path d="${d}" fill="none" stroke="#d93a3a" stroke-width=".9" marker-end="url(#ah)"/>`;
   const defs = `<svg width="0" height="0" style="position:absolute"><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#d93a3a"/></marker></defs></svg>`;
-  const oriPage = (self, o) => page(self, { ...o, body: defs + `<div style="display:flex;gap:5mm;font-size:9.5pt;flex:none"><span>┄┄ 골짜기 접기(앞으로)</span><span style="color:#d93a3a">─·─ 산 접기(뒤로)</span><span style="color:#d93a3a">→ 접는 방향</span></div>` + steps(o.st, o.cls || '') + (o.extra || '') });
+  const ORIPHOTO = { 'ori-hat': ['santa', '산타 모자를 접어 얼굴을 붙이면 산타 완성!'], 'ori-reindeer': ['reindeer', '갈색 색종이 한 장이면 루돌프 얼굴!'], 'ori-bookmark': ['bookmark', '책 모서리에 쏙 끼우는 루돌프 책갈피'], 'ori-tree': ['tree', '세모 세 개를 겹친 트리'], 'snowflake-cut': ['snowflake', '펼치면 여섯 갈래 눈꽃'] };
+  const oriPage = (self, o) => { const [ph, cap] = ORIPHOTO[self.id] || ['tree', '']; return page(self, { ...o, body: defs + `<div style="display:flex;gap:5mm;align-items:center;flex:none;background:#fffdf8;border:.4mm solid #ead9bf;border-radius:4mm;padding:2.5mm"><img src="${XArt.img('ori/' + ph + '.jpg')}" alt="" style="height:36mm;width:auto;border-radius:3mm;background:#fff"><div style="display:flex;flex-direction:column;gap:2mm"><div class="h3" style="font-size:15pt">완성하면 이런 모습!</div><div style="font-size:11pt">${cap}</div><div style="display:flex;gap:4mm;font-size:9.5pt;flex-wrap:wrap"><span>┄┄ 골짜기 접기(앞으로)</span><span style="color:#d93a3a">─·─ 산 접기(뒤로)</span><span style="color:#d93a3a">→ 접는 방향</span></div></div></div>` + steps(o.st, o.cls || '') + (o.extra || '') }); };
   reg({
     id: 'ori-hat', title: '종이접기: 산타 모자', cat: 'ori', grades: ['low', 'mid'], icon: 'hat', paper: '빨간 색종이',
     desc: '세 번만 접으면 완성! 얼굴을 그려 붙이면 산타 카드가 돼요.',
@@ -260,7 +293,7 @@
         [D(artG('snowflake', 10, 5, 40)), '살살 펼치면 여섯 갈래 눈꽃 완성!'],
       ];
       const wedge = (i) => { const cuts = [['M-9 20 l8 6 l-6 6Z', 'M11 30 l-8 3 l7 6Z', 'M-5 0 l5 9 l5 -9Z'], ['M-13 8 a7 7 0 0 0 4 13Z', 'M12 14 a7 7 0 0 1 -4 12Z', 'M-6 34 a5 5 0 0 0 3 9Z', 'M-16 0 L0 12 L16 0Z'], ['M-12 12 l10 2 l-7 8Z', 'M10 22 l-9 0 l6 9Z', 'M-5 36 l5 2 l-3 6Z', 'M-16 0 Q0 16 16 0Z'], ['M14 6 l-10 4 l8 6Z', 'M-10 20 l9 -3 l-6 11Z', 'M7 32 l-6 0 l4 8Z', 'M-8 0 l4 7 l4 -7 l4 7 l4 -7Z'], ['M-14 6 l8 8 l-5 2Z', 'M-9 24 a6 6 0 0 0 4 11Z', 'M13 10 l-8 10 l6 4Z', 'M6 34 l-5 4 l3 5Z'], ['M-11 16 l9 -6 l-4 14Z', 'M11 16 l-9 8 l5 8Z', 'M-16 0 L-6 0 L0 8 L6 0 L16 0 L0 14Z']][i]; return `<g transform="translate(${16 + i * 30.8} 2)"><clipPath id="wc${i}"><path d="M0 60 L-16 0 L16 0Z"/></clipPath><path d="M0 60 L-16 0 L16 0Z" fill="#fff" stroke="#432" stroke-width=".7"/><g clip-path="url(#wc${i})" fill="#bbb" stroke="#432" stroke-width=".4">${cuts.map(d => `<path d="${d}"/>`).join('')}</g>${txt(0, 66, i + 1 + '번', 4)}</g>`; };
-      const extra = `<div class="h3">무늬 본 — 회색 부분을 오려 내요 (5번 단계에서 따라 그리기)</div>` + svg(186, 70, range(6, wedge).join(''), 'style="flex:none;height:60mm"');
+      const extra = `<div class="h3">무늬 본 — 회색 부분을 오려 내요 (5번 단계에서 따라 그리기)</div>` + svg(186, 70, range(6, wedge).join(''), 'style="flex:none;height:36mm"');
       return [oriPage(this, { sub: '준비물: 정사각형 종이(얇을수록 잘 잘려요), 가위, 연필. 커피 필터를 쓰면 접기가 훨씬 쉬워요.', st, extra, tipLabel: '과학 한 스푼', tip: '진짜 눈 결정은 물 분자가 육각형으로 손을 잡고 얼기 때문에 언제나 6갈래예요. 그래서 4갈래·8갈래가 아니라 「3등분 접기」로 6갈래를 만드는 거랍니다.' })];
     }
   });
@@ -285,22 +318,6 @@
     }
   });
   reg({
-    id: 'year-awards', title: '나의 올해 시상식', cat: 'write', grades: ['mid', 'high'], icon: 'star',
-    desc: '올해의 노래·책·순간·고마운 사람… 한 해를 돌아보는 연말 어워드.',
-    gen() {
-      const A = [['올해의 순간', '가장 기억에 남는 장면'], ['올해의 도전', '용기 내어 해 본 일'], ['올해의 책·영화', '가장 재미있게 본 것'], ['올해의 노래', '가장 많이 흥얼거린 노래'], ['올해의 고마운 사람', '그리고 그 까닭'], ['올해의 실수', '그리고 배운 점'], ['올해의 우리 반', '우리 반이 가장 빛난 순간'], ['새해의 나에게', '미리 주는 응원 한마디']];
-      return [page(this, { sub: '올 한 해를 돌아보며 부문별 수상작을 뽑아요. 까닭도 한 줄씩!', body: `<div class="cards" style="grid-template-columns:1fr 1fr;flex:1">${A.map(([t, s], i) => `<div class="box" style="display:flex;flex-direction:column"><div style="display:flex;align-items:center;gap:2mm">${art(['star', 'bell', 'gift', 'ornament', 'candle', 'snowflake', 'tree', 'cocoa'][i], { size: 40 })}<div><div style="font-family:var(--f-display);font-size:13pt;color:#b52a2a;line-height:1.1">${t}</div><div style="font-size:9pt;color:#777">${s}</div></div></div><div class="lines" style="background:repeating-linear-gradient(transparent 0 8.6mm,#bfb1a5 8.6mm 9mm)"></div></div>`).join('')}</div>`, tip: '발표는 시상식처럼! 「올해의 순간 부문, 수상작은… 두구두구」 전자칠판 「돌림판」으로 발표 부문을 뽑으면 더 재미있어요.' })];
-    }
-  });
-  reg({
-    id: 'acrostic', title: 'N행시 짓기', cat: 'write', grades: G3, icon: 'bell',
-    desc: '산타(2행시)·루돌프(3행시)·크리스마스(5행시). 학년에 맞게 골라 써요.',
-    gen() {
-      const blk = (w, h) => `<div class="box" style="flex:none"><table style="width:100%;border-collapse:collapse">${[...w].map(ch => `<tr><td style="width:14mm;height:${h}mm;font-family:var(--f-display);font-size:20pt;color:#b52a2a;text-align:center">${ch}</td><td style="border-bottom:.4mm solid #bfb1a5"></td></tr>`).join('')}</table></div>`;
-      return [page(this, { sub: '낱말의 글자로 시작하는 문장을 지어요. 재미있어도 좋고, 따뜻해도 좋아요!', body: `<div class="q">2행시 (저학년 추천)</div>${blk('산타', 13)}<div class="q">3행시 (중학년 추천)</div>${blk('루돌프', 13)}<div class="q">5행시 (고학년 추천)</div>${blk('크리스마스', 13)}`, tip: '우리 반 친구 이름이나 「메리」, 「눈사람」, 「겨울방학」으로 바꿔 지어도 좋아요.' })];
-    }
-  });
-  reg({
     id: 'wish-three', title: '세 가지 선물', cat: 'write', grades: ['low', 'mid'], icon: 'gift',
     desc: '갖고 싶은 것 · 필요한 것 · 나누고 싶은 것. 선물의 의미를 넓혀 보는 활동.',
     gen() {
@@ -309,93 +326,41 @@
     }
   });
   reg({
-    id: 'manito', title: '비밀 친구(마니또) 미션 카드', cat: 'write', grades: G3, icon: 'stocking',
-    desc: '일주일 동안 몰래 친절을 베푸는 마니또 놀이용 뽑기 카드·미션표·정체 공개 쪽지.',
-    gen() {
-      const M = ['몰래 책상 정리해 주기', '칭찬 쪽지 몰래 넣기', '먼저 인사하기', '필요한 물건 빌려주기', '웃긴 그림 선물하기', '힘들 때 도와주기'];
-      const card = range(4, () => `<div style="border:.5mm dashed #8a7a70;border-radius:4mm;padding:3mm;text-align:center">${art('stocking', { size: 60 }).replace('<svg', '<svg style="margin:0 auto"')}<div style="font-family:var(--f-display);color:#b52a2a">쉿! 나의 비밀 친구는</div><div style="border-bottom:.4mm solid #432;height:10mm"></div><div style="font-size:9pt;color:#777">아무에게도 말하지 않기!</div></div>`).join('');
-      return [page(this, { noname: true, sub: '① 이름 뽑기 → ② 일주일 동안 들키지 않고 미션 실천 → ③ 마지막 날 정체 공개 쪽지 전달!', body: `<div class="h3">✂ 뽑기 카드 (선생님이 이름을 적어 접어서 뽑아요)</div><div class="cards" style="grid-template-columns:repeat(4,1fr);flex:none">${card}</div><div class="h3">나의 비밀 미션표 — 실천하면 ✔</div><table class="t"><tr>${M.map(m => `<td style="width:16.6%;height:22mm">${m}<br>☐</td>`).join('')}</tr></table><div class="h3">정체 공개 쪽지</div><div class="box" style="flex:1;display:flex;flex-direction:column"><div class="q">${blank(40)}에게. 짜잔, 네 마니또는 나였어!</div><div class="lines"></div><div class="q" style="text-align:right">너의 비밀 친구 ${blank(36)}</div></div>` })];
-    }
-  });
-  reg({
     id: 'world-xmas', title: '세계의 크리스마스 여행', cat: 'write', grades: ['mid', 'high'], icon: 'ornament', answers: true,
     desc: '일본의 치킨, 아이슬란드의 장난꾸러기 13명, 롤러스케이트 타고 가는 성탄 미사… 읽기 자료와 확인 퀴즈.',
     gen(c) {
       const F = [['일본', '1970년대의 한 광고가 큰 인기를 끈 뒤로, 크리스마스에 프라이드치킨을 먹는 문화가 생겼어요. 몇 주 전부터 예약할 정도!'], ['호주', '남반구라서 12월이 한여름이에요. 해변에서 수영복 차림으로 바비큐를 하며 크리스마스를 보내기도 해요.'], ['아이슬란드', '「율 라드」라는 장난꾸러기 요정 13명이 크리스마스 13일 전부터 하루에 한 명씩 찾아와요. 창가에 둔 신발에 선물을, 말썽꾸러기에게는 썩은 감자를 넣는대요.'], ['베네수엘라', '수도 카라카스에서는 크리스마스 새벽 미사에 롤러스케이트를 타고 가는 전통이 있어요.'], ['우크라이나', '트리를 거미줄 모양으로 장식해요. 가난한 가족의 트리를 거미가 밤새 꾸며 주었다는 옛이야기에서 왔어요.'], ['필리핀', '별 모양 등불 「파롤」을 집집이 걸어요. 9월부터 캐럴이 울려 퍼질 만큼 세계에서 가장 긴 크리스마스 철을 보내요.'], ['독일', '12월 1일부터 하루에 한 칸씩 여는 「어드벤트 달력」과 크리스마스 마켓의 고향이에요.'], ['멕시코', '「포사다」 기간에 별 모양 피냐타를 막대기로 터뜨려 사탕을 나눠 가져요.'], ['스웨덴', '예블레라는 도시는 해마다 짚으로 집채만 한 염소를 세워요. 1966년부터 이어진 전통이에요.'], ['에티오피아', '달력이 달라서 1월 7일에 「겐나」라는 크리스마스를 지내요.'], ['이탈리아', '1월 6일 전날 밤, 빗자루를 탄 마녀 할머니 「베파나」가 양말에 사탕을 넣어 준대요.'], ['캐나다', '산타에게 보내는 편지 전용 우편번호가 있어요. 바로 H0H 0H0 (호호호)!']];
-      const p1 = page(this, { sub: '나라마다 크리스마스를 보내는 모습이 달라요. 읽으면서 가장 신기한 것에 ★표 하세요.', body: `<div class="cards" style="grid-template-columns:1fr 1fr;flex:1;align-content:space-between">${F.map(([n, t]) => `<div style="border:.4mm solid #d9c9b5;border-radius:3mm;padding:1.6mm 2.6mm;font-size:9.6pt;line-height:1.42;background:#fffdf8"><b style="font-family:var(--f-display);font-weight:400;font-size:12pt;color:#b52a2a">${n}</b> ${t}</div>`).join('')}</div>` });
+      const WI = { 일본: 'japan', 호주: 'australia', 아이슬란드: 'iceland', 베네수엘라: 'venezuela', 우크라이나: 'ukraine', 필리핀: 'philippines', 독일: 'germany', 멕시코: 'mexico', 스웨덴: 'sweden', 에티오피아: 'ethiopia', 이탈리아: 'italy', 캐나다: 'canada' };
+      const p1 = page(this, { sub: '나라마다 크리스마스를 보내는 모습이 달라요. 그림을 보며 읽고, 가장 신기한 것에 ★표 하세요.', body: `<div class="cards" style="grid-template-columns:1fr 1fr;flex:1;align-content:space-between;gap:2.2mm">${F.map(([n, t]) => `<div style="border:.4mm solid #d9c9b5;border-radius:3mm;padding:1.4mm 2mm;font-size:9pt;line-height:1.38;background:#fffdf8;display:flex;gap:2mm;align-items:center"><img src="${XArt.img('w/' + WI[n] + '.png')}" alt="" style="width:17mm;height:17mm;object-fit:contain;flex:none"><div><b style="font-family:var(--f-display);font-weight:400;font-size:12pt;color:#b52a2a">${n}</b> ${t}</div></div>`).join('')}</div>` });
       const Q = [['12월이 한여름이라 해변에서 크리스마스를 보내기도 하는 나라는?', '호주'], ['아이슬란드의 장난꾸러기 요정 「율 라드」는 모두 몇 명인가요?', '13명'], ['우크라이나에서 트리를 거미줄 모양으로 장식하게 된 까닭은?', '거미가 가난한 가족의 트리를 꾸며 주었다는 옛이야기'], ['필리핀의 별 모양 등불 이름은?', '파롤'], ['에티오피아의 크리스마스는 몇 월 며칠인가요?', '1월 7일'], ['캐나다의 산타 전용 우편번호가 H0H 0H0인 까닭을 짐작해 써 보세요.', '산타의 웃음소리 「호호호」']];
       const p2 = page(this, { title: '세계의 크리스마스 퀴즈 & 내 생각', sub: '읽기 자료를 떠올리며 답해요.', body: Q.map(([q, a], i) => `<div style="flex:none"><b style="font-family:var(--f-display);font-weight:400;color:#b52a2a">${i + 1}.</b> ${q}<div class="ans" style="border-bottom:.4mm solid #bfb1a5;height:8mm;padding-left:4mm">${c.ans ? a : ''}</div></div>`).join('') + `<div class="q">가장 가 보고 싶은 나라의 크리스마스와 그 까닭</div><div class="lines"></div><div class="q">우리나라(우리 집)만의 크리스마스 모습을 외국 친구에게 소개한다면?</div><div class="lines"></div>`, tip: '모둠별로 한 나라씩 맡아 「1분 여행 가이드」 발표를 하거나, 세계 지도에 스티커를 붙이며 읽으면 사회 수업과 연결됩니다.' });
       return [p1, p2];
     }
   });
 
-  /* ───────── 과학 · 코딩 ───────── */
-  const card4 = (list) => `<div class="cards" style="grid-template-columns:1fr 1fr;flex:1">${list.map(([ic, t, mat, how, why]) => `<div class="box" style="display:flex;flex-direction:column;gap:1mm;font-size:9.6pt;line-height:1.42"><div style="display:flex;align-items:center;gap:2mm">${art(ic, { size: 44 })}<div style="font-family:var(--f-display);font-size:13.5pt;color:#b52a2a;line-height:1.15">${t}</div></div><div><b style="font-family:var(--f-display);font-weight:400;color:#1c6146">준비물</b> ${mat}</div><div><b style="font-family:var(--f-display);font-weight:400;color:#1c6146">방법</b> ${how}</div><div style="margin-top:auto;background:#fff6dc;border-radius:2mm;padding:1mm 2mm"><b style="font-family:var(--f-display);font-weight:400;color:#b06a00">${why[0]}</b> ${why[1]}</div></div>`).join('')}</div>`;
-  reg({
-    id: 'stem-challenge', title: '크리스마스 STEM 도전 카드', cat: 'stem', grades: G3, icon: 'tree',
-    desc: '컵 트리 쌓기, 산타 낙하산, 포일 썰매, 눈덩이 발사대… 재활용품으로 하는 모둠 공학 챌린지 8종.',
-    gen() {
-      const C = [
-        ['tree', '종이컵 트리 탑', '종이컵 30개', '2분 안에 가장 높은 트리 모양 탑을 쌓아요. 무너지면 다시! 다 쌓으면 10초 버티기.', ['생각', '아래층을 넓게 쌓으면 왜 더 튼튼할까요?']],
-        ['ginger', '젤리 트리 구조물', '젤리(또는 마시멜로) 20개, 이쑤시개 30개', '젤리를 꼭짓점, 이쑤시개를 기둥 삼아 스스로 서는 가장 높은 트리를 지어요.', ['생각', '세모(삼각형) 구조가 네모보다 튼튼한 까닭은?']],
-        ['santa', '산타 낙하산', '비닐봉지·냅킨, 실, 클립(산타)', '클립 산타가 가장 「천천히」 떨어지는 낙하산을 만들어요. 의자 높이에서 떨어뜨려 시간을 재요.', ['생각', '낙하산이 넓어지면 무엇이 달라지나요? (공기 저항)']],
-        ['gift', '포일 썰매 선물 싣기', '알루미늄 포일 15cm, 물 담은 대야, 구슬·동전', '포일로 물에 뜨는 썰매를 접고 선물(구슬)을 하나씩 실어요. 가라앉기 전까지 몇 개?', ['생각', '바닥이 넓은 배가 더 많이 싣는 까닭은? (부력)']],
-        ['star', 'A4 한 장 트리', 'A4 1장, 가위, 테이프 10cm', '종이 한 장만으로 스스로 서는 가장 높은 트리를 만들어요. 자르기·말기·접기 모두 가능!', ['생각', '종이를 말거나 접으면 왜 더 잘 버틸까요?']],
-        ['snowman', '눈덩이 발사대', '아이스크림 막대 7개, 고무줄, 병뚜껑, 솜', '막대를 겹쳐 묶어 지렛대 투석기를 만들고, 솜 눈덩이를 과녁(종이컵)에 넣어요.', ['생각', '받침점을 옮기면 날아가는 거리가 어떻게 달라지나요?']],
-        ['stocking', '선물 미끄럼틀', '종이, 테이프, 구슬, 초시계', '벽에 종이 길을 붙여 구슬이 가장 「오래」 굴러 내려오는 미끄럼틀을 설계해요.', ['생각', '경사를 완만하게, 길을 구불구불하게 하면?']],
-        ['elf', '엘프 덫 설계', '종이, 재활용품', '교실에 몰래 온 엘프를 다치지 않게 붙잡을 장치를 설계도로 그리고, 재활용품으로 만들어 발표해요.', ['생각', '미끼–감지–가두기, 세 단계가 다 들어 있나요?']],
-      ];
-      return range(2, p => page(this, { title: `크리스마스 STEM 도전 카드 (${p + 1}/2)`, noname: true, sub: '모둠(3~4명)별로 「계획 3분 → 제작 10분 → 시험 → 고쳐 만들기」 순서로 진행해요. 실패해도 고치면 성공!', body: card4(C.slice(p * 4, p * 4 + 4)), tip: p ? '저학년은 규칙을 단순하게(높이만 재기), 고학년은 「재료비 예산」(컵 1개 100원 등)을 넣어 가성비 점수를 계산하게 하면 수준을 맞출 수 있어요.' : '안전: 이쑤시개·고무줄은 사람을 향하지 않기. 젤리 대신 고무찰흙을 써도 됩니다.' }));
-    }
-  });
-  reg({
-    id: 'experiments', title: '신기한 겨울 과학 실험 카드', cat: 'stem', grades: G3, icon: 'cocoa',
-    desc: '마법 우유, 사인펜 번지기 오너먼트, 춤추는 건포도, 폭신폭신 인공 눈… 교실에서 하는 안전한 실험 6종과 기록장.',
-    gen() {
-      const E = [
-        ['cane', '빙글빙글 마법 우유', '접시, 우유, 식용 색소(빨강·초록), 면봉, 주방 세제', '우유에 색소를 톡톡 떨어뜨리고, 세제를 묻힌 면봉을 가운데 콕! 색이 저절로 춤을 춰요.', ['왜?', '세제가 우유 속 지방과 만나면서 표면을 당기는 힘(표면 장력)이 약해져 색소가 밀려나요.']],
-        ['ornament', '사인펜 번지기 오너먼트', '커피 필터(키친타월), 수성 사인펜, 스포이트, 물', '필터 가운데에 사인펜으로 점을 둥글게 찍고 물을 한 방울씩! 번진 무늬를 말려 오너먼트로 오려요.', ['왜?', '검은색 사인펜도 사실 여러 색을 섞은 것! 물을 따라 이동하는 빠르기가 달라 색이 나뉘어요(크로마토그래피).']],
-        ['bell', '춤추는 건포도', '투명 컵, 사이다, 건포도 5알', '사이다에 건포도를 넣고 지켜봐요. 가라앉았다가 떠오르기를 되풀이하며 춤을 춰요.', ['왜?', '탄산 기포가 건포도에 달라붙어 튜브처럼 띄워 올리고, 물 위에서 기포가 터지면 다시 가라앉아요.']],
-        ['snowman', '폭신폭신 인공 눈', '베이킹 소다 1컵, 헤어 린스(컨디셔너), 그릇', '베이킹 소다에 린스를 한 숟갈씩 넣으며 섞어요. 뭉쳐질 때까지! 차갑고 보슬보슬한 눈으로 꼬마 눈사람을 만들어요.', ['주의', '먹지 않기, 만진 뒤 손 씻기. 식초를 떨어뜨리면 보글보글 「녹는 눈」 실험이 돼요.']],
-        ['snowflake', '정전기 눈보라', '풍선, 휴지(또는 스티로폼 가루)', '휴지를 눈송이처럼 잘게 찢어요. 풍선을 머리카락·스웨터에 문지른 뒤 가까이 대면 눈이 솟아올라요!', ['왜?', '문지르면 풍선에 전기가 모여요(마찰 전기). 이 전기가 가벼운 휴지를 끌어당겨요.']],
-        ['cocoa', '지팡이 사탕 녹이기 대결', '지팡이 사탕 조각 3개, 찬물·따뜻한 물·식용유 컵', '세 컵에 사탕을 동시에 넣고 어디서 가장 빨리 녹는지 예상하고 관찰해요.', ['왜?', '물이 따뜻할수록 물 알갱이가 활발히 움직여 설탕을 빨리 녹여요. 기름에는 설탕이 녹지 않아요.']],
-      ];
-      const rec = page(this, { title: '꼬마 과학자 실험 기록장', sub: '실험 이름을 쓰고, 예상 → 관찰 → 까닭 순서로 기록해요.', body: `<div class="q">실험 이름: ${blank(110)}</div><div class="grid2" style="flex:none;height:62mm"><div class="box"><span style="font-family:var(--f-display)">① 내 예상 (그림이나 글)</span></div><div class="box"><span style="font-family:var(--f-display)">② 실제로 본 것 (그림)</span></div></div><div class="q">③ 관찰한 것을 글로 써요</div>${lines(4)}<div class="q">④ 왜 그렇게 되었을까요?</div>${lines(3)}<div class="q">⑤ 더 해 보고 싶은 실험</div><div class="lines"></div>` });
-      return [page(this, { title: '신기한 겨울 과학 실험 카드 (1/2)', noname: true, sub: '모든 실험은 「예상하기 → 해 보기 → 까닭 생각하기」 순서로! 선생님이 먼저 시범을 보여 주세요.', body: card4(E.slice(0, 4)) }), page(this, { title: '신기한 겨울 과학 실험 카드 (2/2)', noname: true, sub: '실험 뒤에는 기록장에 관찰한 것을 그림과 글로 남겨요.', body: card4(E.slice(4)) + `<div class="box" style="flex:none"><div class="h3">실험 안전 약속</div><ul class="ul"><li>실험 재료는 먹거나 맛보지 않아요.</li><li>쏟았을 때는 바로 선생님께 말해요.</li><li>실험이 끝나면 손을 깨끗이 씻어요.</li><li>식품 알레르기(우유 등)가 있는 친구는 미리 알려요.</li></ul></div>`, tip: '6학년 「연소·용해」, 3학년 「물질의 성질」, 4학년 「혼합물의 분리」 단원과 연결하기 좋습니다.' }), rec];
-    }
-  });
-  reg({
-    id: 'binary', title: '이진수 비밀 이름 팔찌', cat: 'stem', grades: ['high'], icon: 'ornament', answers: true,
-    desc: '컴퓨터의 언어 0과 1로 영어 이름 첫 글자를 구슬 무늬로 바꿔요. 실과 「소프트웨어」 연계 언플러그드 코딩.',
-    gen(c) {
-      const bin = (n) => n.toString(2).padStart(5, '0');
-      const tb = `<table class="t" style="font-size:9pt">${range(2, r => `<tr>${range(13, i => `<th style="padding:.8mm">${String.fromCharCode(65 + r * 13 + i)}</th>`).join('')}</tr><tr>${range(13, i => `<td style="padding:.8mm;font-size:8.6pt;font-variant-numeric:tabular-nums">${bin(r * 13 + i + 1)}</td>`).join('')}</tr>`).join('')}</table>`;
-      const beads = (code) => svg(80, 12, range(5, i => `<circle cx="${8 + i * 16}" cy="6" r="5.4" fill="${code && code[i] === '1' ? '#d93a3a' : '#fff'}" stroke="#432" stroke-width=".7"/>`).join('') + `<path d="M0 6 h2.6 M77.4 6 h2.6" stroke="#432" stroke-width=".7"/>`, 'style="height:10mm;width:66mm;flex:none"');
-      const ex = ['S', 'A', 'N', 'T', 'A'];
-      return [page(this, { sub: '컴퓨터는 모든 글자를 0과 1로 기억해요. 약속: 1 = 빨간 구슬(칠하기), 0 = 흰 구슬(그대로). 알파벳 순서(A=1, B=2…)를 이진수 다섯 자리로 나타냈어요.', body: `<div class="h3">이진수 암호표</div>${tb}<div class="h3">① 해독하기 — 구슬 무늬는 어떤 낱말일까요?</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:2mm;flex:none">${ex.map(ch => `<div style="text-align:center">${beads(bin(ch.charCodeAt(0) - 64)).replace('width:66mm', 'width:100%')}<div class="ans" style="border:.4mm solid #432;border-radius:2mm;height:9mm;font-size:15pt;line-height:9mm">${c.ans ? ch : ''}</div></div>`).join('')}</div><div class="h3">② 내 이름 첫 글자(이니셜) 세 개를 구슬로 나타내기</div>${range(3, () => `<div style="display:flex;align-items:center;gap:4mm;flex:none">글자 ${blank(12)} → 이진수 ${blank(30)} → ${beads()}</div>`).join('')}<div class="h3">③ 생각해 보기</div><div>구슬 다섯 개로는 모두 몇 가지를 나타낼 수 있을까요? 구슬이 여섯 개라면?</div><div class="ans" style="border-bottom:.4mm solid #bfb1a5;height:9mm">${c.ans ? '5개: 2×2×2×2×2 = 32가지 / 6개: 64가지' : ''}</div>`, tip: '진짜 구슬(두 가지 색)과 모루(철사)로 팔찌·오너먼트를 만들면 멋진 선물이 돼요. 글자 사이에는 다른 색 구슬을 하나 끼워 구분합니다.' })];
-    }
-  });
+  /* ───────── 카드 모양 공통 ───────── */
+  const card4 = (list) => `<div class="cards" style="grid-template-columns:1fr 1fr;flex:1">${list.map(([ic, t, mat, how, why]) => `<div class="box" style="display:flex;flex-direction:column;gap:2mm;font-size:11.5pt;line-height:1.5"><div style="display:flex;align-items:center;gap:2mm">${art(ic, { size: 60 })}<div style="font-family:var(--f-display);font-size:13.5pt;color:#b52a2a;line-height:1.15">${t}</div></div><div><b style="font-family:var(--f-display);font-weight:400;color:#1c6146">준비물</b> ${mat}</div><div><b style="font-family:var(--f-display);font-weight:400;color:#1c6146">방법</b> ${how}</div><div style="margin-top:auto;background:#fff6dc;border-radius:2mm;padding:1mm 2mm"><b style="font-family:var(--f-display);font-weight:400;color:#b06a00">${why[0]}</b> ${why[1]}</div></div>`).join('')}</div>`;
 
   /* ───────── 놀이 카드 ───────── */
   reg({
     id: 'play-cards', title: '교실 놀이 카드 12선', cat: 'play', grades: G3, icon: 'mitten',
-    desc: '종이 눈싸움 질문 놀이, 랩 공 선물 풀기, 컵 트리 릴레이, 선물 포장 2인 1조… 준비물 적은 교실·강당 놀이 12가지.',
+    desc: '종이 눈싸움, 랩 공 선물 풀기, 스무고개, 방울 찾기… 교실 자리에서 바로 하는 놀이 12가지.',
     gen() {
       const P = [
-        ['snowflake', '종이 눈싸움 질문 놀이', '이면지, 펜', '종이에 질문(또는 퀴즈)을 써서 구겨 눈덩이를 만들어요. 신호에 맞춰 30초 눈싸움! 「그만」 하면 가까운 눈덩이를 주워 펴고 질문에 답해요.', ['학년 팁', '저: 「좋아하는 겨울 간식?」 / 고: 단원 복습 퀴즈로']],
-        ['gift', '랩 공 선물 풀기', '랩으로 겹겹이 싼 공(사이사이 사탕·스티커), 주사위', '둥글게 앉아 한 명이 랩을 풀고, 옆 사람은 주사위를 굴려요. 6(또는 같은 눈 두 번)이 나오면 공이 다음 사람에게! 풀려나온 선물은 내 것.', ['학년 팁', '해외에서 대인기인 놀이. 장갑을 끼고 풀면 난이도 상승!']],
-        ['tree', '컵 트리 릴레이', '모둠당 종이컵 10개', '한 명씩 달려가 컵을 하나씩 쌓아 4-3-2-1 트리를 완성하고, 다시 한 명씩 달려가 하나로 포개요. 먼저 끝낸 모둠 승!', ['학년 팁', '저: 6개(3-2-1) / 고: 한 손만 쓰기']],
-        ['stocking', '선물 포장 2인 1조', '상자, 포장지(신문지), 테이프, 리본', '짝과 어깨동무를 하고 한 사람은 오른손만, 한 사람은 왼손만 써서 상자를 포장해요. 3분 뒤 「가장 예쁜 포장」 투표!', ['학년 팁', '말하지 않고 하기 규칙을 넣으면 협동 난도가 올라가요']],
-        ['santa', '산타 수염 채우기', '산타 얼굴 그림, 양면테이프, 솜, 숟가락', '솜을 숟가락에 올려 달려가 산타 턱(양면테이프)에 붙이고 돌아와요. 수염을 먼저 다 채우는 모둠이 승리.', ['학년 팁', '「산타 수염 카운트다운」 도안을 크게 복사해 쓰세요']],
-        ['rudolph', '루돌프 코 옮기기', '빨간 색종이 동그라미, 빨대, 접시 2개', '빨대로 숨을 들이마셔 빨간 코를 붙인 채 옆 접시로 옮겨요. 1분 동안 가장 많이 옮긴 사람은?', ['학년 팁', '빨대는 한 사람이 하나씩! 고: 젓가락으로 폼폼 옮기기']],
-        ['cane', '지팡이 사탕 낚시', '지팡이 사탕(또는 모루로 만든 갈고리) 여러 개, 컵', '지팡이 사탕 하나를 낚싯대 삼아 책상 가장자리에 걸쳐 둔 다른 사탕을 걸어 컵으로 옮겨요.', ['학년 팁', '모루를 구부려 만들면 위생 걱정 없이 여러 번 쓸 수 있어요']],
-        ['snowman', '눈사람 얼음 댄스', '캐럴 음원', '캐럴에 맞춰 신나게 춤추다가 음악이 멈추면 눈사람처럼 얼음! 움직인 사람은 「심사 위원 엘프」가 되어 함께 찾아요.', ['학년 팁', '「산타 포즈로 얼음」, 「트리 포즈로 얼음」 주문 추가']],
-        ['elf', '산타 가라사대', '없음', '「산타 가라사대 ~」가 붙은 말만 따라 해요. 「산타 가라사대 루돌프 뿔!」 「썰매 타!」(← 따라 하면 탈락)', ['학년 팁', '탈락한 친구가 다음 진행자가 되게 하면 모두 참여해요']],
-        ['mitten', '양말 속 물건 맞히기', '큰 양말(주머니), 작은 물건 6가지', '양말 속에 손을 넣어 만져 보고 물건 이름을 맞혀요. 솔방울, 방울, 지우개, 리본, 사탕…', ['학년 팁', '고: 장갑을 끼고 만지기 / 촉감을 낱말로 표현하기(국어 연계)']],
-        ['penguin', '펭귄 눈덩이 릴레이', '풍선(또는 공)', '무릎 사이에 풍선을 끼우고 펭귄처럼 뒤뚱뒤뚱 반환점을 돌아와요. 떨어뜨리면 그 자리에서 다시!', ['학년 팁', '저: 손으로 풍선 통통 치며 가기']],
-        ['bell', '방울 소리 술래잡기', '방울(딸랑이), 안대', '안대를 쓴 「산타」가 방울을 든 「루돌프」를 소리만 듣고 찾아요. 둘레의 친구들은 조용히 울타리가 되어 줘요.', ['학년 팁', '안전을 위해 걷기만! 울타리 친구들이 「스톱」을 외쳐 줘요']],
+        ['snowflake', '종이 눈싸움 질문 놀이', '이면지, 펜', '종이에 질문을 써서 구겨 눈덩이를 만들어요. 자리에서 30초 동안 살살 던지기! 「그만」 하면 가까운 눈덩이를 펴서 질문에 답해요.', ['학년 팁', '저: 「좋아하는 겨울 간식?」 / 고: 단원 복습 퀴즈']],
+        ['gift', '랩 공 선물 풀기', '랩으로 겹겹이 싼 공(사이사이 사탕·스티커), 주사위', '모둠이 둘러앉아 한 명은 랩을 풀고 옆 사람은 주사위를 굴려요. 6이 나오면 공이 다음 사람에게! 풀려나온 선물은 내 것.', ['더 재미있게', '장갑을 끼고 풀면 난이도 상승!']],
+        ['presents', '선물 포장 2인 1조', '상자, 신문지, 테이프, 리본', '짝과 나란히 앉아 한 사람은 오른손만, 다른 사람은 왼손만 써서 상자를 포장해요. 3분 뒤 「가장 예쁜 포장」 투표!', ['더 재미있게', '말하지 않고 하기 규칙을 넣어 보세요']],
+        ['rudolph', '루돌프 코 옮기기', '빨간 색종이 동그라미, 빨대, 접시 2개', '빨대로 숨을 들이마셔 빨간 코를 붙인 채 옆 접시로 옮겨요. 1분 동안 가장 많이 옮긴 사람은?', ['학년 팁', '빨대는 한 사람이 하나씩! 고: 젓가락으로 옮기기']],
+        ['cane', '지팡이 사탕 낚시', '모루로 만든 갈고리 여러 개, 종이컵', '책상 가장자리에 걸쳐 둔 갈고리를 내 갈고리로 걸어 컵에 옮겨요. 30초 동안 몇 개?', ['안전', '모루 끝은 둥글게 말아 두세요']],
+        ['elf', '산타 가라사대', '없음', '「산타 가라사대 ~」가 붙은 말만 따라 해요. 「산타 가라사대 루돌프 뿔!」 「썰매 타!」(← 따라 하면 탈락)', ['더 재미있게', '탈락한 친구가 다음 진행자가 돼요']],
+        ['stocking', '양말 속 물건 맞히기', '큰 양말, 작은 물건 6가지', '양말 속에 손을 넣어 만져 보고 물건 이름을 맞혀요. 솔방울, 방울, 지우개, 리본, 사탕…', ['국어 연계', '만진 느낌을 꾸며 주는 말로 말해 보기']],
+        ['snowman', '자리에서 눈사람 얼음 댄스', '캐럴 음원', '자리에 서서 캐럴에 맞춰 춤추다가 음악이 멈추면 눈사람처럼 얼음! 움직이면 앉아서 「심사 위원 엘프」가 돼요.', ['더 재미있게', '「산타 포즈로 얼음」처럼 포즈를 정해 주세요']],
+        ['tree', '30초 컵 트리 쌓기', '모둠마다 종이컵 10개', '모둠 책상에서 30초 안에 컵으로 4-3-2-1 트리를 쌓아요. 무너지면 처음부터! 성공하면 한 손으로 도전.', ['학년 팁', '저: 6개(3-2-1) / 고: 한 손만 쓰기']],
+        ['holly', '눈 감고 루돌프 코 붙이기', '칠판에 그린 루돌프, 빨간 동그라미 스티커', '눈을 감고 제자리에서 세 바퀴 돈 뒤 칠판의 루돌프 얼굴에 코를 붙여요. 가장 가깝게 붙인 사람이 승리!', ['안전', '친구가 칠판 앞까지 손을 잡고 안내해요']],
+        ['gift', '선물 상자 스무고개', '상자, 상자에 숨길 물건', '선생님이 상자에 숨긴 물건을 「예/아니요」 질문 20번 안에 맞혀요. 「먹을 수 있나요?」 「겨울에 쓰나요?」', ['더 재미있게', '모둠이 돌아가며 질문하고 정답 모둠에 점수']],
+        ['bell', '방울을 찾아라', '방울 하나', '한 명이 복도에 나간 사이 교실에 방울을 숨겨요. 들어와 찾는 동안 가까우면 크게, 멀면 작게 「징글벨」을 흥얼거려요.', ['진행 팁', '숨기는 곳은 손이 닿는 교실 안으로 정해요']],
       ];
-      return range(3, p => page(this, { title: `교실 놀이 카드 (${p + 1}/3)`, noname: true, sub: '준비물이 간단한 놀이만 모았어요. 전자칠판의 「타이머」, 「돌림판」, 「모둠 점수판」과 함께 쓰면 진행이 쉬워요.', body: card4(P.slice(p * 4, p * 4 + 4)) }));
+      return range(3, p => page(this, { title: `교실 놀이 카드 (${p + 1}/3)`, noname: true, sub: '넓은 공간 없이 교실 자리에서 할 수 있는 놀이만 모았어요. 전자칠판의 「타이머」, 「돌림판」, 「모둠 점수판」과 함께 쓰면 진행이 쉬워요.', body: card4(P.slice(p * 4, p * 4 + 4)) }));
     }
   });
   reg({
@@ -403,8 +368,8 @@
     desc: '이야기 속에 「왼쪽」, 「오른쪽」이 나올 때마다 선물을 옆으로! 영미권 파티의 고전 놀이를 우리말 창작 이야기로.',
     gen() {
       const story = '크리스마스이브, 산타는 [오른쪽] 장화를 신다가 깜짝 놀랐어요. [왼쪽] 장화가 보이지 않았거든요! "루돌프, 내 [왼쪽] 장화 못 봤니?" 루돌프는 고개를 [오른쪽]으로 갸웃, 다시 [왼쪽]으로 갸웃했어요. "썰매 [오른쪽] 자리에 있지 않을까요?" 산타는 썰매로 달려가 [오른쪽] 자리를 살폈지만, 거기엔 먹다 [남은] 쿠키뿐이었어요. 그때 [왼쪽] 창고에서 달그락 소리가 났어요. 꼬마 엘프가 [왼쪽] 장화 속에 사탕을 가득 채우고 있었지 뭐예요! "산타 할아버지, 양말인 줄 알았어요!" 산타는 껄껄 웃으며 [왼쪽] 장화를 신고, [오른쪽] 손에 고삐를 쥐었어요. "자, 출발! 첫 번째 집은 [오른쪽]으로 돌아 세 번째 굴뚝이다!" 그런데 루돌프가 그만 [왼쪽]으로 돌아 버렸어요. "아니, [오른쪽]! [오른쪽]이라니까!" 썰매는 [왼쪽]으로 빙글, [오른쪽]으로 빙글, 하늘에서 춤을 추었지요. 겨우 지붕에 내린 산타는 굴뚝의 [왼쪽] 벽과 [오른쪽] 벽 사이에 배가 꽉 끼고 말았어요. 엘프가 [왼쪽] 다리를, 루돌프가 [오른쪽] 다리를 잡아당기자 뽕! 하고 빠졌답니다. 산타는 트리 [오른쪽]에 선물을 내려놓고, 접시에 [남은] 우유를 마신 다음, [왼쪽] 눈을 찡긋하며 말했어요. "지금 선물을 들고 있는 친구, 메리 크리스마스!"';
-      const html = story.replace(/\[(왼쪽|오른쪽)\]/g, (m, w) => `<b style="font-family:var(--f-display);font-weight:400;color:${w === '왼쪽' ? '#1c6146' : '#b52a2a'};border-bottom:.5mm solid currentColor">${w}</b>`).replace(/\[남은\]/g, '<b style="font-family:var(--f-display);font-weight:400;color:#b06a00">남은</b>');
-      return [page(this, { noname: true, sub: '놀이법: 둥글게 앉아 선물(사탕 주머니) 1~3개를 들고 시작해요. 선생님이 이야기를 읽다가 「왼쪽」이 나오면 왼쪽 사람에게, 「오른쪽」이 나오면 오른쪽 사람에게 넘겨요. 이야기가 끝났을 때 선물을 든 사람이 주인!', body: `<div class="box" style="flex:1;font-size:13pt;line-height:2.05;background:#fffdf8">${html}</div>`, tip: '「남은」은 함정 낱말이에요(오른쪽 영어 right/left의 말장난을 우리말로 살렸어요). 속아서 넘기면 다 함께 웃고 넘어가요. 빠르기를 점점 올리면 더 재미있어요. 「왼쪽」 11번, 「오른쪽」 12번이 나옵니다.' })];
+      const html = story.replace(/\[(왼쪽|오른쪽)\]/g, (m, w) => `<b style="font-family:var(--f-display);font-weight:400;color:${w === '왼쪽' ? '#1c6146' : '#b52a2a'};border-bottom:.5mm solid currentColor">${w}</b>`).replace(/\[남은\]/g, '남은');
+      return [page(this, { noname: true, sub: '놀이법: 둥글게 앉아 선물(사탕 주머니) 1~3개를 들고 시작해요. 선생님이 이야기를 읽다가 「왼쪽」이 나오면 왼쪽 사람에게, 「오른쪽」이 나오면 오른쪽 사람에게 넘겨요. 이야기가 끝났을 때 선물을 든 사람이 주인!', body: `<div class="box" style="flex:1;font-size:15.5pt;line-height:1.95;background:#fffdf8">${html}</div>`, tip: '「남은」은 함정 낱말이에요(오른쪽 영어 right/left의 말장난을 우리말로 살렸어요). 속아서 넘기면 다 함께 웃고 넘어가요. 빠르기를 점점 올리면 더 재미있어요. 「왼쪽」 11번, 「오른쪽」 12번이 나옵니다.' })];
     }
   });
 
@@ -417,15 +382,23 @@
       return [page(this, { sub: '「징글벨」 후렴 가락에 맞춰 노랫말을 바꿔요. 한 칸에 한 글자! 원래 글자 수와 맞추면 부르기 쉬워요.', body: `<table class="t"><tr><th>보기 (우리 반 버전)</th><th>내가 바꾼 노랫말 (칸 수 = 음표 수)</th></tr>${row(6, '우리 반 우리 반')}${row(5, '신나는 우리')}${row(9, '함께 웃고 함께 노는 반')}${row(6, '최고의 우리 반')}${row(6, '우리 반 우리 반')}${row(5, '다정한 우리')}${row(9, '서로 돕고 아껴 주는 반')}${row(5, '우리 반 최고')}</table><div class="q">제목: ${blank(80)}</div><div class="q">어울리는 율동이나 손뼉 치기를 그림·글로 계획해요</div><div class="box" style="flex:1"></div>`, tip: '주제 예시: 우리 반 자랑, 겨울방학 계획, 급식 메뉴 찬양가, 선생님께 드리는 노래. 완성되면 전자칠판 「캐럴 노래방」의 징글벨 반주에 맞춰 발표해요.' })];
     }
   });
-  reg({
-    id: 'cup-rhythm', title: '징글벨 컵타 리듬 악보', cat: 'song', grades: G3, icon: 'cocoa',
-    desc: '종이컵 하나로 연주하는 컵 난타. 그림 기호 악보라서 악보를 못 읽어도 OK.',
+  const CUPMOVE = { 짝: ['clap', '손뼉 치기', '두 손을 마주쳐 「짝!」', '#d93a3a'], 탁: ['pat', '책상 치기', '양손바닥으로 책상을 「탁!」', '#2e9e5b'], 쿵: ['tap', '컵 내려치기', '컵을 잡고 책상에 「쿵!」', '#3f7fd6'], 들: ['lift', '컵 들기', '컵을 위로 번쩍 「들!」', '#e0702e'], 쓱: ['pass', '컵 넘기기', '컵을 오른쪽 친구 앞으로 「쓱」', '#8e44ad'], 쉿: ['rest', '쉬기', '손을 멈추고 마음속으로 「쉿」', '#8a7a70'] };
+  const CUPPAT = { 가: ['짝', '짝', '쿵', '쉿'], 나: ['탁', '탁', '짝', '쉿'], 다: ['들', '쿵', '짝', '쉿'], 라: ['들', '쿵', '쓱', '쉿'] };
+  const JBL = [['Jin-gle bells', '징글 벨스'], ['jin-gle bells', '징글 벨스'], ['jin-gle all the', '징글 올 더'], ['way', '웨이~'], ['Oh what fun it', '오 왓 펀 잇'], ['is to ride in a', '이즈 투 라이드 인 어'], ['one-horse o-pen', '원 홀스 오픈'], ['sleigh, hey!', '슬레이 헤이!']];
+  const CUPPLAN = { low: '가가가나가가가나', mid: '가가다나가가다나', high: '가다가다라라라라' };
+  const cupImg = (k, h) => `<img src="${XArt.img('cup/' + CUPMOVE[k][0] + '.jpg')}" alt="" style="height:${h}mm;max-width:100%;object-fit:contain;display:block;margin:0 auto">`;
+  const beat = (k, n, h = 15) => `<div style="flex:1;border:.6mm solid ${CUPMOVE[k][3]};border-radius:3mm;background:${CUPMOVE[k][3]}14;padding:1mm;text-align:center;min-width:0"><div style="font-size:8pt;color:#777">${n}박</div>${cupImg(k, h)}<div style="font-family:var(--f-display);font-size:17pt;line-height:1.1;color:${CUPMOVE[k][3]}">${k}</div></div>`;
+  G3.forEach(g => reg({
+    id: 'cup-' + g, title: '징글벨 컵타 악보', cat: 'song', grades: [g], icon: 'cocoa',
+    desc: { low: '손뼉·책상·컵 내려치기 3동작으로 하는 쉬운 컵타. 동작 사진 카드와 그림 악보.', mid: '컵 들기까지 4동작. 동작 사진 카드와 징글벨 그림 악보.', high: '컵을 옆 친구에게 넘기는 돌림 컵타까지! 동작 사진 카드와 그림 악보.' }[g],
     gen() {
-      const sym = { 짝: ['손뼉', '<path d="M6 16 l5 -9 l3 2 l-2 5 l6 -1 l1 3 l-7 4Z" fill="#fff" stroke="#432" stroke-width="1"/>'], 탁: ['컵 바닥 치기', '<path d="M5 6 h14 l-2 14 h-10Z" fill="#fff" stroke="#432" stroke-width="1"/><path d="M12 1 v4 M8 2 l1.5 3 M16 2 l-1.5 3" stroke="#d93a3a" stroke-width="1"/>'], 들: ['컵 들기', '<path d="M5 9 h14 l-2 12 h-10Z" fill="#fff" stroke="#432" stroke-width="1"/><path d="M12 7 V1 M9 3.5 L12 1 L15 3.5" fill="none" stroke="#d93a3a" stroke-width="1"/>'], 놓: ['컵 놓기', '<path d="M5 3 h14 l-2 12 h-10Z" fill="#fff" stroke="#432" stroke-width="1"/><path d="M12 16 v6 M9 19.5 L12 22 L15 19.5" fill="none" stroke="#d93a3a" stroke-width="1"/>'], 쉼: ['쉬기', '<circle cx="12" cy="12" r="2" fill="#bbb"/>'] };
-      const cell = (k) => `<td style="width:6.25%;padding:1mm 0"><svg viewBox="0 0 24 24" width="30" height="30">${sym[k][1]}</svg><div style="font-family:var(--f-display);font-size:10pt">${k}</div></td>`;
-      const bar = (pat, lyr) => `<table class="t" style="margin-bottom:1mm"><tr>${pat.map(cell).join('')}</tr><tr>${lyr.map(l => `<td colspan="4" style="font-size:10pt;background:#fffdf5">${l}</td>`).join('')}</tr></table>`;
-      const A = ['짝', '짝', '탁', '쉼'], B = ['짝', '탁', '들', '놓'], Cc = ['탁', '탁', '짝', '쉼'], Dd = ['들', '놓', '짝', '쉼'];
-      return [page(this, { sub: '컵을 엎어 놓고 시작해요. 한 칸이 한 박! 먼저 입으로 「짝 짝 탁 (쉬고)」 외우고, 느리게 → 점점 빠르게.', body: `<div style="display:flex;gap:5mm;flex:none;flex-wrap:wrap">${Object.keys(sym).map(k => `<span style="display:inline-flex;align-items:center;gap:1mm"><svg viewBox="0 0 24 24" width="26" height="26">${sym[k][1]}</svg><b style="font-family:var(--f-display);font-weight:400">${k}</b> = ${sym[k][0]}</span>`).join('')}</div><div class="h3">후렴 (Jingle bells~)</div>${bar([...A, ...A, ...B, ...Cc], ['Jingle bells', 'jingle bells', 'jingle all the', 'way'])}${bar([...B, ...B, ...A, ...Dd], ['Oh what fun it', 'is to ride in a', 'one-horse open', 'sleigh, hey!'])}${bar([...A, ...A, ...B, ...Cc], ['Jingle bells', 'jingle bells', 'jingle all the', 'way'])}${bar([...B, ...B, ...Cc, ...Cc], ['Oh what fun it', 'is to ride in a', 'one-horse open', 'sleigh'])}<div class="h3">우리 모둠 리듬 만들기 (기호를 그려 넣어요)</div><table class="t"><tr>${range(16, () => '<td style="height:13mm;width:6.25%"></td>').join('')}</tr></table>`, tip: '저학년은 「짝 짝 탁 (쉬고)」 한 가지 패턴만 되풀이해도 충분해요. 고학년은 「놓」에서 컵을 옆 사람에게 넘기는 돌림 연주에 도전!' })];
+      const plan = CUPPLAN[g], pats = [...new Set(plan)], moves = [...new Set(pats.flatMap(x => CUPPAT[x]))];
+      const cards = `<div style="display:grid;grid-template-columns:repeat(${moves.length > 4 ? 3 : moves.length},1fr);gap:3mm;flex:none">${moves.map(k => `<div style="border:.6mm solid ${CUPMOVE[k][3]};border-radius:4mm;padding:2mm;text-align:center;background:#fff">${cupImg(k, 30)}<div style="font-family:var(--f-display);font-size:24pt;line-height:1.1;color:${CUPMOVE[k][3]}">${k}</div><div style="font-family:var(--f-display);font-size:11pt">${CUPMOVE[k][1]}</div><div style="font-size:9pt;color:#555">${CUPMOVE[k][2]}</div></div>`).join('')}</div>`;
+      const patRows = pats.map(x => `<div style="display:flex;gap:2mm;align-items:stretch;flex:none"><div style="width:14mm;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:16pt;color:#fff;background:#1c6146;border-radius:3mm">${x}</div>${CUPPAT[x].map((k, i) => beat(k, i + 1, 13)).join('')}</div>`).join('');
+      const p1 = page(this, { title: '컵타 동작 익히기', sub: '종이컵을 엎어 놓고 시작해요. 먼저 사진을 보며 동작을 하나씩 따라 해 보세요.', body: cards + `<div class="h3">리듬 패턴 연습 — 「하나, 둘, 셋, 넷」 세며 천천히!</div>` + patRows, tip: '입으로 「짝 짝 쿵 쉿」을 소리 내며 따라 하면 금방 외워져요. 처음에는 아주 느리게, 익숙해지면 점점 빠르게!' });
+      const rows = JBL.map(([en, ko], i) => { const x = plan[i]; return `<div style="display:flex;gap:2mm;align-items:stretch;flex:none"><div style="width:40mm;flex:none;display:flex;flex-direction:column;justify-content:center;border-left:1.2mm solid #d93a3a;padding-left:2mm"><div style="font-family:var(--f-display);font-size:12.5pt;line-height:1.2">${en}</div><div style="font-size:9.5pt;color:#777">${ko}</div><div style="font-size:8.5pt;color:#1c6146">${i + 1}마디 · 패턴 ${x}</div></div>${CUPPAT[x].map((k, j) => beat(k, j + 1, 11)).join('')}</div>`; }).join('');
+      const p2 = page(this, { title: '징글벨 컵타 악보', sub: '한 줄이 한 마디(4박)예요. 왼쪽 가사를 부르며 오른쪽 동작을 차례로 해요. 8마디를 두 번 되풀이하면 후렴이 끝나요.', body: rows, tip: g === 'high' ? '「쓱」에서 컵을 오른쪽 친구 앞으로 넘기고, 왼쪽 친구가 넘긴 컵을 받아 다음 동작을 이어 가요. 둥글게 앉아 하면 컵이 한 바퀴 돌아요!' : '전자칠판 「캐럴 노래방」의 징글벨 반주를 느리게(빠르기 90) 틀어 놓고 연습해 보세요.' });
+      return [p1, p2];
     }
-  });
+  }));
 })();

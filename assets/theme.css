@@ -84,3 +84,4 @@ body.stage{background:var(--pine);color:#fff;min-height:100vh;min-height:100dvh;
 @keyframes wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 .pop{animation:pop .35s ease-out}
 @media (max-width:640px){.topbar h1{flex-basis:100%;order:-1}}
+[hidden]{display:none!important}

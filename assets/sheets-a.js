@@ -23,14 +23,16 @@
     }
   });
 
-  reg({
-    id: 'coloring-scene', title: '크리스마스 장면 컬러링', cat: 'color', grades: G3, icon: 'tree',
-    desc: '한 장 가득 그려진 크리스마스 장면 5종. 쉬운 그림(저학년)부터 섬세한 그림(고학년)까지.',
-    gen() {
-      return [['snowman', '눈사람과 친구들', '저학년', '큰 칸이 많아 크레파스로 칠하기 좋아요.'], ['gingerhouse', '과자 집 마을', '저·중학년', '사탕과 아이싱 무늬를 알록달록하게!'], ['sleigh', '산타의 밤하늘 비행', '중학년', '밤하늘은 진한 색, 창문은 밝은 노랑으로 칠하면 불빛이 반짝여요.'], ['livingroom', '크리스마스이브 거실', '중·고학년', '벽난로 불빛이 닿는 곳은 밝게, 먼 곳은 어둡게 칠해 보세요.'], ['elves', '엘프들의 장난감 공장', '고학년', '색연필로 섬세하게! 엘프마다 다른 옷 색을 정해 보세요.']]
-        .map(([f, t, g, tip]) => page(this, { title: t, sub: `${g} 추천 · ${tip}`, body: SH.full(f + '.png') }));
-    }
-  });
+  const SCENES = {
+    low: [['snowman', '눈사람과 친구들', '큰 칸이 많아 크레파스로 칠하기 좋아요.'], ['rudolph', '선물 더미 속 루돌프', '코는 빨갛게, 선물 상자는 알록달록하게!'], ['penguins', '스케이트 타는 펭귄들', '넘어진 펭귄의 표정도 살려 칠해 보세요.'], ['gingerhouse', '과자 집 마을', '사탕과 아이싱 무늬를 알록달록하게!']],
+    mid: [['sleigh', '산타의 밤하늘 비행', '밤하늘은 진한 색, 창문은 밝은 노랑으로 칠하면 불빛이 반짝여요.'], ['train', '선물 싣고 칙칙폭폭', '기차 칸마다 다른 색을 정해 보세요.'], ['forest', '숲속 동물들의 트리 꾸미기', '동물마다 털 색을 다르게 칠해 보세요.'], ['hanok', '한옥 마당의 눈사람', '한복의 색동 무늬와 감나무의 주황 감을 살려 보세요.']],
+    high: [['livingroom', '크리스마스이브 거실', '벽난로 불빛이 닿는 곳은 밝게, 먼 곳은 어둡게 칠해 보세요.'], ['elves', '엘프들의 장난감 공장', '색연필로 섬세하게! 엘프마다 다른 옷 색을 정해 보세요.'], ['market', '크리스마스 마켓의 밤', '전구 불빛을 노랑·주황으로 반짝이게 칠해 보세요.'], ['glass', '스테인드글라스 창문', '칸마다 밝은 색을 넣으면 빛이 비치는 유리처럼 보여요.']],
+  };
+  G3.forEach(g => reg({
+    id: 'scene-' + g, title: '크리스마스 장면 컬러링', cat: 'color', grades: [g], icon: 'tree',
+    desc: { low: '큼직한 선의 장면 4종: 눈사람 친구들, 루돌프, 스케이트 펭귄, 과자 집.', mid: '장면 4종: 산타 비행, 선물 기차, 숲속 동물 트리, 한옥 마당 눈사람.', high: '섬세한 장면 4종: 이브의 거실, 엘프 공장, 크리스마스 마켓, 스테인드글라스.' }[g],
+    gen() { return SCENES[g].map(([f, t, tip]) => page(this, { title: t, sub: tip, body: SH.full(f + '.png') })); }
+  }));
 
   reg({
     id: 'mandala', title: '크리스마스 만다라 컬러링', cat: 'color', grades: ['mid', 'high'], icon: 'snowflake',
@@ -58,7 +60,7 @@
   };
   const pxKey = (used, labelOf) => `<div class="cards" style="grid-template-columns:repeat(4,1fr);flex:none">${used.map(ch => `<div style="display:flex;align-items:center;gap:2mm;font-size:10pt"><span style="width:7mm;height:7mm;border:.4mm solid #432;border-radius:1.5mm;background:${PC[ch][1]};flex:none"></span><span><b style="font-family:var(--f-display);font-weight:400">${labelOf(ch)}</b> → ${PC[ch][0]}</span></div>`).join('')}</div>`;
   const pxSheet = (g) => reg({
-    id: 'pixel-' + g, title: { low: '숫자 픽셀 컬러링', mid: '곱셈 픽셀 컬러링', high: '코딩 픽셀 아트' }[g], cat: g === 'high' ? 'stem' : 'color', grades: [g], icon: 'gift', answers: true, random: g === 'mid',
+    id: 'pixel-' + g, title: { low: '숫자 픽셀 컬러링', mid: '곱셈 픽셀 컬러링', high: '코딩 픽셀 아트' }[g], cat: 'color', grades: [g], icon: 'gift', answers: true, random: g === 'mid',
     desc: { low: '숫자에 맞는 색을 칠하면 숨은 그림이 나타나요.', mid: '곱셈을 풀고 답에 맞는 색을 칠하면 그림 완성! 문제는 매번 바뀌어요.', high: '「하3 초2…」 같은 줄 코드를 읽고 칸을 칠하는 언플러그드 코딩.' }[g],
     gen(c) {
       const designs = { low: ['tree', 'gift'], mid: ['santa', 'rudolph'], high: ['tree', 'santa', 'rudolph'] }[g];
@@ -272,43 +274,6 @@
   });
   G3.forEach(wsSheet);
 
-  /* ───────── 스도쿠 ───────── */
-  function sudoku(n, br, bc, holes, r) {
-    const ok = (g, y, x, v) => { for (let i = 0; i < n; i++) if (g[y][i] === v || g[i][x] === v) return false; const by = y - y % br, bx = x - x % bc; for (let j = 0; j < br; j++) for (let i = 0; i < bc; i++) if (g[by + j][bx + i] === v) return false; return true; };
-    const fill = (g) => { for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!g[y][x]) { for (const v of shuffle(range(n, i => i + 1), r)) if (ok(g, y, x, v)) { g[y][x] = v; if (fill(g)) return true; g[y][x] = 0; } return false; } return true; };
-    const count = (g, lim = 2) => { for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!g[y][x]) { let c = 0; for (let v = 1; v <= n; v++) if (ok(g, y, x, v)) { g[y][x] = v; c += count(g, lim - c); g[y][x] = 0; if (c >= lim) break; } return c; } return 1; };
-    const sol = range(n, () => range(n, () => 0)); fill(sol);
-    const puz = sol.map(row => row.slice()); let removed = 0;
-    for (const cell of shuffle(range(n * n), r)) { if (removed >= holes) break; const y = Math.floor(cell / n), x = cell % n, v = puz[y][x]; puz[y][x] = 0; if (count(puz.map(row => row.slice())) === 1) removed++; else puz[y][x] = v; }
-    return { sol, puz };
-  }
-  const sdSheet = (g) => reg({
-    id: 'sudoku-' + g, title: { low: '그림 스도쿠 4×4', mid: '크리스마스 스도쿠 6×6', high: '크리스마스 스도쿠 9×9' }[g], cat: 'play', grades: [g], icon: 'ornament', random: true, answers: true,
-    desc: { low: '가로줄·세로줄·굵은 상자에 그림이 한 번씩만! 그림 조각을 오려 붙여요.', mid: '그림 6종이 한 번씩만 들어가는 6×6 스도쿠 2문제.', high: '진짜 9×9 스도쿠에 도전! 풀이가 하나뿐인지 컴퓨터가 확인한 문제예요.' }[g],
-    gen(c) {
-      const r = c.r, [n, br, bc, holes, num] = { low: [4, 2, 2, 8, 2], mid: [6, 2, 3, 20, 2], high: [9, 3, 3, 46, 1] }[g];
-      const ics = shuffle(['tree', 'star', 'gift', 'bell', 'snowman', 'santa', 'rudolph', 'ginger', 'stocking'], r).slice(0, n);
-      const one = (x0, y0, size) => {
-        const { sol, puz } = sudoku(n, br, bc, holes, r), cs = size / n; let s = '';
-        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-          s += `<rect x="${x0 + x * cs}" y="${y0 + y * cs}" width="${cs}" height="${cs}" fill="${puz[y][x] ? '#fff7e6' : '#fff'}" stroke="#8a7a70" stroke-width=".3"/>`;
-          const v = puz[y][x] || (c.ans ? sol[y][x] : 0); if (!v) continue;
-          s += g === 'high' ? txt(x0 + x * cs + cs / 2, y0 + y * cs + cs / 2 + .4, v, cs * .6, { fill: puz[y][x] ? '#2b2320' : '#d93a3a' }) : artG(ics[v - 1], x0 + x * cs + cs * .1, y0 + y * cs + cs * .1, cs * .8, { sw: 5 }) + (puz[y][x] ? '' : `<circle cx="${x0 + x * cs + cs * .86}" cy="${y0 + y * cs + cs * .14}" r="1.4" fill="#d93a3a"/>`);
-        }
-        for (let i = 0; i <= n; i++) { if (i % br === 0) s += `<path d="M${x0} ${y0 + i * cs} h${size}" stroke="#432" stroke-width="1.2"/>`; if (i % bc === 0) s += `<path d="M${x0 + i * cs} ${y0} v${size}" stroke="#432" stroke-width="1.2"/>`; }
-        return s;
-      };
-      let body;
-      if (g === 'high') body = svg(186, 186, one(3, 3, 180)) + `<div class="q">규칙: 가로줄, 세로줄, 굵은 3×3 상자에 1~9가 한 번씩만 들어가요.</div>`;
-      else {
-        const sz = g === 'low' ? 84 : 100; body = svg(186, sz * 2 + 14, one((186 - sz) / 2, 2, sz) + one((186 - sz) / 2, sz + 12, sz));
-        body += `<div class="q">${g === 'low' ? '✂ 그림 조각 — 오려서 빈칸에 붙여요 (그려도 좋아요)' : '빈칸에 들어갈 그림의 번호를 쓰거나 간단히 그려요'}</div><div style="display:flex;gap:1.5mm;flex-wrap:wrap;flex:none;justify-content:center">${g === 'low' ? range(8, i => `<span style="border:.4mm dashed #8a7a70;width:17mm;height:17mm;display:inline-flex;align-items:center;justify-content:center">${art(ics[i % 4], { size: 54 })}</span>`).join('') : ics.map((n2, i) => `<span style="display:inline-flex;align-items:center;gap:1mm;font-family:var(--f-display);font-size:13pt">${i + 1}${art(n2, { size: 44 })}</span>`).join('&nbsp;&nbsp;')}</div>`;
-      }
-      return [page(this, { sub: g === 'high' ? '숫자가 이미 많이 들어간 줄이나 상자부터 살펴보세요.' : '가로줄, 세로줄, 굵은 선 상자 안에 같은 그림이 두 번 나오면 안 돼요.', body })];
-    }
-  });
-  G3.forEach(sdSheet);
-
   /* ───────── 암호 ───────── */
   const RID = [['산타 할아버지가 가장 싫어하는 면은?', '울면'], ['세상에서 가장 추운 바다는?', '썰렁해'], ['눈이 녹으면 무엇이 될까?', '봄'], ['눈사람의 반대말은?', '일어선사람'], ['겨울에 가장 많이 쓰는 끈은?', '따끈따끈'], ['산타가 굴뚝에서 하는 말은?', '아이고좁다'], ['루돌프가 길을 잃지 않는 까닭은?', '코가내비게이션'], ['트리가 미용실을 무서워하는 까닭은?', '가지치기']];
   reg({
@@ -339,34 +304,22 @@
     }
   });
 
-  /* ───────── 다른 그림 찾기 ───────── */
-  const diffScene = (items, r0, mark) => {
-    const r = XK.rng(r0);
-    return `<rect x=".5" y=".5" width="185" height="103" rx="4" fill="#fff" stroke="#432" stroke-width=".9"/>${flakes(r, 186, 60, 10)}<path d="M0.5 78 Q50 66 96 76 T185.5 72" fill="none" stroke="#432" stroke-width=".7"/>` +
-      items.filter(i => !i.gone).map(i => artG(i.n, i.x, i.y, i.s, { line: true, sw: 4, flip: i.flip, rot: i.rot })).join('') +
-      (mark ? items.filter(i => i.d).map(i => `<circle cx="${i.x + i.s0 / 2}" cy="${i.y + i.s0 / 2}" r="${i.s0 * .62}" fill="none" stroke="#d93a3a" stroke-width="1"/>`).join('') : '');
-  };
-  const diffSheet = (g) => reg({
-    id: 'diff-' + g, title: '다른 그림 찾기', cat: 'play', grades: [g], icon: 'snowman', random: true, answers: true,
-    desc: `위아래 그림에서 다른 곳 ${{ low: 5, mid: 7, high: 10 }[g]}군데 찾기. 찾은 뒤에는 색칠까지!`,
+  /* ───────── 다른 그림 찾기 (한 장면 속에서 달라진 곳) ───────── */
+  const DIFFSET = { low: [['snowman', '눈사람과 친구들'], ['rudolph', '선물 더미 속 루돌프'], ['penguins', '스케이트 타는 펭귄들']], mid: [['train', '선물 싣고 칙칙폭폭'], ['forest', '숲속 동물들의 트리 꾸미기'], ['hanok', '한옥 마당의 눈사람']], high: [['market', '크리스마스 마켓의 밤'], ['elves', '엘프들의 장난감 공장'], ['livingroom', '크리스마스이브 거실']] };
+  G3.forEach(g => reg({
+    id: 'diff-' + g, title: '다른 그림 찾기', cat: 'play', grades: [g], icon: 'snowman', answers: true,
+    desc: `한 장면 속에서 달라진 곳을 찾아요(${{ low: '5~6', mid: '7', high: '10' }[g]}군데). 그림 3장, 다 찾으면 색칠까지!`,
     gen(c) {
-      const r = c.r, nd = { low: 5, mid: 7, high: 10 }[g], cols = g === 'low' ? 5 : g === 'mid' ? 6 : 7, rows = g === 'high' ? 3 : 2, cw = 180 / cols, ch = 96 / rows;
-      const asym = ['santa', 'stocking', 'cane', 'hat', 'cocoa', 'snowman', 'elf', 'penguin'];
-      const A = range(cols * rows, i => { const s = Math.min(cw, ch) * (.7 + r() * .22); return { n: pick(ICONS, r), x: +f1(3 + (i % cols) * cw + (cw - s) / 2 + (r() - .5) * 3), y: +f1(4 + Math.floor(i / cols) * ch + (ch - s) / 2 + (r() - .5) * 3), s, s0: s, rot: 0 }; });
-      const B = A.map(o => ({ ...o }));
-      shuffle(range(B.length), r).slice(0, nd).forEach((idx, j) => {
-        const o = B[idx]; o.d = 1; const kind = j % 5;
-        if (kind === 0) o.n = pick(ICONS.filter(x => x !== o.n), r);
-        else if (kind === 1) o.gone = 1;
-        else if (kind === 2) { o.x += o.s * .2; o.y += o.s * .2; o.s *= .6; }
-        else if (kind === 3) { if (asym.includes(o.n)) o.flip = 1; else o.n = pick(asym, r), o.flip = 1; }
-        else o.rot = 180;
+      return DIFFSET[g].map(([f, t]) => {
+        const D = window.DIFF[f], n = D.spots.length, w = 91, h = w * D.h / D.w;
+        const im = (k, x) => `<image href="${XArt.img('diff/' + f + '-' + k + '.png')}" x="${x}" y="0" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/><rect x="${x}" y="0" width="${w}" height="${h}" rx="2" fill="none" stroke="#432" stroke-width=".8"/>`;
+        const marks = c.ans ? D.spots.map(([x, y, r]) => `<circle cx="${(95 + x * w).toFixed(1)}" cy="${(y * h).toFixed(1)}" r="${Math.max(4, r * w * 1.35).toFixed(1)}" fill="none" stroke="#d93a3a" stroke-width="1"/>`).join('') : '';
+        return page(this, { title: `다른 그림 찾기: ${t}`, sub: `왼쪽 그림과 오른쪽 그림에서 다른 곳 ${n}군데를 찾아 오른쪽 그림에 ○표 하세요. 다 찾으면 왼쪽 그림을 색칠해요.`,
+          body: svg(186, h, im('a', 0) + im('b', 95) + marks, `style="flex:none;height:${h}mm"`) + `<div class="q" style="text-align:center">찾은 개수: ${range(n, () => '☐').join(' ')}</div>`,
+          tip: g === 'low' ? '눈송이·별 같은 작은 그림, 칠해진 곳, 사라진 것을 잘 살펴보세요.' : '없어진 것, 새로 생긴 것, 까맣게 칠해진 곳이 섞여 있어요. 그림을 반으로 나누어 차례로 비교하면 빨리 찾을 수 있어요.' });
       });
-      const seed2 = c.seed + 5;
-      return [page(this, { sub: `두 그림에서 서로 다른 곳 ${nd}군데를 찾아 아래 그림에 ○표 하세요.`, body: svg(186, 104, diffScene(A, seed2)) + svg(186, 104, diffScene(B, seed2, c.ans)) + `<div class="q" style="text-align:center">찾은 개수: ${range(nd, () => '☐').join(' ')}</div>` })];
     }
-  });
-  G3.forEach(diffSheet);
+  }));
 
   /* ───────── 빙고 ───────── */
   const BW = ['산타', '루돌프', '눈사람', '트리', '선물', '썰매', '양말', '캐럴', '굴뚝', '장갑', '종', '촛불', '눈꽃', '엘프', '진저맨', '코코아', '목도리', '카드', '케이크', '펭귄', '북극', '별', '리본', '소원', '리스', '오너먼트', '지팡이 사탕', '벽난로', '함박눈', '고드름'];
@@ -472,22 +425,24 @@
       return [page(this, { sub: '엘프들이 가게를 열었어요. 가격표를 잘 보고 문제를 풀어 주세요.', body: shop + qa(Q, c.ans) })];
     }
   });
+  const PARTY = [
+    { n: 4, chars: ['penguin', 'rudolph', 'fox', 'polarbear'], clues: ['펭귄은 맨 왼쪽 1번 자리에 앉았어요.', '여우는 루돌프의 바로 오른쪽에 앉았어요.', '북극곰은 펭귄 바로 옆자리가 아니에요.'], ans: ['penguin', 'rudolph', 'fox', 'polarbear'] },
+    { n: 5, chars: ['bunny', 'polarbear', 'rudolph', 'penguin', 'fox'], clues: ['토끼는 가운데 3번 자리에 앉았어요.', '북극곰은 토끼의 바로 왼쪽에 앉았어요.', '루돌프와 펭귄은 서로 바로 옆자리예요.', '펭귄은 루돌프보다 오른쪽에 앉았어요.', '여우는 양 끝 자리 중 하나에 앉았어요.'], ans: ['fox', 'polarbear', 'bunny', 'rudolph', 'penguin'] },
+  ];
   reg({
-    id: 'math-high', title: '산타의 배달 작전 수학', cat: 'play', grades: ['high'], icon: 'santa', answers: true,
-    desc: '속력·분수·평균·소수 나눗셈·비율·부피까지, 5~6학년 수학 종합 문장제 8문제.',
+    id: 'party-logic', title: '파티 자리 배치 추리', cat: 'play', grades: ['mid', 'high'], icon: 'presents', answers: true,
+    desc: '단서를 읽고 동물 친구 카드를 오려 파티 자리에 앉혀 보는 추리 퍼즐. 4자리(쉬움)·5자리(어려움).',
     gen(c) {
-      const Q = [['썰매는 1시간에 240km를 날아요. 같은 빠르기로 3시간 30분 동안 날면 몇 km를 가나요?', '840km'], ['선물 360개 가운데 <sup>3</sup>⁄<sub>8</sub>이 장난감이에요. 장난감은 몇 개인가요?', '135개'], ['순록 네 마리의 몸무게가 92kg, 88kg, 95kg, 85kg이에요. 평균 몸무게는 몇 kg인가요?', '90kg'], ['선물 하나를 묶는 데 리본이 0.75m 필요해요. 리본 12m로 선물을 몇 개 묶을 수 있나요?', '16개'], ['우리 반 25명 가운데 23명이 「착한 어린이 명단」에 올랐어요. 명단에 오른 학생은 전체의 몇 %인가요?', '92%'], ['굴뚝 안쪽은 가로 0.6m, 세로 0.5m, 높이 4m인 직육면체 모양이에요. 굴뚝 안쪽의 부피는 몇 m³인가요?', '1.2m³'], ['엘프 6명이 8일 걸려 끝내는 일이 있어요. 모든 엘프가 같은 빠르기로 일한다면 엘프 12명은 며칠 만에 끝낼까요?', '4일'], ['도전! 산타가 1초에 3집씩 배달한다면 1분에는 몇 집, 1시간에는 몇 집을 배달할 수 있나요?', '180집, 10,800집']];
-      return [page(this, { sub: '크리스마스이브, 산타 본부의 계산 담당이 되어 주세요. 식을 쓰고 답을 구해요.', body: qa(Q, c.ans) })];
-    }
-  });
-  reg({
-    id: 'logic-high', title: '논리 퍼즐: 누가 무엇을 포장했을까?', cat: 'play', grades: ['high'], icon: 'elf', answers: true,
-    desc: '단서 5개로 엘프 4명의 선물과 포장지 색을 추리하는 격자 논리 퍼즐.',
-    gen(c) {
-      const E = ['루미', '토토', '콩이', '별이'], Gf = ['로봇', '인형', '책', '자전거'], Cl = ['빨강', '초록', '금색', '파랑'], sol = { 루미: ['책', '초록'], 토토: ['로봇', '빨강'], 콩이: ['자전거', '파랑'], 별이: ['인형', '금색'] };
-      const clues = ['토토는 로봇을 포장했어요.', '책은 초록 포장지로 쌌어요.', '별이는 금색 포장지를 썼어요.', '콩이는 인형도 책도 포장하지 않았어요.', '자전거는 빨강 포장지로 싸지 않았어요.'];
-      const tb = `<table class="t"><tr><th rowspan="2"></th><th colspan="4">선물</th><th colspan="4">포장지</th></tr><tr>${[...Gf, ...Cl].map(x => `<th>${x}</th>`).join('')}</tr>${E.map(e => `<tr><th>${e}</th>${[...Gf, ...Cl].map(x => `<td style="height:11mm;width:10%" class="ans">${c.ans ? (sol[e].includes(x) ? '○' : '×') : ''}</td>`).join('')}</tr>`).join('')}</table>`;
-      return [page(this, { sub: '엘프 네 명이 서로 다른 선물을 서로 다른 색 포장지로 쌌어요. 단서를 읽고 표에 ○, ×를 표시하며 추리해요.', body: `<div class="box" style="flex:none"><div class="q">단서</div><ol class="ol">${clues.map(x => `<li>${x}</li>`).join('')}</ol></div>${tb}<div class="q">추리 결과</div><table class="t"><tr><th>엘프</th>${E.map(e => `<th>${e}</th>`).join('')}</tr><tr><th>선물</th>${E.map(e => `<td style="height:10mm" class="ans">${c.ans ? sol[e][0] : ''}</td>`).join('')}</tr><tr><th>포장지</th>${E.map(e => `<td style="height:10mm" class="ans">${c.ans ? sol[e][1] : ''}</td>`).join('')}</tr></table><div class="q">어떤 순서로 알아냈는지 설명해 보세요.</div><div class="lines"></div>`, tip: '확실한 단서(1, 3번)부터 ○표 하고, 같은 줄·같은 칸의 나머지에 ×표를 하면 실마리가 풀려요.' })];
+      return PARTY.map((P, k) => {
+        const sw = P.n === 4 ? 42 : 34, gap = (186 - sw * P.n) / (P.n + 1);
+        let tb = `<rect x="4" y="8" width="178" height="22" rx="11" fill="#fff" stroke="#432" stroke-width=".8"/>` + ['cookies', 'cocoa', 'presents', 'candle', 'cookies'].map((n2, i) => artG(n2, 18 + i * 34, 4, 26)).join('');
+        tb += range(P.n, i => { const x = gap + i * (sw + gap); return `<rect x="${x}" y="38" width="${sw}" height="${sw + 8}" rx="4" fill="#fffdf5" stroke="#432" stroke-width=".8" stroke-dasharray="3 1.5"/>${txt(x + sw / 2, 34, (i + 1) + '번 자리', 4.6, { fill: '#b52a2a' })}` + (c.ans ? artG(P.ans[i], x + 3, 41, sw - 6) + txt(x + sw / 2, 38 + sw + 4, XArt.label(P.ans[i]), 4) : ''); }).join('');
+        const cards = `<div class="h3">✂ 친구 카드 — 오려서 자리에 올려 보며 추리해요</div><div style="display:flex;gap:3mm;flex:none;justify-content:center">${P.chars.map(n2 => `<div style="border:.5mm dashed #8a7a70;border-radius:3mm;padding:1.5mm;text-align:center;width:${P.n === 4 ? 36 : 30}mm">${art(n2, { size: 92 })}<div style="font-family:var(--f-display);font-size:12pt">${XArt.label(n2)}</div></div>`).join('')}</div>`;
+        const clues = `<div class="box" style="flex:none;background:#fffdf5"><div class="h3">단서 카드</div><ol class="ol" style="font-size:12.5pt">${P.clues.map(q => `<li>${q}</li>`).join('')}</ol></div>`;
+        return page(this, { title: `파티 자리 배치 추리 ${k + 1} (${P.n === 4 ? '쉬움' : '어려움'})`, sub: `크리스마스 파티에 동물 친구 ${P.n}명이 나란히 앉았어요. 단서를 모두 만족하는 자리를 찾아 카드를 붙이세요.`,
+          body: svg(186, 38 + sw + 12, tb, `style="flex:none;height:${38 + sw + 12}mm"`) + clues + cards + `<div class="q">내가 정답을 찾은 방법</div><div class="lines"></div>`,
+          tip: '확실한 단서(자리 번호가 나온 것)부터 카드를 올려 보세요. 카드를 이리저리 옮겨 보다 단서와 어긋나면 다시 옮기면 돼요.' });
+      });
     }
   });
 

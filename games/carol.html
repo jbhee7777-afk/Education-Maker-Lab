@@ -79,28 +79,49 @@
     const pr = $('#pron').checked && cur.id!=='class';
     $('#ly').innerHTML = parse(cur.s).map(l=>`<div class="ln">${l.map(x=>x.w==='~'?'<span class="sy" style="display:none"></span>':`<span class="sy">${x.w}${pr?`<small>${x.p}</small>`:''}</span>`).join('')}</div>`).join('');
   }
-  function bell(f, t, dur, vol=.2){
-    const c = XK.audio(); if(!c||XK.muted) return;
+  /* 모든 소리는 연주마다 새로 만드는 master 음량을 거쳐 나가요. 멈추면 master를 꺼서 예약된 소리까지 바로 사라져요. */
+  let master = null, sched = null;
+  function newMaster(){
+    const c = XK.audio(); if(!c) return null;
+    if(master){ const m = master; try{ m.gain.setTargetAtTime(0, c.currentTime, .015); }catch(e){} setTimeout(()=>{ try{ m.disconnect(); }catch(e){} },150); }
+    master = c.createGain(); master.gain.value = 1; master.connect(c.destination); return master;
+  }
+  function bell(f, t, dur, vol=.2, out){
+    const c = XK.audio(); if(!c||XK.muted) return; const dst = out || master || c.destination;
     [[1,'triangle',vol],[2,'sine',vol*.35],[3.01,'sine',vol*.12]].forEach(([m,type,v])=>{
       const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.value=f*m;
       g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+.012); g.gain.exponentialRampToValueAtTime(.001,t+Math.max(.25,dur*1.4));
-      o.connect(g).connect(c.destination); o.start(t); o.stop(t+Math.max(.3,dur*1.5));
+      o.connect(g).connect(dst); o.start(t); o.stop(t+Math.max(.3,dur*1.5));
     });
   }
+  function tick(t, hi, out){
+    const c = XK.audio(); if(!c||XK.muted) return;
+    const o=c.createOscillator(), g=c.createGain(); o.type='square'; o.frequency.value=hi?3100:2600;
+    g.gain.setValueAtTime(.025,t); g.gain.exponentialRampToValueAtTime(.0005,t+.06); o.connect(g).connect(out); o.start(t); o.stop(t+.07);
+  }
+  /* 미리 0.12초만큼만 예약하는 스케줄러: 빠르기를 바꾸면 다음 음표부터 바로 적용돼요 */
   function play(){
-    stop(); const c = XK.audio(); if(!c) return; playing = true;
-    const bpm = +$('#tempo').value, spb = 60/bpm, notes = parse(cur.s).flat(), spans = [...document.querySelectorAll('.sy')];
-    let t = c.currentTime + .4, beat = 0, k = 0;
-    notes.forEach((x,i)=>{
-      bell(freq(x.n), t, x.d*spb);
-      const at = (t - c.currentTime)*1000;
-      timers.push(setTimeout(()=>{ spans.forEach((s,j)=>{ s.classList.toggle('on', j===i); if(j<i) s.classList.add('past'); }); if(x.w==='~'&&spans[i-1]) spans[i-1].classList.add('on'); },at));
-      t += x.d*spb;
-    });
-    if($('#beat').checked){ const c0 = c.currentTime+.4; for(let b=0; c0+b*spb < t; b++){ const tt=c0+b*spb; const o=c.createOscillator(), g=c.createGain(); o.type='square'; o.frequency.value=b%2?2600:3100; g.gain.setValueAtTime(.025,tt); g.gain.exponentialRampToValueAtTime(.0005,tt+.06); o.connect(g).connect(c.destination); o.start(tt); o.stop(tt+.07); } }
-    timers.push(setTimeout(()=>{ playing=false; document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on')); XK.confetti(); },(t-c.currentTime)*1000+300));
+    stop(); const c = XK.audio(); if(!c) return; const out = newMaster(); playing = true;
+    const notes = parse(cur.s).flat(), spans = [...document.querySelectorAll('.sy')];
+    const st = { i:0, t:c.currentTime+.35, beat:0 };
+    const light = (i, x)=>{ spans.forEach((s,j)=>{ s.classList.toggle('on', j===i); if(j<i) s.classList.add('past'); }); if(x.w==='~'&&spans[i-1]) spans[i-1].classList.add('on'); };
+    sched = setInterval(()=>{
+      while(st.i < notes.length && st.t < c.currentTime + .12){
+        const x = notes[st.i], spb = 60 / +$('#tempo').value, i = st.i;
+        bell(freq(x.n), st.t, x.d*spb, .2, out);
+        if($('#beat').checked){ for(let b=Math.ceil(st.beat-1e-6); b < st.beat + x.d - 1e-6; b++) tick(st.t + (b-st.beat)*spb, b%2===0, out); }
+        timers.push(setTimeout(()=>light(i, x), Math.max(0,(st.t - c.currentTime)*1000)));
+        st.t += x.d*spb; st.beat += x.d; st.i++;
+      }
+      if(st.i >= notes.length){ clearInterval(sched); sched = null;
+        timers.push(setTimeout(()=>{ playing=false; document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on')); XK.confetti(); }, Math.max(0,(st.t-c.currentTime)*1000+300))); }
+    }, 25);
   }
-  function stop(){ timers.forEach(clearTimeout); timers = []; playing = false; document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on','past')); }
+  function stop(){
+    clearInterval(sched); sched = null; timers.forEach(clearTimeout); timers = []; playing = false;
+    if(master){ newMaster(); }
+    document.querySelectorAll('.sy').forEach(s=>s.classList.remove('on','past'));
+  }
   $('#play').onclick = play; $('#stop').onclick = stop;
   $('#tempo').oninput = (e)=>$('#tv').textContent = e.target.value;
   $('#pron').onchange = show;
@@ -115,11 +136,11 @@
     $('#ly').innerHTML = `<div class="center" style="gap:18px;color:#fff"><div class="row">${Object.keys(RHY).map(k=>`<button class="btn sm" data-lv="${k}">${k}</button>`).join('')}</div><div class="rhy" id="rr"></div><div class="big" id="rmsg" style="color:var(--gold2)">단계를 고르세요</div></div>`;
     document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go(b.dataset.lv));
     function go(lv){
-      const pat = XK.pick(RHY[lv]); const c = XK.audio(); if(!c) return;
+      stop(); const pat = XK.pick(RHY[lv]); const c = XK.audio(); if(!c) return; const out = newMaster();
       $('#rr').innerHTML = pat.map(d=>`<span class="${d?'':'rest'}" style="width:calc(clamp(44px,6vw,74px)*${Math.max(.6,d||1)})">${d?art('bell'):''}</span>`).join('');
       const spb = 60/ +$('#tempo').value; let t = c.currentTime+.5; const sp=[...document.querySelectorAll('#rr span')];
       $('#rmsg').textContent='잘 들어 보세요…';
-      pat.forEach((d,i)=>{ const dd = d||1; if(d) bell(1568, t, .2, .25); timers.push(setTimeout(()=>{ sp.forEach(s=>s.classList.remove('on')); if(d) sp[i].classList.add('on'); },(t-c.currentTime)*1000)); t += dd*spb; });
+      pat.forEach((d,i)=>{ const dd = d||1; if(d) bell(1568, t, .2, .25, out); timers.push(setTimeout(()=>{ sp.forEach(s=>s.classList.remove('on')); if(d) sp[i].classList.add('on'); },(t-c.currentTime)*1000)); t += dd*spb; });
       timers.push(setTimeout(()=>{ sp.forEach(s=>s.classList.remove('on')); $('#rmsg').textContent='이제 손뼉으로 따라 해요! 짝짝!'; XK.sfx('pop'); },(t-c.currentTime)*1000+100));
     }
   }
