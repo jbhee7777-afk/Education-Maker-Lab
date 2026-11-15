@@ -2,6 +2,17 @@
 
 초등 저·중·고학년용 크리스마스 수업 자료 모음입니다. `index.html`을 브라우저로 열면 학년군과 종류별로 자료를 고를 수 있습니다.
 
+
+**웹사이트:** https://jbhee7777-afk.github.io/Education-Maker-Lab/ · 공유용 소개 글은 [`docs/소개.md`](docs/소개.md)
+
+## 화면 미리보기
+
+| 첫 화면 | 장면 컬러링 | 다른 그림 찾기(정답) | 숨은그림찾기 |
+|---|---|---|---|
+| ![](docs/screenshots/1-첫화면.png) | ![](docs/screenshots/2-활동지-장면컬러링.png) | ![](docs/screenshots/3-활동지-다른그림찾기-정답.png) | ![](docs/screenshots/4-활동지-숨은그림찾기.png) |
+| **방탈출** | **퀴즈 쇼** | **캐럴 노래방** | **휴대폰** |
+| ![](docs/screenshots/5-게임-방탈출.png) | ![](docs/screenshots/6-게임-퀴즈쇼.png) | ![](docs/screenshots/7-캐럴노래방.png) | ![](docs/screenshots/8-휴대폰-첫화면.png) |
+
 ## 들어 있는 것
 
 | 구분 | 내용 |
