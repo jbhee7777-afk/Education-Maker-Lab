@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2학년 2학기 복습 활동지</title>
+<link rel="stylesheet" href="g2.css">
+</head>
+<body>
+<div id="home" class="wrap">
+  <header class="hero">
+    <div>
+      <h1>2학년 2학기 복습 활동지</h1>
+      <p>2022 개정 교육과정 · 국어 1~4단원, 수학 1~3단원, 통합(계절·인물), 창체·범교과. 풀고, 색칠하고, 고민하며 <b>양면 한 장으로 40분</b>을 채우는 활동지와 <b>영상 20분 + 활동지 20분</b> 수업용 활동지입니다.</p>
+    </div>
+    <div class="mas"><img src="../assets/img/l/fox.png" alt=""><img src="../assets/img/l/owl.png" alt=""><img src="../assets/img/l/bunny.png" alt=""><img src="../assets/img/l/teddy.png" alt=""></div>
+  </header>
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+  <section class="guide">
+    <h2>이렇게 쓰세요</h2>
+    <ul>
+      <li><b>인쇄</b>: 활동지를 열고 「인쇄하기」를 누르거나 <a href="print/">print 폴더</a>의 PDF를 쓰세요. A4, <b>양면 인쇄(긴 쪽 넘김)</b>, 여백 없음.</li>
+      <li><b>40분 수업</b>: 앞면 20분 → 뒷면 20분. 활동마다 걸리는 시간이 적혀 있어요. 일찍 끝낸 어린이는 색칠을 마무리하거나 맨 아래 「더 해 보기」를 합니다.</li>
+      <li><b>영상 20분 + 활동지 20분</b>: 창체·범교과 활동지의 앞면은 영상을 본 직후에, 뒷면은 놀이·색칠 활동으로 씁니다. 20분만 쓸 때는 한 면만 골라 인쇄하세요. 영상은 「선생님께」 칸의 검색어로 찾아 길이를 확인하고 틀어 주세요.</li>
+      <li><b>정답</b>: 「정답 보기」를 누르면 빨간 글씨로 나옵니다. 그리기·글쓰기처럼 답이 여러 가지인 활동에는 정답이 없습니다.</li>
+      <li>국어의 시와 글은 교과서 지문이 아니라 이 활동지를 위해 새로 쓴 글입니다.</li>
+    </ul>
+  </section>
+</div>
+<div id="viewer" hidden>
+  <div class="sbar wrap">
+    <a class="btn" href="#">← 목록</a>
+    <h1 id="st"></h1>
+    <a class="btn" id="b-prev">◀ 이전</a><a class="btn" id="b-next">다음 ▶</a>
+    <button class="btn" id="b-ans">정답 보기</button>
+    <a class="btn" id="b-pdf" target="_blank" rel="noopener">PDF</a>
+    <button class="btn pri" id="b-print">인쇄하기</button>
+    <div class="info" id="info"></div>
+  </div>
+  <main id="pages" class="wrap"></main>
+</div>
+<script src="g2-core.js"></script>
+<script src="g2-kor.js"></script>
+<script src="g2-math.js"></script>
+<script src="g2-tong.js"></script>
+<script src="g2-cre.js"></script>
+<script>
+(function(){
+  const $ = (s)=>document.querySelector(s), S = G2.SHEETS, q = new URLSearchParams(location.search);
+  let ans = q.get('ans') === '1', filt = 'all';
+  const F = [['all','전체'],['kor','국어'],['math','수학'],['tong','통합'],['cre','창체·범교과'],['40','40분 꽉 채우기'],['video','영상 20 + 활동 20'],['pair','짝·모둠 놀이']];
+  function list(){
+    $('#filters').innerHTML = F.map(([k,t])=>`<button class="btn" data-f="${k}" aria-pressed="${k===filt}">${t}</button>`).join('');
+    document.querySelectorAll('#filters button').forEach(b=>b.onclick=()=>{ filt=b.dataset.f; list(); });
+    const ok = (s)=> filt==='all' || s.subj===filt || s.mode===filt || (filt==='pair' && s.pair);
+    $('#list').innerHTML = Object.keys(G2.SUBJ).map(k=>{
+      const ss = S.filter(s=>s.subj===k && ok(s)); if(!ss.length) return '';
+      return `<section class="sec"><h2><i style="background:var(--${k})"></i>${G2.SUBJ[k].name} <small style="font-size:.6em;color:var(--ink2)">${ss.length}종</small></h2><p>${G2.SUBJ[k].note}</p><div class="cards">${ss.map(s=>`<a class="cardx" href="#${s.id}" style="border-top-color:var(--${k})"><h3>${s.title}</h3><p>${s.desc}</p><div class="meta">${s.unit?`<span>${s.unit}</span>`:''}<span>${s.mode==='video'?'영상 20 + 활동 20':'40분'}</span>${s.pair?'<span>짝·모둠</span>':''}<span>양면 1장</span></div></a>`).join('')}</div></section>`;
+    }).join('');
+  }
+  const fit = ()=>document.querySelectorAll('.pagebox').forEach(b=>{ const p=b.firstElementChild; p.style.transform=''; const k=Math.min(1,b.clientWidth/p.offsetWidth); p.style.transform=k<1?`scale(${k})`:''; b.style.height=(p.offsetHeight*k)+'px'; });
+  function show(){
+    const id = decodeURIComponent(location.hash.slice(1));
+    const all = id === 'all', s = G2.find(id);
+    $('#home').hidden = !!(s||all); $('#viewer').hidden = !(s||all);
+    if(!s && !all){ document.title='2학년 2학기 복습 활동지'; return; }
+    const ss = all ? S.filter(x=>!ans || x.answers) : [s];
+    $('#pages').innerHTML = ss.map(x=>x.gen({ans, r:G2.rng(x.seed||7)}).map(p=>`<div class="pagebox">${p}</div>`).join('')).join('');
+    if(all){ $('#st').textContent='전체 활동지'; fit(); return; }
+    document.title = s.title+' · 2학년 2학기 복습 활동지';
+    $('#st').textContent = s.title;
+    const i = S.indexOf(s); $('#b-prev').href='#'+S[(i+S.length-1)%S.length].id; $('#b-next').href='#'+S[(i+1)%S.length].id;
+    $('#b-ans').hidden = !s.answers; $('#b-ans').textContent = ans?'정답 숨기기':'정답 보기';
+    $('#b-pdf').href = 'print/'+encodeURIComponent(G2.pdfName(s, ans && s.answers));
+    $('#info').textContent = `${G2.SUBJ[s.subj].name}${s.unit?' · '+s.unit:''} · A4 양면 1장 · ${s.mode==='video'?'영상 20분 + 활동지 20분':'40분'}${s.need?' · 준비물: '+s.need:''}`;
+    requestAnimationFrame(fit); scrollTo(0,0);
+  }
+  $('#b-ans').onclick = ()=>{ ans=!ans; show(); };
+  $('#b-print').onclick = ()=>window.print();
+  addEventListener('hashchange', ()=>{ ans = q.get('ans')==='1'; show(); });
+  addEventListener('resize', fit);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  list(); show();
+  if(q.get('print')==='1') addEventListener('load', ()=>setTimeout(()=>window.print(), 700));
+})();
+</script>
+</body>
+</html>
